@@ -9,8 +9,12 @@
     include_once '../../config/database.php';
 
 
-    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-        return;
+    if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        $code_error="error_requestMethodInvalid";
+        $mensaje = "El tipo de petición no es la correcta";
+        header('HTTP/1.0  405 Method Not Allowed');
+        echo json_encode(array("error"=>$code_error, "mensaje"=>$mensaje,"exito"=>false));
+    
     }
 
     $database = new Database();

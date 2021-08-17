@@ -1,11 +1,10 @@
 <?php
-    include_once '../util/mysqlnd.php';
+    include_once '../../util/mysqlnd.php';
 
     class Usuario{
         private $conn;
 
         public $USU_ID;
-        public $USU_TIPO; //administrador(1) y empleado(0)
         public $USU_USUARIO;
         public $USU_CONTRASENIA;
         public $USU_NOMBRES;
@@ -17,18 +16,20 @@
         public $USU_DIRECCION;
         public $USU_EMAIL;
         public $USU_ESTADO; //Habilitado(1) / Deshabilitado(0) / Cambio de contraseña (2) 
+        public $ROL_ID; //administrador(1) y empleado(0)
+
 
         public function __construct($db){
             $this->conn = $db;
         }
 
-        function login($IP ,$usu_tipo , &$usu_id, &$usu_nombres, &$usu_hash, &$usu_estado, &$usu_email, &$mensaje, &$exito){
+        function login($IP ,$rol_id , &$usu_id, &$usu_nombres, &$usu_hash, &$usu_estado, &$usu_email, &$mensaje, &$exito){
             //Consulta
             $query="SELECT USU_ID, USU_CONTRASENIA, USU_ESTADO, USU_EMAIL, CONCAT(USU_NOMBRES, ' ', USU_APELLIDO_PATERNO, ' ', USU_APELLIDO_MATERNO) AS NOMBRE_COMPLETO FROM USUARIOS WHERE USU_USUARIO = ? AND USU_TIPO = ? "; 
             
             try{
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("ss",$this->USU_USUARIO,$usu_tipo);
+                $stmt->bind_param("ss",$this->USU_USUARIO,$rol_id);
 
                 $stmt->execute();
 
