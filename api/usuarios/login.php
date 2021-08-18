@@ -7,14 +7,10 @@
 
     include_once '../../clases/Usuario.php';
     include_once '../../config/database.php';
+    include_once '../../util/validaciones.php';
 
-
-    if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        $code_error="error_requestMethodInvalid";
-        $mensaje = "El tipo de petición no es la correcta";
-        header('HTTP/1.0  405 Method Not Allowed');
-        echo json_encode(array("error"=>$code_error, "mensaje"=>$mensaje,"exito"=>false));
-    
+    if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
+        exit;
     }
 
     $database = new Database();
@@ -34,10 +30,10 @@
     $usu_estado = -1;
     $usu_email = "";
 
-    function esValido(&$m, &$d){
+    function esValido(&$m, $d){
         //Antes la variable se llamaba USU_ALIAS 
         if(!isset($d->USU_IDENTIFICADOR)){
-            $m = "*Campo obligatorio* La variable USU_IDENTIFICADOR no ha sido enviado.";
+            $m = "La variable USU_IDENTIFICADOR no ha sido enviada.";
             return false;
         }else{
             if($d->USU_IDENTIFICADOR!=""){
@@ -50,10 +46,8 @@
                 return false;
             }
         }
-        
-    
         if(!isset($d->USU_CONTRASENIA)){
-            $m = "La variable USU_CONTRASENIA no ha sido enviado.";
+            $m = "La variable USU_CONTRASENIA no ha sido enviada.";
             return false;
         }else{
             if($d->USU_CONTRASENIA!=""){
@@ -67,41 +61,33 @@
             }
         }
 
-        if(!isset($d->TIPO_CUENTA)){
-            $m = "La variable TIPO_CUENTA no ha sido enviado.";
-            return false;
-        }else{
-            if(!is_int($d->TIPO_CUENTA)){
-                $m = "La variable TIPO_CUENTA debe ser numérico.";
-                return false;
-            }else{
-                if($d->TIPO_CUENTA<0 || $d->TIPO_CUENTA>1){
-                    $m = "La variable TIPO_CUENTA debe ser 0 empleado, 1 administrador.";
-                    return false;
-                }
-            }
-        }
-
         return true;
     }
 
     if(esValido($mensaje,$datos)){
+        $TIPO_CUENTA = -1;
         $identificador = $datos->USU_IDENTIFICADOR;
-        $alias = $usuario->buscarAliasUsuario( $identificador , $exito , $code_error , $mensaje );
-        if(!$exito){
-            header('HTTP/1.0 400 Error');
+        $alias = $usuario->buscarAliasUsuario($TIPO_CUENTA, $identificador , $exito , $code_error , $mensaje );
+        if(!$exito || ($TIPO_CUENTA!==1 && $TIPO_CUENTA!==0) || $alias === ''){
+            header('HTTP/1.0 400 Bad Request');
             echo json_encode(array("error"=>$code_error, "mensaje"=>$mensaje, "exito"=>$exito));
         }else{
             $usuario->USU_USUARIO = $alias;
             $usuario->USU_CONTRASENIA = $datos->USU_CONTRASENIA;
-            $usuario->USU_TIPO = $datos->TIPO_CUENTA;
+            $usuario->ROL_ID = $TIPO_CUENTA;
             $IP = $usuario->obtenerIpUsuario();
-            $usuario->login($IP, $usu_tipo, $usu_id, $usu_nombres, $usu_hash, $usu_estado, $usu_email, $mensaje, $exito);
-            
-            
+            $exitoLogin = $usuario->login($IP, $usu_id, $usu_nombres, $usu_hash, $usu_estado, $usu_email, $mensaje, $code_error);
+            if($exitoLogin){
+                header('HTTP/1.1 200 OK');
+                echo json_encode(array("error"=>$code_error, "autenticar"=>$usu_hash, "id"=>$usu_id, "fullName"=>$usu_nombres, "estado"=>$usu_estado, "email"=>$usu_email, "mensaje"=>$mensaje, "exito"=>$exitoLogin));
+            }else {
+                header('HTTP/1.0 400 Bad Request');
+                echo json_encode(array("error"=>$code_error, "mensaje"=>$mensaje, "exito"=>$exitoLogin));
+            }
         }
     }else{
-        header('HTTP/1.0 400 Error');
+        $code_error = "error_deCampo";
+        header('HTTP/1.0 400 Bad Request');
         echo json_encode(array("estado"=>$usu_estado, "error"=>$code_error, "mensaje"=>$mensaje, "exito"=>false));
     }
 
