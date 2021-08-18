@@ -5,10 +5,10 @@
     class Database{
     
         //Database credentials
-        private $host = "btymmzkjpr9zdpc2cgww-mysql.services.clever-cloud.com";
-        private $db_name = "rolando2_MilOficiosDev";
-        private $username = "u03ihtda1vnbkyaj";
-        private $password = "t39kuv6JvphhwOvRJ00n";
+        private $host = "213.190.6.85";
+        private $db_name = "u507536466_CanVet";
+        private $username = "u507536466_SolucionesMK";
+        private $password = "solucionesMK_2021";
         public $conn;
 
         //Constructor
