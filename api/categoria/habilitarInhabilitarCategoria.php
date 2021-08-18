@@ -1,7 +1,7 @@
 <?php
     header('Access-Control-Allow-Origin: *');
     header("Content-Type: application/json; charset=UTF-8");
-    header("Access-Control-Allow-Methods: POST");
+    header("Access-Control-Allow-Methods: PUT");
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
 
@@ -10,12 +10,9 @@
     include_once '../../config/database.php';
     include_once '../../clases/Categoria.php';
 
-    //COMPROBAMOS QUE EL METODO USADO SEA GET
-    if ($_SERVER['REQUEST_METHOD'] != 'PUT') {
-        $code_error="error_requestMethodInvalid";
-        $mensaje = "El tipo de petición no es la correcta";
-        header('HTTP/1.0  405 Method Not Allowed');
-        echo json_encode(array("error"=>$code_error, "mensaje"=>$mensaje,"exito"=>false));
+    //COMPROBAMOS QUE EL METODO USADO SEA put
+    if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
+        exit;
     }
 
 
