@@ -75,13 +75,56 @@
             
         }
 
-        function editarCategoria(){
-            $query = "";
+        function editarCategoria(&$mensaje,&$code_error,$NUEVO_NOMBRE){
+            $queryValidarExistenciID="SELECT * FROM CATEGORIA where CAT_ID = ?";
+            $queryValidarExistenciaNombre="SELECT * FROM CATEGORIA where CAT_NOMBRE = ?";
+            $query = "UPDATE CATEGORIA SET CAT_NOMBRE = ? WHERE CAT_ID = ?";
 
             try {
-                //code...
+
+                //COMPROBAMOS DE QUE EXISTA EL ID DE LA CATEGORIA
+                $stmtId = $this->conn->prepare($queryValidarExistenciID);
+                $stmtId->bind_param("s",$this->CAT_ID);
+                $stmtId->execute();
+                $resultID = get_result($stmtId);
+
+                if(count($resultID) > 0 ){
+
+                    //COMPROBAMOS DE QUE EL NUEVO NOMBRE DE LA CATEGORIA EXISTA. 
+                    $stmtNombre = $this->conn->prepare($queryValidarExistenciaNombre);
+                    $stmtNombre->bind_param("s",$NUEVO_NOMBRE);
+                    $stmtNombre->execute();
+                    $resultNombre = get_result($stmtNombre);
+
+                    if(count($resultNombre) < 1){
+
+                        $stmtUpdate = $this->conn->prepare($query);
+                        $stmtUpdate->bind_param("ss",$NUEVO_NOMBRE,$this->CAT_ID);
+                        $stmtUpdate->execute();
+                        $mensaje = "Se editó la categoría con éxito";
+                        return true;
+
+                    }else{
+
+                        //SI ES QUE YA EXISTE UNA CATEGORIA PUES MOSTRAMOS EL ERROR DE QUE YA EXISTE UNA CATEGORIA CON ESE NOMBRE
+                        $code_error = "error_exitenciaNombre";
+                        $mensaje = "El nombre ingresado para crear la nueva categoría ya existe.";
+                        return false; 
+
+                    }
+                }else{
+
+                    //SI ES QUE NO EXISTE UNA CATEGORIA CON EL ID INGRESADO SE MUESTRA EL ERROR DE NO EXISTENCIA ID
+                    $code_error = "error_noExistenciaId";
+                    $mensaje = "El Id de la categoria ingresado no existe.";
+                    return false; 
+
+                }
+
             } catch (\Throwable $th) {
-                //throw $th;
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
             }
 
         }
