@@ -9,7 +9,11 @@ class Proveedor{
     public $PROV_EMPRESA_PROVEEDORA;
     public $PROV_NUMERO_CONTACTO;
 
-    listarProveedor(&$mensaje,&$exito,&$code_error){
+    public function __construct($db){
+        $this->conn = $db;
+    }
+
+    function listarProveedor(&$mensaje,&$exito,&$code_error){
         $query = "SELECT * FROM PROVEEDOR";
         $datos= [];
         try{
@@ -37,10 +41,10 @@ class Proveedor{
 
     function actualizarProveedor(&$mensaje,&$code_error){
 
-        $queryVerificarExistenciaId = "select * from proveedor where prov_id = ? ";
-        $queryVerificarExistenciaRuc = "select * from proveedor where prov_ruc = ? ";
-        $queryVerificarExistenciaNombreEmpresa = "select * from proveedor where PROV_EMPRESA_PROVEEDOR = ? ";
-        $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDOR,PROV_NUMERO_CONTACTO) VALUES(?,?,?)"; 
+        $queryVerificarExistenciaId = "select * from PROVEEDOR where PROV_ID = ? ";
+        $queryVerificarExistenciaRuc = "select * from PROVEEDOR where PROV_RUC = ? AND PROV_ID =? ";
+        $queryVerificarExistenciaNombreEmpresa = "select * from PROVEEDOR where PROV_EMPRESA_PROVEEDORA = ?  AND PROV_ID =?";
+        $query = "UPDATE PROVEEDOR SET PROV_RUC = ?, PROV_EMPRESA_PROVEEDORA = ?, PROV_NUMERO_CONTACTO= ? WHERE PROV_ID = ? "; 
 
         
         try {
@@ -50,9 +54,9 @@ class Proveedor{
         $stmtId->execute();
         $resultId = get_result($stmtId);
 
-        if(count($resultRuc) < 1){
+        if(count($resultId) > 0){
             $stmtRuc = $this->conn->prepare($queryVerificarExistenciaRuc);
-            $stmtRuc->bind_param("s",$this->PROV_RUC);
+            $stmtRuc->bind_param("s",$this->PROV_RUC,$this->PROV_ID);
             $stmtRuc->execute();
             $resultRuc = get_result($stmtRuc);
             //VERIFICAMOS SI EL RUC INGRESADO YA EXISTE
@@ -60,14 +64,14 @@ class Proveedor{
                 //SI ES QUE EL RUC INGRESADO NO EXISTE PASA EL FILTRO Y VERIFICAMOS SI YA EXISTE UN PROVEEDOR CON EL NOMBRE INGRESADO
 
                 $stmtExistenciaNombreEmpresa = $this->conn->prepare($queryVerificarExistenciaNombreEmpresa);
-                $stmtExistenciaNombreEmpresa->bind_param("s",$this->PROV_EMPRESA_PROVEEDORA);
+                $stmtExistenciaNombreEmpresa->bind_param("s",$this->PROV_EMPRESA_PROVEEDORA,$this->PROV_ID);
                 $stmtExistenciaNombreEmpresa->execute();
                 $resultaNombreEmpresa = get_result($stmtExistenciaNombreEmpresa);
                 
                 if(count($resultaNombreEmpresa) < 1){
                     //SI ES QUE PASA LOS DOS FILTRO CREAMOS EL PROVEEDOR
                     $stmt = $this->conn->prepare($query);
-                    $stmt->bind_param("s",$this->PROV_EMPRESA_PROVEEDORA);
+                    $stmt->bind_param("ssss",$this->PROV_RUC,$this->PROV_EMPRESA_PROVEEDORA,$this->PROV_NUMERO_CONTACTO,$this->PROV_ID);
                     $stmt->execute();
     
                     $mensaje = "Se ha actualizó el proveedor con éxito";
@@ -89,7 +93,7 @@ class Proveedor{
             return false; 
         }
             
-        }catch (\Throwable $th) {
+        }catch (Throwable $th) {
             $code_error = "error_deBD";
             $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
             $exito = false;
@@ -100,13 +104,12 @@ class Proveedor{
 
     function crearProveedor(&$mensaje,&$code_error){
 
-        $queryVerificarExistenciaRuc = "select * from proveedor where prov_ruc = ? ";
-        $queryVerificarExistenciaNombreEmpresa = "select * from proveedor where PROV_EMPRESA_PROVEEDOR = ? ";
-        $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDOR,PROV_NUMERO_CONTACTO) VALUES(?,?,?)"; 
-
+        $queryVerificarExistenciaRuc = "select * from PROVEEDOR where PROV_RUC = ? ";
+        $queryVerificarExistenciaNombreEmpresa = "select * from PROVEEDOR where PROV_EMPRESA_PROVEEDORA = ? ";
+        $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDORA,PROV_NUMERO_CONTACTO) VALUES(?,?,?)"; 
+       
 
         try {
-
             $stmtRuc = $this->conn->prepare($queryVerificarExistenciaRuc);
             $stmtRuc->bind_param("s",$this->PROV_RUC);
             $stmtRuc->execute();
@@ -140,10 +143,10 @@ class Proveedor{
                 return false; 
             }
   
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             $code_error = "error_deBD";
-                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
-                $exito = false;
+            $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+            return false;
         }
     }
 
