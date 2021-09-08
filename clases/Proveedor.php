@@ -8,6 +8,7 @@ class Proveedor{
     public $PROV_RUC;
     public $PROV_EMPRESA_PROVEEDORA;
     public $PROV_NUMERO_CONTACTO;
+    public $PROV_ESTADO; 
 
     public function __construct($db){
         $this->conn = $db;
@@ -106,7 +107,7 @@ class Proveedor{
 
         $queryVerificarExistenciaRuc = "select * from PROVEEDOR where PROV_RUC = ? ";
         $queryVerificarExistenciaNombreEmpresa = "select * from PROVEEDOR where PROV_EMPRESA_PROVEEDORA = ? ";
-        $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDORA,PROV_NUMERO_CONTACTO) VALUES(?,?,?)"; 
+        $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDORA,PROV_NUMERO_CONTACTO,PROV_ESTADO) VALUES(?,?,?,0)"; 
        
 
         try {
@@ -151,6 +152,21 @@ class Proveedor{
     }
 
     function habilitarInhabilitarProveedor(&$mensaje,&$code_error){
+        $query = "UPDATE PROVEEDOR SET PROV_ESTADO = ? WHERE PROV_ID = ?";
+
+            try {
+                //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA CATEGORIA 
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("ss",$this->PROV_ESTADO,$this->PROV_ID);
+                $stmt->execute();
+
+                $mensaje = "Se ha actualizado el proveedor con éxito";
+                return true;
+            } catch (\Throwable $th) {
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+            }
 
     }
 }

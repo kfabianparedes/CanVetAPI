@@ -29,7 +29,6 @@
 
 
     function esValido($d,&$m){
-        echo "hola";
         if(!isset($d->PROV_ID)){
             $mensaje = "la variable PROV_ID no ha sido enviada.";
             return false;
@@ -50,7 +49,6 @@
                 }
             }
         }
-        echo "hola";
         if(!isset($d->PROV_RUC)){
             $m = "El campo PROV_RUC no ha sido enviado.";
             return false;
@@ -129,10 +127,10 @@
             header('HTTP/1.1 400 Bad Request');
         }
             
-        echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito,"enviado"=>$data));
+        echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
     }else{
         $code_error = "error_deCampo";
-        echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>$exito,"enviado"=>$data));
+        echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>$exito));
         header('HTTP/1.1 400 Bad Request');
     }
 
