@@ -29,7 +29,7 @@
     $usu_nombres = "";  // Nombre completo del usuario
     $usu_estado = -1;
     $usu_email = "";
-
+    $id_sesion = "";
     function esValido(&$m, $d){
         //Antes la variable se llamaba USU_ALIAS 
         if(!isset($d->USU_IDENTIFICADOR)){
@@ -76,10 +76,10 @@
             $usuario->USU_CONTRASENIA = $datos->USU_CONTRASENIA;
             $usuario->ROL_ID = $TIPO_CUENTA;
             $IP = $usuario->obtenerIpUsuario();
-            $exitoLogin = $usuario->login($IP, $usu_id, $usu_nombres, $usu_hash, $usu_estado, $usu_email, $mensaje, $code_error);
+            $exitoLogin = $usuario->login($IP, $usu_id, $usu_nombres, $usu_hash, $usu_estado, $usu_email, $id_sesion,$mensaje, $code_error);
             if($exitoLogin){
                 header('HTTP/1.1 200 OK');
-                echo json_encode(array("error"=>$code_error, "autenticar"=>$usu_hash, "id"=>$usu_id, "fullName"=>$usu_nombres, "estado"=>$usu_estado, "email"=>$usu_email, "mensaje"=>$mensaje, "exito"=>$exitoLogin));
+                echo json_encode(array("error"=>$code_error, "autenticar"=>$usu_hash, "id"=>$usu_id, "sesion"=>$id_sesion,"tipo"=>$TIPO_CUENTA ,"fullName"=>$usu_nombres, "estado"=>$usu_estado, "email"=>$usu_email, "mensaje"=>$mensaje, "exito"=>$exitoLogin));
             }else {
                 header('HTTP/1.0 400 Bad Request');
                 echo json_encode(array("error"=>$code_error, "mensaje"=>$mensaje, "exito"=>$exitoLogin));
