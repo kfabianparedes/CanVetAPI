@@ -68,7 +68,7 @@
         $TIPO_CUENTA = -1;
         $identificador = $datos->USU_IDENTIFICADOR;
         $alias = $usuario->buscarAliasUsuario($TIPO_CUENTA, $identificador , $exito , $code_error , $mensaje );
-        if(!$exito || ($TIPO_CUENTA!==1 && $TIPO_CUENTA!==0) || $alias === ''){
+        if(!$exito || ($TIPO_CUENTA!==1 && $TIPO_CUENTA!==2) || $alias === ''){
             header('HTTP/1.0 400 Bad Request');
             echo json_encode(array("error"=>$code_error, "mensaje"=>$mensaje, "exito"=>$exito));
         }else{

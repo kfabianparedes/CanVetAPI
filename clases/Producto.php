@@ -47,11 +47,9 @@ class Producto{
                     $resultProveedorId = get_result($stmtExistenciaProvID);
                     if(count($resultProveedorId) > 0){
 
-                        $stmt = $this->conn->prepare($query);echo "hola";
+                        $stmt = $this->conn->prepare($query);
                         $stmt->bind_param("sssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_STOCK,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID);
-                        echo "hola";
                         $stmt->execute();
-                        echo "hola";
                         $mensaje = "Se ha creado el producto con éxito";
                         return true;
 
