@@ -87,11 +87,11 @@
                 $usuario = new Usuario($db);
                 $exito_verify = $usuario->tokenVerify($TOKEN,$auth->ROL,$code_error,$mensaje);
                 // echo json_encode(array("exito verify"=>$exito_verify,"rol"=>$auth->ROL,"error"=>$code_error,"mensaje"=>$mensaje));
-                if($exito_verify && $auth->ROL == 2){
+                if($exito_verify && ($auth->ROL == 2 || $auth->ROL == 1)){
                     $exito = true;
                 }else{
                     $code_error = "error_autorizacion";
-                    $mensaje = 'Hubo un error de autorización, el usuario no es administrador.';
+                    $mensaje = 'Hubo un error de autorización, el usuario no está autorizado, vuelva a iniciar sesión.';
                     $exito = false;
                     echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
                     header('HTTP/1.0 401 Unauthorized');
@@ -125,20 +125,14 @@
         if(esValido($mensaje ,$datos)){
             $usuario->USU_ID = $datos->USU_ID;
             $usuario->USU_USUARIO = $datos->USU_USUARIO;
+            $usuario->USU_EMAIL = $datos->USU_EMAIL;
             $usuario->USU_CONTRASENIA = $datos->USU_CONTRASENIA;
             $usuario->USU_NOMBRES = $datos->USU_NOMBRES;
             $usuario->USU_APELLIDO_PATERNO = $datos->USU_APELLIDO_PATERNO;
             $usuario->USU_APELLIDO_MATERNO = $datos->USU_APELLIDO_MATERNO;
             $usuario->USU_SEXO = $datos->USU_SEXO; 
-            $usuario->USU_DNI = $datos->USU_DNI;
-            $usuario->USU_CELULAR = $datos->USU_CELULAR;
-            $usuario->USU_FECHA_NACIMIENTO = $datos->USU_FECHA_NACIMIENTO;
-            $usuario->USU_DIRECCION = $datos->USU_DIRECCION;
-            $usuario->USU_EMAIL = $datos->USU_EMAIL;
-            $usuario->USU_ESTADO = $datos->USU_ESTADO; //Habilitado(1) / Deshabilitado(0) / Cambio de contraseña (2) 
-            $usuario->ROL_ID = $datos->ROL_ID;
     
-            $exito = $usuario->actualizarUsuario($code_error , $mensaje);
+            $exito = $usuario->actualizarPerfil($code_error , $mensaje);
             if($exito == true)
                 header('HTTP/1.1 200 OK');
             else{
@@ -196,8 +190,6 @@
                         return false; 
                     }
                 }
-
-                
             }
     
             if(!isset($d->USU_NOMBRES)){
@@ -277,81 +269,6 @@
                 }
             }
 
-            if(!isset($d->USU_DNI)){
-                $m = "El campo USU_DNI no ha sido enviado.";
-                return false;
-            }else{
-                if($d->USU_DNI==""){
-                    $m = "La variable USU_DNI no debe estar vacía.";
-                    return false;
-                }
-                else {
-                    if(!ctype_digit($d->USU_DNI)){
-                        $m = "La variable USU_DNI debe tener caracteres numéricos.";
-                        return false;
-                    }
-                    if(obtenerCantidadDeCaracteres($d->USU_DNI)!=8){
-                        $m = "La variable USU_DNI debe tener una longitud de 8 caracteres numéricos.";
-                        return false;
-                    }
-                }
-            }
-
-            if(!isset($d->USU_CELULAR)){
-                $m = "El campo USU_CELULAR no ha sido enviado.";
-                return false;
-            }else{
-                if($d->USU_CELULAR==""){
-                    $m = "El campo USU_CELULAR no puede estar vacío.";
-                    return false;
-                }else{
-                    if(obtenerCantidadDeCaracteres($d->USU_CELULAR)>20){
-                        $m = "La variable USU_CELULAR no debe exceder de 20 caracteres.";
-                        return false;
-                    }else{
-                        if(!verificarCelular($d->USU_CELULAR)){
-                            $m = "La varaible USU_CELULAR no tiene el formato permitido.";
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            if(!isset($d->USU_FECHA_NACIMIENTO)){
-                $m = "La variable USU_FECHA_NACIMIENTO no ha sido enviada.";
-                return false; 
-            }else{
-                if($d->USU_FECHA_NACIMIENTO==""){
-                    $m = "La variable USU_FECHA_NACIMIENTO no puede ser null.";
-                    return false;
-                }else{
-                    if(!verificarFecha($d->USU_FECHA_NACIMIENTO)){
-                        $m = "La variable USU_FECHA_NACIMIENTO no contiene una fecha válida o no tiene el formato permitido.";
-                        return false;
-                    }else{
-                        if(calcularedad($d->USU_FECHA_NACIMIENTO)<18){
-                            $m = "La variable USU_FECHA_NACIMIENTO debe ser mayor a 18 años.";
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            if(!isset($d->USU_DIRECCION)){
-                $m = "El campo USU_DIRECCION no ha sido enviado";
-                return false;
-            }else{
-                if($d->USU_DIRECCION==""){  
-                    $m = "La variable USU_DIRECCION no puede ser null o vacía";
-                    return false;  
-                }else{
-                    if(obtenerCantidadDeCaracteres($d->USU_DIRECCION)>100){
-                        $m = "La variable USU_DIRECCION supera los 100 caracteres permitidos.";
-                        return false;
-                    }
-                }
-            }
-
             if(!isset($d->USU_EMAIL)){
                 $m = "El campo USU_EMAIL no ha sido enviado";
                 return false;
@@ -372,56 +289,6 @@
                 }
             }
 
-            if(!isset($d->USU_ESTADO)){
-                $m = "El campo USU_ESTADO no ha sido enviado";
-                return false;
-            }else{
-                if($d->USU_ESTADO == ""){
-                    $m = "La variable USU_ESTADO no puede ser null o vacío.";
-                    return false;
-                    
-                }else{
-                    if(!is_numeric($d->USU_ESTADO)){
-                        $m = "El campo USU_ESTADO debe ser numérico";
-                        return false;
-                    }else{
-                        if(obtenerCantidadDeCaracteres($d->USU_ESTADO)!=1){
-                            $m = "El valor de USU_ESTADO debe tener solo un digito positivo.";
-                            return false;
-                        }else{
-                            if($d->USU_ESTADO>1 || $d->USU_ESTADO <0){
-                                $m = "El valor de USU_ESTADO debe no debe ser difernete de 0 o 1.";
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if(!isset($d->ROL_ID)){
-                $m = "El campo ROL_ID no ha sido enviado";
-                return false;
-            }else{
-                if($d->ROL_ID == ""){
-                    $m = "La variable ROL_ID no puede ser null o vacío.";
-                    return false;
-                }else{
-                    if(!is_numeric($d->ROL_ID)){
-                        $m = "El campo ROL_ID debe ser numérico";
-                        return false;
-                    }else{
-                        if(obtenerCantidadDeCaracteres($d->ROL_ID)!=1){
-                            $m = "El valor de ROL_ID debe tener solo un digito positivo.";
-                            return false;
-                        }else{
-                            if($d->ROL_ID>2 || $d->ROL_ID <=0){
-                                $m = "El valor de ROL_ID debe no debe ser difernete de 1 o 2.";
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
         }
         return true;
     }

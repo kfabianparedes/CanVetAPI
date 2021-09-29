@@ -1,20 +1,10 @@
 <?php
-    // $http_origin = $_SERVER['HTTP_ORIGIN'];
-
-    // $allowed_domains = array(
-    //   'http://localhost:4200',
-    //   'https://solucionesmk.online',
-    // );
     
-    // if (in_array($http_origin, $allowed_domains))
-    // {  
-    //     header("Access-Control-Allow-Origin: $http_origin");
-    // }
     header('Access-Control-Allow-Origin: *');
     header("Content-Type: application/json; charset=UTF-8");
     header("Access-Control-Allow-Methods: POST");
     header("Access-Control-Max-Age: 3600");
-    header("Access-Control-Allow-Headers: *");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, User");
 
     include_once '../../clases/Usuario.php';
     include_once '../../clases/Autorizacion.php';

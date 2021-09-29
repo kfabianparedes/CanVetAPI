@@ -240,8 +240,34 @@
         }
 
         function actualizarUsuario(&$code_error,&$mensaje){
-            $query = "UPDATE USUARIOS SET  USU_USUARIO = ?, USU_CONTRASENIA = ?, USU_NOMBRES = ?, USU_APELLIDO_PATERNO = ?, USU_APELLIDO_MATERNO = ?, USU_SEXO = ?, USU_DNI = ?, USU_CELULAR = ?, USU_FECHA_NACIMIENTO = ?, USU_DIRECCION = ?, USU_EMAIL = ?, USU_ESTADO = ?, ROL_ID = ? WHERE USU_ID = ?;";
-            $query_ = "UPDATE USUARIOS SET  USU_USUARIO = ?, USU_NOMBRES = ?, USU_APELLIDO_PATERNO = ?, USU_APELLIDO_MATERNO = ?, USU_SEXO = ?, USU_DNI = ?, USU_CELULAR = ?, USU_FECHA_NACIMIENTO = ?, USU_DIRECCION = ?, USU_EMAIL = ?, USU_ESTADO = ?, ROL_ID = ? WHERE USU_ID = ?;";
+            $query = "UPDATE USUARIOS SET  
+            USU_USUARIO = ?,
+            USU_CONTRASENIA = ?,
+            USU_NOMBRES = ?, 
+            USU_APELLIDO_PATERNO = ?, 
+            USU_APELLIDO_MATERNO = ?, 
+            USU_SEXO = ?, 
+            USU_DNI = ?, 
+            USU_CELULAR = ?, 
+            USU_FECHA_NACIMIENTO = ?, 
+            USU_DIRECCION = ?, 
+            USU_EMAIL = ?, 
+            USU_ESTADO = ?, 
+            ROL_ID = ? WHERE USU_ID = ?;";
+            
+            $query_ = "UPDATE USUARIOS SET 
+            USU_USUARIO = ?,
+            USU_NOMBRES = ?,
+            USU_APELLIDO_PATERNO = ?,
+            USU_APELLIDO_MATERNO = ?,
+            USU_SEXO = ?,
+            USU_DNI = ?,
+            USU_CELULAR = ?,
+            USU_FECHA_NACIMIENTO = ?,
+            USU_DIRECCION = ?,
+            USU_EMAIL = ?,
+            USU_ESTADO = ?,
+            ROL_ID = ? WHERE USU_ID = ?;";
             $query0 = "SELECT USU_ID FROM USUARIOS WHERE USU_ID = ?";
             $query1 = "SELECT USU_ID FROM USUARIOS WHERE USU_EMAIL = ? AND USU_ID <> ?";
             $query2 = "SELECT USU_ID FROM USUARIOS WHERE USU_USUARIO = ? AND USU_ID <> ?";
@@ -294,8 +320,7 @@
                                     $mensaje = "El celular ingresado ya pertenece a una cuenta.";  
                                     return false;
                                 }else{
-
-                                    if($this->USU_CONTRASENIA != ''){ //Cuando la contraseña NO está vacía se hashea la nueva contraseña
+                                    if($this->USU_CONTRASENIA != ''){ //Cuando la contraseña NO está vacía se hashea la nueva contraseña (Envíaron la contraseña)
                                         $hash = password_hash($this->USU_CONTRASENIA,PASSWORD_DEFAULT);
                                         $stmt = $this->conn->prepare($query);
                                         $stmt->bind_param("ssssssssssssss",$this->USU_USUARIO,$hash,$this->USU_NOMBRES,$this->USU_APELLIDO_PATERNO,$this->USU_APELLIDO_MATERNO,$this->USU_SEXO,$this->USU_DNI,$this->USU_CELULAR,$this->USU_FECHA_NACIMIENTO,$this->USU_DIRECCION,$this->USU_EMAIL,$this->USU_ESTADO,$this->ROL_ID,$this->USU_ID);
@@ -306,7 +331,7 @@
                                         }
                                         $mensaje = "Solicitud ejecutada con éxito.";
                                         return true;
-                                    }else if($this->USU_CONTRASENIA == ''){ //Cuando la contraseña SI está vacía , se actualizan los otros campos
+                                    }else if($this->USU_CONTRASENIA == ''){ //Cuando la contraseña SI está vacía , se actualizan los otros campos (No envíaron la contraseña)
                                         $stmt_ = $this->conn->prepare($query_);
                                         $stmt_->bind_param("sssssssssssss",$this->USU_USUARIO,$this->USU_NOMBRES,$this->USU_APELLIDO_PATERNO,$this->USU_APELLIDO_MATERNO,$this->USU_SEXO,$this->USU_DNI,$this->USU_CELULAR,$this->USU_FECHA_NACIMIENTO,$this->USU_DIRECCION,$this->USU_EMAIL,$this->USU_ESTADO,$this->ROL_ID,$this->USU_ID);
                                         if(!$stmt_->execute()){
@@ -331,6 +356,110 @@
 
         }
 
+        function actualizarPerfil(&$code_error,&$mensaje){
+            $query = "UPDATE USUARIOS SET  
+            USU_USUARIO = ?,
+            USU_EMAIL = ?,
+            USU_CONTRASENIA = ?,
+            USU_NOMBRES = ?, 
+            USU_APELLIDO_PATERNO = ?, 
+            USU_APELLIDO_MATERNO = ?, 
+            USU_SEXO = ? 
+            WHERE USU_ID = ?;";
+            $query_ = "UPDATE USUARIOS SET 
+            USU_USUARIO = ?,
+            USU_EMAIL = ?,
+            USU_NOMBRES = ?, 
+            USU_APELLIDO_PATERNO = ?, 
+            USU_APELLIDO_MATERNO = ?, 
+            USU_SEXO = ?  WHERE USU_ID = ?;";
+            $query0 = "SELECT USU_ID FROM USUARIOS WHERE USU_ID = ?";
+            $query1 = "SELECT USU_ID FROM USUARIOS WHERE USU_EMAIL = ? AND USU_ID <> ?";
+            $query2 = "SELECT USU_ID FROM USUARIOS WHERE USU_USUARIO = ? AND USU_ID <> ?";
+            $query3 = "SELECT USU_ID FROM USUARIOS WHERE USU_DNI = ? AND USU_ID <> ?";
+            $query4 = "SELECT USU_ID FROM USUARIOS WHERE USU_CELULAR = ? AND USU_ID <> ?";
+
+            try{
+                $stmt0 = $this->conn->prepare($query0);
+                $stmt0->bind_param("s",$this->USU_ID);
+                $stmt0->execute();
+                $result0 = get_result($stmt0);
+                if(count($result0)<=0){
+                    $code_error = "error_existenciaUsuarioId";
+                    $mensaje = "El ID ingresado no existe en la Base de Datos.";  
+                    return false;    
+                }else{
+                    $stmt1 = $this->conn->prepare($query1);
+                    $stmt1->bind_param("ss",$this->USU_EMAIL,$this->USU_ID);
+                    $stmt1->execute();
+                    $result1 = get_result($stmt1);
+                    if(count($result1)>0){
+                        $code_error = "error_emailExistente";
+                        $mensaje = "El email ingresado ya pertenece a una cuenta.";  
+                        return false;    
+                    }else{
+                        $stmt2 = $this->conn->prepare($query2);
+                        $stmt2->bind_param("ss",$this->USU_USUARIO,$this->USU_ID);
+                        $stmt2->execute();
+                        $result2 = get_result($stmt2);
+                        if(count($result2)>0){
+                            $code_error = "error_nombreUsuarioExistente";
+                            $mensaje = "El nombre de usuario ingresado ya pertenece a una cuenta.";  
+                            return false; 
+                        }else{
+                            $stmt3 = $this->conn->prepare($query3);
+                            $stmt3->bind_param("ss",$this->USU_DNI,$this->USU_ID);
+                            $stmt3->execute();
+                            $result3 = get_result($stmt3);
+                            if(count($result3)>0){
+                                $code_error = "error_dniExistente";
+                                $mensaje = "El DNI ingresado ya pertenece a una cuenta.";  
+                                return false; 
+                            }else{
+                                $stmt4 = $this->conn->prepare($query4);
+                                $stmt4->bind_param("ss",$this->USU_CELULAR,$this->USU_ID);
+                                $stmt4->execute();
+                                $result4 = get_result($stmt4);
+                                if(count($result4)>0){
+                                    $code_error = "error_celularExistente";
+                                    $mensaje = "El celular ingresado ya pertenece a una cuenta.";  
+                                    return false;
+                                }else{
+                                    if($this->USU_CONTRASENIA != ''){ //Cuando la contraseña NO está vacía se hashea la nueva contraseña (Envíaron la contraseña)
+                                        $hash = password_hash($this->USU_CONTRASENIA,PASSWORD_DEFAULT);
+                                        $stmt = $this->conn->prepare($query);
+                                        $stmt->bind_param("ssssssss",$this->USU_USUARIO,$this->USU_EMAIL,$hash,$this->USU_NOMBRES,$this->USU_APELLIDO_PATERNO,$this->USU_APELLIDO_MATERNO,$this->USU_SEXO,$this->USU_ID);
+                                        if(!$stmt->execute()){
+                                            $code_error ="error_ejecucionQuery";
+                                            $mensaje = "Hubo un error al actualizar el usuario.";
+                                            return false;
+                                        }
+                                        $mensaje = "Solicitud ejecutada con éxito.";
+                                        return true;
+                                    }else if($this->USU_CONTRASENIA == ''){ //Cuando la contraseña SI está vacía , se actualizan los otros campos (No envíaron la contraseña)
+                                        $stmt_ = $this->conn->prepare($query_);
+                                        $stmt_->bind_param("sssssss",$this->USU_USUARIO,$this->USU_EMAIL,$this->USU_NOMBRES,$this->USU_APELLIDO_PATERNO,$this->USU_APELLIDO_MATERNO,$this->USU_SEXO,$this->USU_ID);
+                                        if(!$stmt_->execute()){
+                                            $code_error ="error_ejecucionQuery";
+                                            $mensaje = "Hubo un error al actualizar el usuario.";
+                                            return false;
+                                        }
+                                        $mensaje = "Solicitud ejecutada con éxito.";
+                                        return true;
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }catch(Throwable  $e){
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";  
+                return false;     
+            }
+
+        }
         function listarUsuarios(&$mensaje, &$exito, &$code_error){
             $query = "SELECT * FROM USUARIOS";
             $datos = [];
