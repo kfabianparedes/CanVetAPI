@@ -189,6 +189,88 @@ class Producto{
             $exito = false;
         }
     }
+    function obtenerProductoPorId(&$mensaje,&$exito,&$code_error){
+        
+        $verificarExistenciaDeProducto = "SELECT * FROM PRODUCTO WHERE PRO_ID = ?";
+        $obtenerProductoPorId = "SELECT P.*, C.CAT_NOMBRE,PV.PROV_EMPRESA_PROVEEDORA FROM PRODUCTO P 
+        INNER JOIN CATEGORIA C ON (P.CAT_ID = C.CAT_ID) 
+        INNER JOIN PROVEEDOR PV ON (P.PROV_ID = PV.PROV_ID ) WHERE P.PRO_ID = ?";
+
+        try {
+
+            $stmtExistenciaProId = $this->conn->prepare($verificarExistenciaDeProducto);
+            $stmtExistenciaProId->bind_param("s",$this->PRO_ID);
+            $stmtExistenciaProId->execute();
+            $resultProductoId = get_result($stmtExistenciaProId);
+
+            if(count($resultProductoId) > 0 ){
+
+                $stmt = $this->conn->prepare($obtenerProductoPorId);
+                $stmt->bind_param("s",$this->PRO_ID);
+                $stmt->execute();
+                $result = get_result($stmt); 
+                
+    
+                $mensaje = "Solicitud ejecutada con exito";
+                $exito = true;
+                return $result;
+
+            }else{
+
+                $code_error = "error_deExistenciaProducto";
+                $mensaje = "El producto seleccionado no existe.";
+                $exito = false;
+
+            }
+
+        } catch (Throwable $th) {
+            
+        }
+    }
+
+    function listarProductosPorProveedor(&$mensaje,&$exito,&$code_error){
+        
+        $validarExistenciaDeProveedor = "SELECT * FROM PROVEEDOR WHERE PROV_ID = ? ";
+        $listarProductosPorProveedor = "SELECT P.*, C.CAT_NOMBRE,PV.PROV_EMPRESA_PROVEEDORA FROM PRODUCTO P 
+        INNER JOIN CATEGORIA C ON (P.CAT_ID = C.CAT_ID) 
+        INNER JOIN PROVEEDOR PV ON (P.PROV_ID = PV.PROV_ID ) WHERE P.PROV_ID = ?";
+        $datos = []; 
+        try {
+            $stmtExistenciaProvId = $this->conn->prepare($validarExistenciaDeProveedor);
+            $stmtExistenciaProvId->bind_param("s",$this->PROV_ID);
+            $stmtExistenciaProvId->execute();
+            $resultProveedorId = get_result($stmtExistenciaProvId);
+
+            if(count($resultProveedorId) > 0){
+
+                $stmt = $this->conn->prepare($listarProductosPorProveedor);
+                $stmt->bind_param("s",$this->PROV_ID);
+                $stmt->execute();
+                $result = get_result($stmt); 
+                
+                if (count($result) > 0) {                
+                    while ($dato = array_shift($result)) {    
+                        $datos[] = $dato;
+                    }
+                }
+
+                $mensaje = "Solicitud ejecutada con exito";
+                $exito = true;
+                return $datos;
+
+            }else{
+                $code_error = "error_deExistenciaProveedor";
+                $mensaje = "El proveedor seleccionado no existe.";
+                $exito = false;
+            }
+
+        } catch (Throwable $th) {
+            $code_error = "error_deBD";
+            $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+            $exito = false;
+        }
+    }
+
 
     function listarProductos(&$mensaje,&$exito,&$code_error){
         $query = "SELECT P.*, C.CAT_NOMBRE,PV.PROV_EMPRESA_PROVEEDORA FROM PRODUCTO P 
