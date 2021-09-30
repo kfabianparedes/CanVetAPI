@@ -12,6 +12,7 @@
     if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
         return;
     }
+    
     $database = new Database();
     $db = $database->getConnection();
     $rol= new Rol($db);
