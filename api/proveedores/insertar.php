@@ -12,7 +12,7 @@
     include_once '../../util/validaciones.php';
     //COMPROBAMOS QUE EL METODO USADO SEA GET
     if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
-        exit;
+        return;
     }
 
 

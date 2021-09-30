@@ -13,7 +13,7 @@
     date_default_timezone_set("America/Lima");//Zona horaria de Peru
     //COMPROBAMOS QUE EL METODO USADO SEA GET
     if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
-        exit;
+        return;
     }
 
     

@@ -12,7 +12,7 @@
 
     //COMPROBAMOS QUE EL METODO USADO SEA GET
     if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
-        exit;
+        return;
     }
 
 

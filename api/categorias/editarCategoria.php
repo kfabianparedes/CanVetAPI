@@ -13,7 +13,7 @@ include_once '../../clases/Categoria.php';
 
 //COMPROBAMOS QUE EL METODO USADO SEA GET
 if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
-    exit;
+    return;
 }
 
 
