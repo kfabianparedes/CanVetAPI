@@ -81,7 +81,7 @@
             # TOKEN = $2y$10$YYKcURLLTlYGMuKVTkklVeUVfXtpzUAwbRL35P03P1vNQjo91NaYW (La contraseña hasheada del usuario)
             
 
-            if($auth->TYPE_USER == $auth->AUTH_ADM){
+            if($auth->TYPE_USER == $auth->AUTH_ADM || $auth->TYPE_USER == $auth->AUTH_EMP){
                 $database = new Database();
                 $db = $database->getConnection();
                 $usuario = new Usuario($db);

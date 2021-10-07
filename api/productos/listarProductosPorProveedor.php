@@ -53,7 +53,7 @@
     if(esValido($mensaje)){
 
         $productoC->PROV_ID = $_GET['PROV_ID'];
-        $productoL = $productoC->listarProductosPorProveedor($mensaje, $exito, $code_error);  
+        $productoL = $productoC->listarProductosActivosPorProveedor($mensaje, $exito, $code_error);  
         if($exito==true){
             header('HTTP/1.1 200 OK');
             echo json_encode( array("error"=>$code_error, "resultado"=>$productoL, "mensaje"=>$mensaje,"exito"=>true));
