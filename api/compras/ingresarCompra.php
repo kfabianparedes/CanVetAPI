@@ -150,7 +150,7 @@
         
         }
     }
-    
+     
     function esValido(&$m, $d,&$hay_guia){
         
 
