@@ -53,4 +53,25 @@
 
         return false;
     }
+
+    function esMenorFechaActual($fechaIngresada){
+
+        $fecha_ingresada = new DateTime($fechaIngresada);
+        $hoy = new DateTime();
+
+        return $fecha_ingresada < $hoy; 
+        // $fechaActual = getdate();
+        // $valoresIngresado = explode('-', $fechaIngresada);
+        
+        // if ($fechaActual["mday"] > $valoresIngresado[2]){
+        //     return false;
+        // }else if ($fechaActual["mon"] > $valoresIngresado[1]) {
+        //     return false;
+        // }else if ($fechaActual["year"] > $valoresIngresado[0]) {
+        //     return false;
+        // }
+        
+        // return true;
+
+    }
 ?>
