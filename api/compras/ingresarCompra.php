@@ -19,15 +19,13 @@
         return;
     }
 
-
-    
     $mensaje = '';
     $exito = false;
     $code_error = null;
     $hay_guia = 0;
     $GUIA_NRO_SERIE = '';
     $GUIA_NRO_COMPROBANTE = '';
-    $P_GUIA_FECHA_EMISION = '';
+    $GUIA_FECHA_EMISION = '';
     $Compra_id = '';
     //Autorización
     $headers = apache_request_headers();
@@ -136,12 +134,66 @@
     
     if($exito){
         $datos = json_decode(file_get_contents("php://input"));
+        $compraC = new Compra($db);
         if(esValido($mensaje,$datos,$hay_guia)){
             $COMPRA = $datos->COMPRA;
-            $GUIA_DE_REMISION = $datos->GUIA_DE_REMISION;
-
+           
+            //se llenan las variables de la guia de remisión siempre y cuando esta halla sido enviada
+            if(isset($datos->GUIA_DE_REMISION)){
+                $GUIA_DE_REMISION = $datos->GUIA_DE_REMISION;
+                $GUIA_NRO_SERIE =  $GUIA_DE_REMISION->GUIA_NRO_SERIE;
+                $GUIA_NRO_COMPROBANTE =  $GUIA_DE_REMISION->GUIA_NRO_COMPROBANTE;
+                $GUIA_FECHA_EMISION =  $GUIA_DE_REMISION->GUIA_FECHA_EMISION;
+            }
+            //se llenan los datos de la compra que se insertará
+            $compraC->COMPRA_FECHA_EMISION_COMPROBANTE = $COMPRA->COMPRA_FECHA_EMISION_COMPROBANTE;
+            $compraC->COMPRA_FECHA_REGISTRO = $COMPRA->COMPRA_FECHA_REGISTRO;
+            $compraC->COMPRA_NRO_SERIE = $COMPRA->COMPRA_NRO_SERIE;
+            $compraC->COMPRA_NRO_COMPROBANTE = $COMPRA->COMPRA_NRO_COMPROBANTE;
+            $compraC->COMPRA_SUBTOTAL = $COMPRA->COMPRA_SUBTOTAL/100;
+            $compraC->COMPRA_TOTAL = $COMPRA->COMPRA_TOTAL/100;
+            if(isset($COMPRA->COMPRA_DESCRIPCION))
+                $compraC->COMPRA_DESCRIPCION = $COMPRA->COMPRA_DESCRIPCION;
+            else    
+                $compraC->COMPRA_DESCRIPCION = '';  
+            $compraC->USU_ID = $COMPRA->USU_ID;
+            $compraC->COMPROBANTE_ID = $COMPRA->COMPROBANTE_ID;
+            $compraC->PROV_ID = $COMPRA->PROV_ID;
             $db->begin_transaction(); // INICIO DE LAS TRANSACCIONES. 
 
+            $exito = $compraC->ingresarCompra($mensaje,$code_error,$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FECHA_EMISION,$Compra_id);
+            if($exito){
+                
+                $detalleCompra = new DetalleCompra($db);
+                $DETALLE_COMPRA =  $datos->DETALLES_DE_COMPRA;
+
+                foreach($DETALLE_COMPRA as $det){
+
+                    $detalleCompra->DET_CANTIDAD = $det->DET_CANTIDAD; 
+                    $detalleCompra->DET_IMPORTE = $det->DET_IMPORTE/100;
+                    $detalleCompra->PRO_ID = $det->DET_PRO_ID;
+                    $exito = $detalleCompra->agregarDetalleCompra($mensaje,$code_error,$Compra_id);
+
+                    if(!$exito)
+                        break;
+                }
+
+                if($exito){
+
+                    header('HTTP/1.1 200 OK');
+                    $db->commit(); // SI NO EXISTE NINGÚN ERROR SE EJECUTA LA TRANSACCIÓN
+                    
+                }else{
+
+                    $db->rollback(); //SE DESHACEN LOS CAMBIOS REALIZADOS
+                    header('HTTP/1.1 400 Bad Request');
+                }
+            }else{
+
+                $db->rollback(); //SE DESHACEN LOS CAMBIOS REALIZADOS
+                header('HTTP/1.1 400 Bad Request');
+            }   
+            echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
         }else{
     
             $code_error = "error_deCampo";
@@ -412,6 +464,96 @@
                 }
             }
         } 
+        //validaciones de los detalles de compra
+        if(!isset($d->DETALLES_DE_COMPRA)){
+            $m = "la variable DETALLES_DE_COMPRA  no ha sido enviada.";
+            return false;
+        }else{
+            $DETALLE_COMPRA = $d->DETALLES_DE_COMPRA;
+            $DET_COMPRA_TEMP = $d->DETALLES_DE_COMPRA;
+
+            $importeTotalDetalleCompra = 0 ; 
+            $i = 0 ; //indice del primer bucle
+            $j = 0;  //indice del segundo bucle 
+            foreach($DETALLE_COMPRA as $det){
+                
+                
+                //sirve para validar que no se repita ningún producto
+                foreach($DET_COMPRA_TEMP as $deta){
+                    if($deta->DET_PRO_ID == $det->DET_PRO_ID &&  $i!=$j){
+
+                        $m = "No pueden haber productos repetidos en los detalles de compra.";
+                        return false;
+                    }
+                    $j++;
+                }
+                $j=0;
+                $i++;
+
+                //validaciones de la cantidad del detalle de compra
+                if(!isset($det->DET_CANTIDAD)){
+                    $m = "la variable DET_CANTIDAD no ha sido enviada.";
+                    return false;
+                }else{  
+                    if(ctype_digit($det->DET_CANTIDAD) || is_numeric($det->DET_CANTIDAD)){
+                        if($det->DET_CANTIDAD <= 0) { 
+                            $m = 'El valor de la variable DET_CANTIDAD debe ser mayor a 0.';
+                            return false;
+                        }
+                    }else{
+                        $m = 'La variable DET_CANTIDAD no es un numero o es null.';
+                        return false;
+                    }
+                }
+
+                //validaciones del importe del detalle de compra
+                if(!isset($det->DET_IMPORTE)){
+                    $m = "la variable DET_IMPORTE no ha sido enviada.";
+                    return false;
+                }else{  
+                    if(ctype_digit($det->DET_IMPORTE) || is_numeric($det->DET_IMPORTE)){
+                        if($det->DET_IMPORTE <= 0) { 
+                            $m = 'El valor de la variable DET_IMPORTE debe ser mayor a 0.';
+                            return false;
+                        }
+                    }else{
+                        $m = 'La variable DET_IMPORTE no es un numero o es null.';
+                        return false;
+                    }
+                }
+                //se van sumando los importes de los detalles de venta para verificar sea igual al total de la compra
+                $importeTotalDetalleCompra += $det->DET_IMPORTE;
+
+                //validaciones del id del producto ingresado en el detalle de compra
+                if(!isset($det->DET_PRO_ID)){
+                    $m = "la variable DET_PRO_ID no ha sido enviada.";
+                    return false;
+                }else{  
+                    if($det->DET_PRO_ID == ""){
+                        $m = "la variable DET_PRO_ID no puede estar vacía o ser null.";
+                        return false; 
+                    }else{
+                        if(!is_numeric($det->DET_PRO_ID)){
+                        $m = "la variable USU_ID solo acepta caracteres numéricos.";
+                        return false;  
+                        }else{
+                            if($det->DET_PRO_ID < 1 ){
+                                $m = "la variable USU_ID no puede ser menor o igual a 0.";
+                                return false; 
+                            }
+                        }
+                    }
+                }
+               
+            }            
+            
+        }
+
+        if($importeTotalDetalleCompra != $COMPRA->COMPRA_TOTAL){
+            
+            $m ="La suma de los importes de los detalles de venta no es igual al total de la compra.";
+            return false; 
+        }
             
        return true;  
     }

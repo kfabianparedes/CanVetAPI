@@ -15,15 +15,19 @@
             $this->conn = $db;
         }
 
-        function agregarDetalleCompra(&$mensaje, &$code_error){
+        function agregarDetalleCompra(&$mensaje, &$code_error,$Compra_id){
             
             $queryVerificarCompraId="SELECT * FROM COMPRA WHERE COMPRA_ID = ? ";
             $queryVerificarProductoId="SELECT * FROM PRODUCTO WHERE PRO_ID = ? ";
-            $queryAgregarDetalle="";
+            $queryAgregarDetalle="
+            INSERT INTO DETALLE_COMPRA(DET_CANTIDAD,DET_IMPORTE,COMPRA_ID,PRO_ID)
+            VALUES(?,?,?,?);";
+            $queryAumentaStock ="UPDATE PRODUCTO SET PRO_STOCK = ? WHERE PRO_ID = ?";
+            
             
             try {
                 $stmtExistenciaCompraId = $this->conn->prepare($queryVerificarCompraId);
-                $stmtExistenciaCompraId->bind_param("s",$this->COMPRA_ID);
+                $stmtExistenciaCompraId->bind_param("s",$Compra_id);
                 $stmtExistenciaCompraId->execute();
                 $resultCompraId = get_result($stmtExistenciaCompraId);
                 //validamos si existe el id de la compra ingresada
@@ -37,7 +41,7 @@
                     if(count($resultProductoId) > 0){
 
                         $stmt = $this->conn->prepare($queryAgregarDetalle);
-                        $stmt->bind_param("s",$this->PRO_ID);
+                        $stmt->bind_param("ssss",$this->DET_CANTIDAD,$this->DET_IMPORTE,$Compra_id,$this->PRO_ID);
                         if(!$stmt->execute()){
 
                             $code_error = "error_ejecucionQuery";
@@ -46,8 +50,17 @@
 
                         }else{
 
-                            $mensaje = "La solicitud se ha realizado con éxito.";
-                            $exito = true;
+                            $stmtAumentarStock = $this->conn->prepare($queryAumentaStock);
+                            $stmtAumentarStock->bind_param("ss",$this->DET_CANTIDAD,$this->PRO_ID);
+                            if(!$stmtAumentarStock->execute()){
+
+                                $code_error = "error_ejecucionQuery";
+                                $mensaje = "Hubo un error al aumentar el stock de los productos.";
+                                return false; 
+                            }else{
+                                $mensaje = "La solicitud se ha realizado con éxito.";
+                                return true;
+                            }
 
                         }
 
