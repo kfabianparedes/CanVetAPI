@@ -207,25 +207,25 @@
         
 
         if(!isset($d->COMPRA)){
-            $m = "la variable COMPRA  no ha sido enviada.";
+            $m = "La variable COMPRA  no ha sido enviada.";
             return false;
         }else{
             $COMPRA = $d->COMPRA;
             //validaciones de la variable USU_ID
             if(!isset($COMPRA->USU_ID)){
-                $m = "la variable USU_ID no ha sido enviada.";
+                $m = "La variable USU_ID no ha sido enviada.";
                 return false;
             }else{  
                 if($COMPRA->USU_ID == ""){
-                    $m = "la variable USU_ID no puede estar vacía o ser null.";
+                    $m = "La variable USU_ID no puede estar vacía o ser null.";
                     return false; 
                 }else{
                     if(!is_numeric($COMPRA->USU_ID)){
-                    $m = "la variable USU_ID solo acepta caracteres numéricos.";
+                    $m = "La variable USU_ID solo acepta caracteres numéricos.";
                     return false;  
                     }else{
                         if($COMPRA->USU_ID < 1 ){
-                            $m = "la variable USU_ID no puede ser menor o igual a 0.";
+                            $m = "La variable USU_ID no puede ser menor o igual a 0.";
                             return false; 
                         }
                     }
@@ -234,19 +234,19 @@
 
             //validaciones de la variable COMPROBANTE_ID
             if(!isset($COMPRA->COMPROBANTE_ID)){
-                $m = "la variable COMPROBANTE_ID no ha sido enviada.";
+                $m = "La variable COMPROBANTE_ID no ha sido enviada.";
                 return false;
             }else{  
                 if($COMPRA->COMPROBANTE_ID == ""){
-                    $m = "la variable COMPROBANTE_ID no puede estar vacía o ser null.";
+                    $m = "La variable COMPROBANTE_ID no puede estar vacía o ser null.";
                     return false; 
                 }else{
                     if(!is_numeric($COMPRA->COMPROBANTE_ID)){
-                    $m = "la variable COMPROBANTE_ID solo acepta caracteres numéricos.";
+                    $m = "La variable COMPROBANTE_ID solo acepta caracteres numéricos.";
                     return false;  
                     }else{
                         if($COMPRA->COMPROBANTE_ID < 1 ){
-                            $m = "la variable COMPROBANTE_ID no puede ser menor o igual a 0.";
+                            $m = "La variable COMPROBANTE_ID no puede ser menor o igual a 0.";
                             return false; 
                         }
                     }
@@ -255,19 +255,19 @@
 
             //validaciones de la variable PROV_ID
             if(!isset($COMPRA->PROV_ID)){
-                $m = "la variable PROV_ID no ha sido enviada.";
+                $m = "La variable PROV_ID no ha sido enviada.";
                 return false;
             }else{  
                 if($COMPRA->PROV_ID == ""){
-                    $m = "la variable PROV_ID no puede estar vacía o ser null.";
+                    $m = "La variable PROV_ID no puede estar vacía o ser null.";
                     return false; 
                 }else{
                     if(!is_numeric($COMPRA->PROV_ID)){
-                    $m = "la variable PROV_ID solo acepta caracteres numéricos.";
+                    $m = "La variable PROV_ID solo acepta caracteres numéricos.";
                     return false;  
                     }else{
                         if($COMPRA->PROV_ID < 1 ){
-                            $m = "la variable PROV_ID no puede ser menor o igual a 0.";
+                            $m = "La variable PROV_ID no puede ser menor o igual a 0.";
                             return false; 
                         }
                     }
@@ -318,11 +318,11 @@
 
             //validaciones de la variable COMPRA_NRO_SERIE
             if(!isset($COMPRA->COMPRA_NRO_SERIE)){
-                $m = "la variable COMPRA_NRO_SERIE no ha sido enviada.";
+                $m = "La variable COMPRA_NRO_SERIE no ha sido enviada.";
                 return false;
             }else{  
                 if($COMPRA->COMPRA_NRO_SERIE == ""){
-                    $m = "la variable COMPRA_NRO_SERIE no puede estar vacía o ser null.";
+                    $m = "La variable COMPRA_NRO_SERIE no puede estar vacía o ser null.";
                     return false; 
                 }else{
                     if(!ctype_digit($COMPRA->COMPRA_NRO_SERIE)){
@@ -338,11 +338,11 @@
             }
             //validaciones de la variable COMPRA_NRO_COMPROBANTE
             if(!isset($COMPRA->COMPRA_NRO_COMPROBANTE)){
-                $m = "la variable COMPRA_NRO_COMPROBANTE no ha sido enviada.";
+                $m = "La variable COMPRA_NRO_COMPROBANTE no ha sido enviada.";
                 return false;
             }else{  
                 if($COMPRA->COMPRA_NRO_COMPROBANTE == ""){
-                    $m = "la variable COMPRA_NRO_COMPROBANTE no puede estar vacía o ser null.";
+                    $m = "La variable COMPRA_NRO_COMPROBANTE no puede estar vacía o ser null.";
                     return false; 
                 }else{
                     if(!ctype_digit($COMPRA->COMPRA_NRO_COMPROBANTE)){
@@ -359,7 +359,7 @@
 
             //validaciones de la variable COMPRA_SUBTOTAL
             if(!isset($COMPRA->COMPRA_SUBTOTAL)){
-                $m = "la variable COMPRA_SUBTOTAL no ha sido enviada.";
+                $m = "La variable COMPRA_SUBTOTAL no ha sido enviada.";
                 return false;
             }else{  
                 if(ctype_digit($COMPRA->COMPRA_SUBTOTAL) || is_numeric($COMPRA->COMPRA_SUBTOTAL)){
@@ -375,7 +375,7 @@
 
             //validaciones de la variable COMPRA_TOTAL
             if(!isset($COMPRA->COMPRA_TOTAL)){
-                $m = "la variable COMPRA_TOTAL no ha sido enviada.";
+                $m = "La variable COMPRA_TOTAL no ha sido enviada.";
                 return false;
             }else{  
                 if(ctype_digit($COMPRA->COMPRA_TOTAL) || is_numeric($COMPRA->COMPRA_TOTAL)){
@@ -405,11 +405,11 @@
 
             //validaciones de la variable GUIA_NRO_SERIE
             if(!isset($GUIA_DE_REMISION->GUIA_NRO_SERIE)){
-                $m = "la variable GUIA_NRO_SERIE no ha sido enviada.";
+                $m = "La variable GUIA_NRO_SERIE no ha sido enviada.";
                 return false;
             }else{  
                 if($GUIA_DE_REMISION->GUIA_NRO_SERIE == ""){
-                    $m = "la variable GUIA_NRO_SERIE no puede estar vacía o ser null.";
+                    $m = "La variable GUIA_NRO_SERIE no puede estar vacía o ser null.";
                     return false; 
                 }else{
                     if(!ctype_digit($GUIA_DE_REMISION->GUIA_NRO_SERIE)){
@@ -425,11 +425,11 @@
             }
             //validaciones de la variable GUIA_NRO_COMPROBANTE
             if(!isset($GUIA_DE_REMISION->GUIA_NRO_COMPROBANTE)){
-                $m = "la variable GUIA_NRO_COMPROBANTE no ha sido enviada.";
+                $m = "La variable GUIA_NRO_COMPROBANTE no ha sido enviada.";
                 return false;
             }else{  
                 if($GUIA_DE_REMISION->GUIA_NRO_COMPROBANTE == ""){
-                    $m = "la variable GUIA_NRO_COMPROBANTE no puede estar vacía o ser null.";
+                    $m = "La variable GUIA_NRO_COMPROBANTE no puede estar vacía o ser null.";
                     return false; 
                 }else{
                     if(!ctype_digit($GUIA_DE_REMISION->GUIA_NRO_COMPROBANTE)){
@@ -466,7 +466,7 @@
         } 
         //validaciones de los detalles de compra
         if(!isset($d->DETALLES_DE_COMPRA)){
-            $m = "la variable DETALLES_DE_COMPRA  no ha sido enviada.";
+            $m = "La variable DETALLES_DE_COMPRA  no ha sido enviada.";
             return false;
         }else{
             $DETALLE_COMPRA = $d->DETALLES_DE_COMPRA;
@@ -479,7 +479,7 @@
                 
                  //validaciones de la cantidad del detalle de compra
                  if(!isset($det->DET_CANTIDAD)){
-                    $m = "la variable DET_CANTIDAD no ha sido enviada.";
+                    $m = "La variable DET_CANTIDAD no ha sido enviada.";
                     return false;
                 }else{  
                     if(ctype_digit($det->DET_CANTIDAD) || is_numeric($det->DET_CANTIDAD)){
@@ -495,7 +495,7 @@
 
                 //validaciones del importe del detalle de compra
                 if(!isset($det->DET_IMPORTE)){
-                    $m = "la variable DET_IMPORTE no ha sido enviada.";
+                    $m = "La variable DET_IMPORTE no ha sido enviada.";
                     return false;
                 }else{  
                     if(ctype_digit($det->DET_IMPORTE) || is_numeric($det->DET_IMPORTE)){
@@ -513,19 +513,19 @@
 
                 //validaciones del id del producto ingresado en el detalle de compra
                 if(!isset($det->PRO_ID)){
-                    $m = "la variable PRO_ID no ha sido enviada.";
+                    $m = "La variable PRO_ID no ha sido enviada.";
                     return false;
                 }else{  
                     if($det->PRO_ID == ""){
-                        $m = "la variable PRO_ID no puede estar vacía o ser null.";
+                        $m = "La variable PRO_ID no puede estar vacía o ser null.";
                         return false; 
                     }else{
                         if(!is_numeric($det->PRO_ID)){
-                        $m = "la variable PRO_ID solo acepta caracteres numéricos.";
+                        $m = "La variable PRO_ID solo acepta caracteres numéricos.";
                         return false;  
                         }else{
                             if($det->PRO_ID < 1 ){
-                                $m = "la variable PRO_ID no puede ser menor o igual a 0.";
+                                $m = "La variable PRO_ID no puede ser menor o igual a 0.";
                                 return false; 
                             }
                         }
@@ -543,8 +543,6 @@
                 $j=0;
                 $i++;
 
-               
-               
             }            
             
         }
