@@ -171,7 +171,7 @@
 
                     $detalleCompra->DET_CANTIDAD = $det->DET_CANTIDAD; 
                     $detalleCompra->DET_IMPORTE = $det->DET_IMPORTE/100;
-                    $detalleCompra->PRO_ID = $det->DET_PRO_ID;
+                    $detalleCompra->PRO_ID = $det->PRO_ID;
                     $exito = $detalleCompra->agregarDetalleCompra($mensaje,$code_error,$Compra_id);
 
                     if(!$exito)
@@ -477,21 +477,8 @@
             $j = 0;  //indice del segundo bucle 
             foreach($DETALLE_COMPRA as $det){
                 
-                
-                //sirve para validar que no se repita ningún producto
-                foreach($DET_COMPRA_TEMP as $deta){
-                    if($deta->DET_PRO_ID == $det->DET_PRO_ID &&  $i!=$j){
-
-                        $m = "No pueden haber productos repetidos en los detalles de compra.";
-                        return false;
-                    }
-                    $j++;
-                }
-                $j=0;
-                $i++;
-
-                //validaciones de la cantidad del detalle de compra
-                if(!isset($det->DET_CANTIDAD)){
+                 //validaciones de la cantidad del detalle de compra
+                 if(!isset($det->DET_CANTIDAD)){
                     $m = "la variable DET_CANTIDAD no ha sido enviada.";
                     return false;
                 }else{  
@@ -525,25 +512,38 @@
                 $importeTotalDetalleCompra += $det->DET_IMPORTE;
 
                 //validaciones del id del producto ingresado en el detalle de compra
-                if(!isset($det->DET_PRO_ID)){
-                    $m = "la variable DET_PRO_ID no ha sido enviada.";
+                if(!isset($det->PRO_ID)){
+                    $m = "la variable PRO_ID no ha sido enviada.";
                     return false;
                 }else{  
-                    if($det->DET_PRO_ID == ""){
-                        $m = "la variable DET_PRO_ID no puede estar vacía o ser null.";
+                    if($det->PRO_ID == ""){
+                        $m = "la variable PRO_ID no puede estar vacía o ser null.";
                         return false; 
                     }else{
-                        if(!is_numeric($det->DET_PRO_ID)){
-                        $m = "la variable USU_ID solo acepta caracteres numéricos.";
+                        if(!is_numeric($det->PRO_ID)){
+                        $m = "la variable PRO_ID solo acepta caracteres numéricos.";
                         return false;  
                         }else{
-                            if($det->DET_PRO_ID < 1 ){
-                                $m = "la variable USU_ID no puede ser menor o igual a 0.";
+                            if($det->PRO_ID < 1 ){
+                                $m = "la variable PRO_ID no puede ser menor o igual a 0.";
                                 return false; 
                             }
                         }
                     }
                 }
+                //sirve para validar que no se repita ningún producto
+                foreach($DET_COMPRA_TEMP as $deta){
+                    if($deta->PRO_ID == $det->PRO_ID &&  $i!=$j){
+
+                        $m = "No pueden haber productos repetidos en los detalles de compra.";
+                        return false;
+                    }
+                    $j++;
+                }
+                $j=0;
+                $i++;
+
+               
                
             }            
             
