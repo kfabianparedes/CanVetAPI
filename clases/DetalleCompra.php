@@ -32,14 +32,21 @@
                 $resultCompraId = get_result($stmtExistenciaCompraId);
                 //validamos si existe el id de la compra ingresada
                 if(count($resultCompraId) > 0){
+                    
 
                     $stmtExistenciaProductoId = $this->conn->prepare($queryVerificarProductoId);
                     $stmtExistenciaProductoId->bind_param("s",$this->PRO_ID);
                     $stmtExistenciaProductoId->execute();
                     $resultProductoId = get_result($stmtExistenciaProductoId);
+                    
                     //validamos si existe el id de la compra ingresada
                     if(count($resultProductoId) > 0){
 
+                         //se obtiene el stock que tiene el producto para luego sumarle la cantidad ingresada en la compra 
+                        $cantidadAnteriorProducto = array_shift($resultProductoId)["PRO_STOCK"];
+
+                        //se suma la cantidad ingresada de la compra con el stock del producto obtenido lineas arriba
+                        $this->DET_CANTIDAD = $this->DET_CANTIDAD + $cantidadAnteriorProducto;
                         $stmt = $this->conn->prepare($queryAgregarDetalle);
                         $stmt->bind_param("ssss",$this->DET_CANTIDAD,$this->DET_IMPORTE,$Compra_id,$this->PRO_ID);
                         if(!$stmt->execute()){
