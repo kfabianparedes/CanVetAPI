@@ -22,7 +22,47 @@
         public function __construct($db){
             $this->conn = $db;
         }
-    
+        
+        function listar(&$mensaje,&$code_error,&$exito){
+
+            $query = "SELECT * FROM COMPRA";
+
+            $datos = [];
+            try {
+
+                $stmt = $this->conn->prepare($query);
+                if(!$stmt->execute()){
+
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error al aumentar el stock de los productos.";
+                    return false; 
+
+                }else{
+
+                    $result = get_result($stmt); 
+                
+                    if (count($result) > 0) {                
+                        while ($dato = array_shift($result)) {    
+                            $datos[] = $dato;
+                        }
+                    }
+
+                    $mensaje = "Solicitud ejecutada con exito";
+                    $exito = true;
+                    
+                }
+
+                return $datos;
+            } catch (Throwable $th) {
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos ;
+
+            }
+        }
+
         function ingresarCompra(&$mensaje,&$code_error,$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FECHA_EMISION,&$Compra_id){
             
 

@@ -15,6 +15,69 @@
             $this->conn = $db;
         }
 
+        function listarDetallesPorIdCompra(&$mensaje, &$code_error,&$exito){
+
+            $queryValidarIdCompra = " SELECT * FROM COMPRA WHERE COMPRA_ID = ?";
+            $queryListarDetalles = "
+                SELECT DET.*,PRO.*,CAT.CAT_NOMBRE, PROV.PROV_EMPRESA_PROVEEDORA FROM DETALLE_COMPRA DET
+                INNER JOIN PRODUCTO PRO ON (DET.PRO_ID = PRO.PRO_ID)
+                INNER JOIN CATEGORIA CAT ON (PRO.CAT_ID = CAT.CAT_ID)
+                INNER JOIN PROVEEDOR PROV ON (PRO.PROV_ID = PROV.PROV_ID)
+                WHERE COMPRA_ID = ?
+            ";
+
+            $datos = [];
+            try {
+
+                $stmtValidarIdCompra = $this->conn->prepare($queryValidarIdCompra);
+                $stmtValidarIdCompra->bind_param("s",$this->COMPRA_ID);
+                $stmtValidarIdCompra->execute();
+                $resultIdCompra = get_result($stmtValidarIdCompra);
+
+                if(count($resultIdCompra) > 0){
+
+                    $stmt = $this->conn->prepare($queryListarDetalles);
+                    $stmt->bind_param("s",$this->COMPRA_ID);
+                    if(!$stmt->execute()){
+
+                        $code_error = "error_ejecucionQuery";
+                        $mensaje = "Hubo un error al aumentar el stock de los productos.";
+                        return false; 
+
+                    }else{
+
+                        $result = get_result($stmt); 
+                    
+                        if (count($result) > 0) {                
+                            while ($dato = array_shift($result)) {    
+                                $datos[] = $dato;
+                            }
+                        }
+    
+                        $mensaje = "Solicitud ejecutada con exito";
+                        $exito = true;
+                        
+                    }
+                    
+
+                }else{
+                    
+                    $code_error = "error_NoExistenciaCompraId";
+                    $mensaje = "El id de la compra ingresada no existe.";
+                    return false; 
+
+                }
+                return $datos;
+            } catch (Throwable $th) {
+               
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos;
+
+            }
+        }
+
         function agregarDetalleCompra(&$mensaje, &$code_error,$Compra_id){
             
             $queryVerificarCompraId="SELECT * FROM COMPRA WHERE COMPRA_ID = ? ";
