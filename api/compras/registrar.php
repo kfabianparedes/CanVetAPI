@@ -350,7 +350,7 @@
                         return false;
                     }else{
                         if(obtenerCantidadDeCaracteres($COMPRA->COMPRA_NRO_COMPROBANTE)!=10){
-                            $m = "La variable COMPRA_NRO_COMPROBANTE debe tener una longitud de 5 caracteres numericos.";
+                            $m = "La variable COMPRA_NRO_COMPROBANTE debe tener una longitud de 10 caracteres numericos.";
                             return false;
                         }
                     }
@@ -437,7 +437,7 @@
                         return false;
                     }else{
                         if(obtenerCantidadDeCaracteres($GUIA_DE_REMISION->GUIA_NRO_COMPROBANTE)!=10){
-                            $m = "La variable GUIA_NRO_COMPROBANTE debe tener una longitud de 5 caracteres numericos.";
+                            $m = "La variable GUIA_NRO_COMPROBANTE debe tener una longitud de 10 caracteres numericos.";
                             return false;
                         }
                     }
