@@ -549,7 +549,7 @@
 
         if($importeTotalDetalleCompra != $COMPRA->COMPRA_TOTAL){
             
-            $m ="La suma de los importes de los detalles de venta no es igual al total de la compra.";
+            $m ="La suma de los importes de los detalles de compra no es igual al total de la compra.";
             return false; 
         }
             

@@ -34,7 +34,7 @@
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
-                    $mensaje = "Hubo un error al aumentar el stock de los productos.";
+                    $mensaje = "Hubo un error al listar el registro de compras.";
                     return false; 
 
                 }else{
@@ -108,7 +108,7 @@
                             if(!$stmtIngresarCompra->execute()){
 
                                 $code_error = "error_ejecucionQuery";
-                                $mensaje = "Hubo un error al aumentar el stock de los productos.";
+                                $mensaje = "Hubo un error crear la compra.";
                                 return false; 
 
                             }else{
