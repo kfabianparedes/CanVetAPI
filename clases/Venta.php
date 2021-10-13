@@ -21,7 +21,7 @@
             $this->conn = $db;
         }
 
-        function registrar($ventaId){
+        function registrar(&$mensaje,&$code_error,&$ventaId){
 
             $query = "CALL SP_INSERTAR_VENTA(@P_VENTA_ID,@VAL_COMPROBANTE_ID,@VAL_USU_ID,?,?,?,?,?,?,?,?)"; 
             $queryComprobanteID = "SELECT @VAL_COMPROBANTE_ID"; 
@@ -31,8 +31,8 @@
             try {
 
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("ssssssss",$this->VENTA_FECHA_EMISION_COMPROBANTE,$this->VENTA_FECHA_REGISTRO,
-                $this->VENTA_NRO_SERIE,$this->VENTA_NRO_COMPROBANTE,
+                $stmt->bind_param("ssssssss",$this->VENTA_FECHA_EMISION_COMPROBANTE,
+                $this->VENTA_NRO_SERIE,$this->VENTA_NRO_COMPROBANTE,$this->VENTA_FECHA_REGISTRO,
                 $this->VENTA_SUBTOTAL,$this->VENTA_TOTAL,$this->COMPROBANTE_ID,$this->USU_ID);
                 //verificamos que se haya realizado correctamente el ingreso de la compra
                 if(!$stmt->execute()){
@@ -92,7 +92,7 @@
 
                                 if (count($resultVentaId) > 0) {
                                     //se guarda el id de la compra creada en una variable
-                                    $venta = array_shift($resultCompraId)["@P_VENTA_ID"];
+                                    $ventaId = array_shift($resultVentaId)["@P_VENTA_ID"];
                                 }else{
                                     $code_error = "error_ejecucionQuery";
                                     $mensaje = "Hubo un error al obtener el id de venta generado.";

@@ -15,7 +15,7 @@
     if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
         return;
     }
-
+    $VentaId = '';
     $headers = apache_request_headers();
     $auth = new Autorizacion();
     $code_error = null;
@@ -127,9 +127,55 @@
         $ventaC = new Venta($db);
 
         if(esValido($mensaje,$datos)){
+            $VENTA = $datos->VENTA;
 
+            $ventaC->VENTA_FECHA_EMISION_COMPROBANTE = $VENTA->VENTA_FECHA_EMISION_COMPROBANTE;
+            $ventaC->VENTA_FECHA_REGISTRO = $VENTA->VENTA_FECHA_REGISTRO;
+            $ventaC->VENTA_NRO_SERIE = $VENTA->VENTA_NRO_SERIE;
+            $ventaC->VENTA_NRO_COMPROBANTE = $VENTA->VENTA_NRO_COMPROBANTE;
+            $ventaC->VENTA_SUBTOTAL = $VENTA->VENTA_SUBTOTAL/100;
+            $ventaC->VENTA_TOTAL = $VENTA->VENTA_TOTAL/100;
+            $ventaC->COMPROBANTE_ID = $VENTA->COMPROBANTE_ID;
+            $ventaC->USU_ID = $VENTA->USU_ID;
+
+            $db->begin_transaction(); // INICIO DE LAS TRANSACCIONES. 
+
+            $exito = $ventaC->registrar($mensaje,$code_error,$VentaId);
+
+            if($exito){
+
+                $detalleVenta = new DetalleVenta($db);
+                $DETALLE_VENTA =  $datos->DETALLE_DE_VENTA;
+
+                foreach($DETALLE_VENTA as $det){
+
+                    $detalleVenta->DET_CANTIDAD = $det->DET_CANTIDAD; 
+                    $detalleVenta->DET_IMPORTE = $det->DET_IMPORTE/100;
+                    $detalleVenta->PRO_ID = $det->PRO_ID;
+                    $exito = $detalleVenta->agregarDetalleVenta($mensaje,$code_error,$VentaId);
+
+                    if(!$exito)
+                        break;
+                }
+
+                if($exito){
+
+                    header('HTTP/1.1 200 OK');
+                    $db->commit(); // SI NO EXISTE NINGÚN ERROR SE EJECUTA LA TRANSACCIÓN
+                    
+                }else{
+
+                    $db->rollback(); //SE DESHACEN LOS CAMBIOS REALIZADOS
+                    header('HTTP/1.1 400 Bad Request');
+                }
+
+            }else{
+                $db->rollback(); //SE DESHACEN LOS CAMBIOS REALIZADOS
+                header('HTTP/1.1 400 Bad Request');
+            }
+            echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
         }else{
-
+            $db->rollback(); //SE DESHACEN LOS CAMBIOS REALIZADOS
             $code_error = "error_deCampo";
             echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
             header('HTTP/1.1 400 Bad Request');

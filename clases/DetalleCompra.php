@@ -41,7 +41,7 @@
                     if(!$stmt->execute()){
 
                         $code_error = "error_ejecucionQuery";
-                        $mensaje = "Hubo un error al aumentar el stock de los productos.";
+                        $mensaje = "Hubo un error al listar los detalles de la compra.";
                         return false; 
 
                     }else{
