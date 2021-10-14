@@ -137,6 +137,8 @@
             $ventaC->VENTA_TOTAL = $VENTA->VENTA_TOTAL/100;
             $ventaC->COMPROBANTE_ID = $VENTA->COMPROBANTE_ID;
             $ventaC->USU_ID = $VENTA->USU_ID;
+            $ventaC->METODO_DE_PAGO_ID = $VENTA->METODO_DE_PAGO_ID;
+            $ventaC->CLIENTE_ID = $VENTA->CLIENTE_ID;
 
             $db->begin_transaction(); // INICIO DE LAS TRANSACCIONES. 
 
@@ -194,6 +196,48 @@
         }else{
             
             $VENTA = $d->VENTA;
+
+            //validamos METODO_DE_PAGO_ID
+            if(!isset($VENTA->METODO_DE_PAGO_ID)){
+                $m = "La variable METODO_DE_PAGO_ID no ha sido enviada.";
+                return false;
+            }else{  
+                if($VENTA->METODO_DE_PAGO_ID == ""){
+                    $m = "La variable METODO_DE_PAGO_ID no puede estar vacía o ser null.";
+                    return false; 
+                }else{
+                    if(!is_numeric($VENTA->METODO_DE_PAGO_ID)){
+                    $m = "La variable METODO_DE_PAGO_ID solo acepta caracteres numéricos.";
+                    return false;  
+                    }else{
+                        if($VENTA->METODO_DE_PAGO_ID < 1 ){
+                            $m = "La variable METODO_DE_PAGO_ID no puede ser menor o igual a 0.";
+                            return false; 
+                        }
+                    }
+                }
+            }
+
+            //validamos CLIENTE_ID
+            if(!isset($VENTA->CLIENTE_ID)){
+                $m = "La variable CLIENTE_ID no ha sido enviada.";
+                return false;
+            }else{  
+                if($VENTA->CLIENTE_ID == ""){
+                    $m = "La variable CLIENTE_ID no puede estar vacía o ser null.";
+                    return false; 
+                }else{
+                    if(!is_numeric($VENTA->CLIENTE_ID)){
+                    $m = "La variable CLIENTE_ID solo acepta caracteres numéricos.";
+                    return false;  
+                    }else{
+                        if($VENTA->CLIENTE_ID < 1 ){
+                            $m = "La variable CLIENTE_ID no puede ser menor o igual a 0.";
+                            return false; 
+                        }
+                    }
+                }
+            }
 
             //validamos usu id 
             if(!isset($VENTA->USU_ID)){
