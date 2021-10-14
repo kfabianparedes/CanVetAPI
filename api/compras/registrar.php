@@ -26,6 +26,7 @@
     $GUIA_NRO_SERIE = '';
     $GUIA_NRO_COMPROBANTE = '';
     $GUIA_FECHA_EMISION = '';
+    $GUIA_FLETE = '';
     $Compra_id = '';
     //Autorización
     $headers = apache_request_headers();
@@ -144,6 +145,7 @@
                 $GUIA_NRO_SERIE =  $GUIA_DE_REMISION->GUIA_NRO_SERIE;
                 $GUIA_NRO_COMPROBANTE =  $GUIA_DE_REMISION->GUIA_NRO_COMPROBANTE;
                 $GUIA_FECHA_EMISION =  $GUIA_DE_REMISION->GUIA_FECHA_EMISION;
+                $GUIA_FLETE = $GUIA_DE_REMISION->GUIA_FLETE/100;
             }
             //se llenan los datos de la compra que se insertará
             $compraC->COMPRA_FECHA_EMISION_COMPROBANTE = $COMPRA->COMPRA_FECHA_EMISION_COMPROBANTE;
@@ -161,7 +163,7 @@
             $compraC->PROV_ID = $COMPRA->PROV_ID;
             $db->begin_transaction(); // INICIO DE LAS TRANSACCIONES. 
 
-            $exito = $compraC->ingresarCompra($mensaje,$code_error,$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FECHA_EMISION,$Compra_id);
+            $exito = $compraC->ingresarCompra($mensaje,$code_error,$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FECHA_EMISION,$GUIA_FLETE,$Compra_id);
             if($exito){
                 
                 $detalleCompra = new DetalleCompra($db);
@@ -423,6 +425,23 @@
                     }
                 }
             }
+
+            //validaciones de la variable GUIA_FLETE
+            if(!isset($GUIA_DE_REMISION->GUIA_FLETE)){
+                $m = "La variable GUIA_FLETE no ha sido enviada.";
+                return false;
+            }else{  
+                if(ctype_digit($GUIA_DE_REMISION->GUIA_FLETE) || is_numeric($GUIA_DE_REMISION->GUIA_FLETE)){
+                    if($GUIA_DE_REMISION->GUIA_FLETE <= 0) { 
+                        $m = 'El valor de la variable GUIA_FLETE debe ser mayor a 0.';
+                        return false;
+                    }
+                }else{
+                    $m = 'La variable GUIA_FLETE no es un numero o es null.';
+                    return false;
+                }
+            }
+
             //validaciones de la variable GUIA_NRO_COMPROBANTE
             if(!isset($GUIA_DE_REMISION->GUIA_NRO_COMPROBANTE)){
                 $m = "La variable GUIA_NRO_COMPROBANTE no ha sido enviada.";

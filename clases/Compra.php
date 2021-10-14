@@ -63,7 +63,7 @@
             }
         }
 
-        function ingresarCompra(&$mensaje,&$code_error,$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FECHA_EMISION,&$Compra_id){
+        function ingresarCompra(&$mensaje,&$code_error,$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FECHA_EMISION,$GUIA_FLETE,&$Compra_id){
             
 
             $queryValidarUsuId="SELECT * FROM USUARIOS WHERE USU_ID = ?";
@@ -71,7 +71,7 @@
             $queryValidarComprobanteId="SELECT * FROM COMPROBANTE WHERE COMPROBANTE_ID = ?";
             $queryValidarGuiaId="SELECT * FROM USUARIOS WHERE USU_ID = ?";
             $queryIngresarCompra ="
-            CALL SP_INSERTAR_COMPRA(@P_COMPRA_ID,@VAL_GUIA_NRO_COMPROBANTE,@VAL_COMPRA_NRO_COMPROBANTE,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; 
+            CALL SP_INSERTAR_COMPRA(@P_COMPRA_ID,@VAL_GUIA_NRO_COMPROBANTE,@VAL_COMPRA_NRO_COMPROBANTE,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"; 
             $queryCompraID = "SELECT @P_COMPRA_ID";
             $queryGUIA_NRO_COMPROBANTE = "SELECT @VAL_GUIA_NRO_COMPROBANTE";
             $queryCOMPRA_NRO_COMPROBANTE = "SELECT @VAL_COMPRA_NRO_COMPROBANTE";
@@ -100,7 +100,7 @@
                             
 
                             $stmtIngresarCompra = $this->conn->prepare($queryIngresarCompra);
-                            $stmtIngresarCompra->bind_param("ssssssssssssss",$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FECHA_EMISION,
+                            $stmtIngresarCompra->bind_param("sssssssssssssss",$hay_guia,$GUIA_NRO_SERIE,$GUIA_NRO_COMPROBANTE,$GUIA_FLETE,$GUIA_FECHA_EMISION,
                             $this->COMPRA_FECHA_EMISION_COMPROBANTE,$this->COMPRA_FECHA_REGISTRO,$this->COMPRA_NRO_SERIE,
                             $this->COMPRA_NRO_COMPROBANTE,$this->COMPRA_SUBTOTAL,$this->COMPRA_TOTAL,$this->COMPRA_DESCRIPCION,
                             $this->USU_ID,$this->COMPROBANTE_ID,$this->PROV_ID);
