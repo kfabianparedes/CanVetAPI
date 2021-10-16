@@ -158,7 +158,7 @@
             }
         }
 
-        function listar(){
+        function listar(&$mensaje,&$code_error,&$exito){
 
             $query = "SELECT * FROM VENTA";
             $datos = [];
@@ -170,7 +170,7 @@
 
                     $code_error = "error_ejecucionQuery";
                     $mensaje = "Hubo un error al listar el registro de ventas.";
-                    return false; 
+                    $exito = false; 
 
                 }else{
 
