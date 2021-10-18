@@ -21,6 +21,9 @@
     $mensaje = '';
     $exito = false;
     $esJuridico = 0;
+    $DJ_RAZON_SOCIAL = '';
+    $DJ_RUC = '';
+    $DJ_TIPO_EMPRESA_ID = 0;
     foreach ($headers as $header => $value) {
         if(strtolower($header) == $auth->FIRST_HEADER){//se compara si existe la cabecera authorization
             $auth->USE_SUB = $value;//se obtiene el valor
@@ -127,6 +130,34 @@
         
         if(esValido($mensaje,$datos,$esJuridico)){
 
+            $clienteC = new Cliente($db);
+            $CLIENTE = $datos->CLIENTE; 
+
+            $clienteC->CLIENTE_ID =$CLIENTE->CLIENTE_ID;
+            $clienteC->CLIENTE_DNI =$CLIENTE->CLIENTE_DNI;
+            $clienteC->CLIENTE_NOMBRES =$CLIENTE->CLIENTE_NOMBRES;
+            $clienteC->CLIENTE_APELLIDOS =$CLIENTE->CLIENTE_APELLIDOS;
+            $clienteC->CLIENTE_TELEFONO =$CLIENTE->CLIENTE_TELEFONO;
+            $clienteC->CLIENTE_DIRECCION =$CLIENTE->CLIENTE_DIRECCION;
+            if($esJuridico == 1){
+                $DATOS_JURIDICOS = $datos->DATOS_JURIDICOS; 
+                $DJ_RAZON_SOCIAL = $DATOS_JURIDICOS->DJ_RAZON_SOCIAL; 
+                $DJ_RUC = $DATOS_JURIDICOS->DJ_RUC; 
+                $DJ_TIPO_EMPRESA_ID = $DATOS_JURIDICOS->TIPO_EMPRESA_ID; 
+                echo  $DATOS_JURIDICOS->TIPO_EMPRESA_ID; 
+            }else{
+                $DJ_RAZON_SOCIAL = ''; 
+                $DJ_RUC = ''; 
+                $DJ_TIPO_EMPRESA_ID = ''; 
+            }
+
+            $exito = $clienteC->registrarCliente($mensaje,$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID);
+            if($exito == true)
+                header('HTTP/1.1 200 OK');
+            else{
+                header('HTTP/1.1 400 Bad Request');
+            }
+            echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
         }else{
             $code_error = "error_deCampo";
             echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
@@ -426,6 +457,27 @@
                                         $m = "La variable CLIENTE_APELLIDOS no debe tener números.";
                                         return false;
                                     }
+                                }
+                            }
+                        }
+                    }
+                    
+                    //validaciones de la variable USU_ID
+                    if(!isset($CLIENTE->CLIENTE_ID)){
+                        $m = "La variable CLIENTE_ID no ha sido enviada.";
+                        return false;
+                    }else{  
+                        if($CLIENTE->CLIENTE_ID == ""){
+                            $m = "La variable CLIENTE_ID no puede estar vacía o ser null.";
+                            return false; 
+                        }else{
+                            if(!is_numeric($CLIENTE->CLIENTE_ID)){
+                            $m = "La variable CLIENTE_ID solo acepta caracteres numéricos.";
+                            return false;  
+                            }else{
+                                if($CLIENTE->CLIENTE_ID < 1 ){
+                                    $m = "La variable CLIENTE_ID no puede ser menor o igual a 0.";
+                                    return false; 
                                 }
                             }
                         }

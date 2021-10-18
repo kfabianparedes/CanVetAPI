@@ -4,18 +4,27 @@
     class Cliente{
         private $conn; 
 
+        public $CLIENTE_ID;
+        public $CLIENTE_DNI;
+        public $CLIENTE_NOMBRES;
+        public $CLIENTE_APELLIDOS;
+        public $CLIENTE_TELEFONO;
+        public $CLIENTE_DIRECCION;
+
         public function __construct($db){
             $this->conn = $db;
         }
         
-        function registrar(&$mensaje,&$code_error,$esJuridico){
+        function registrarCliente(&$mensaje,&$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID){
 
-            $query = "" ; 
+            $query = "CALL SP_INSERTAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?)" ; 
+            $queryValidaciones = "SELECT @VALIDACIONES"; 
 
             try {
 
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("s",$this->PROV_ID);
+                $stmt->bind_param("sssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
+                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
@@ -23,6 +32,33 @@
                     return false; 
 
                 }else{
+
+                    $stmtValidaciones = $this->conn->prepare($queryValidaciones);
+                    $stmtValidaciones->execute();
+                    $resultValidaciones = get_result($stmtValidaciones); 
+
+                    if (count($resultValidaciones) > 0) {
+                        //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
+                        $validaciones = array_shift($resultValidaciones)["@VALIDACIONES"];
+                    }
+
+                    switch ($validaciones) {
+                        case 1:
+                            $code_error = "error_existenciaDNI";
+                            $mensaje = "El DNI ingresado ya existe.";
+                            return false; 
+                            break;
+                        case 2:
+                            $code_error = "error_existenciaRUC";
+                            $mensaje = "El RUC ingresado ya existe.";
+                            return false; 
+                            break;
+                        case 3:
+                            $code_error = "error_noExistenciaTipoEmpresa";
+                            $mensaje = "El tipo de empresa ingresado no existe.";
+                            return false; 
+                            break;
+                    }
 
                     $mensaje = "Solicitud ejecutada con exito";
                     return true;
@@ -104,13 +140,14 @@
 
         function editar(&$mensaje,&$code_error,$esJuridico){
 
-            $queryValidarClienteId ="SELECT * FROM CLIENTE WHERE CLIENTE_ID = ?";
-            $queryEditar = "";
+            $query = "CALL SP_EDITAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?,?)" ; 
+            $queryValidaciones = "SELECT @VALIDACIONES"; 
 
             try {
                 
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("s",$this->PROV_ID);
+                $stmt->bind_param("ssssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
+                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_ID);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
@@ -118,6 +155,38 @@
                     return false; 
 
                 }else{
+
+                    $stmtValidaciones = $this->conn->prepare($queryValidaciones);
+                    $stmtValidaciones->execute();
+                    $resultValidaciones = get_result($stmtValidaciones); 
+
+                    if (count($resultValidaciones) > 0) {
+                        //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
+                        $validaciones = array_shift($resultValidaciones)["@VALIDACIONES"];
+                    }
+
+                    switch ($validaciones) {
+                        case 1:
+                            $code_error = "error_noExistenciaCliente";
+                            $mensaje = "El id del cliente ingresado no existe.";
+                            return false; 
+                            break;
+                        case 2:
+                            $code_error = "error_existenciaDNI";
+                            $mensaje = "El DNI ingresado ya existe.";
+                            return false; 
+                            break;
+                        case 3:
+                            $code_error = "error_existenciaRUC";
+                            $mensaje = "El RUC ingresado ya existe.";
+                            return false; 
+                            break;
+                        case 4:
+                            $code_error = "error_noExistenciaTipoEmpresa";
+                            $mensaje = "El tipo de empresa ingresado no existe.";
+                            return false; 
+                            break;
+                    }
 
                     $mensaje = "Solicitud ejecutada con exito";
                     return true;
