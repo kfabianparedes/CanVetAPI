@@ -154,7 +154,7 @@
     }
 
     function esValido(&$m ,$d){
-        if(is_null($d)){
+        if(!isset($d)){
             $m = "Los datos ingresados deben respetar el formato json";
             return false;
         }else{
