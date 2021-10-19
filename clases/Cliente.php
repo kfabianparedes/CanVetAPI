@@ -138,7 +138,7 @@
 
         }
 
-        function editar(&$mensaje,&$code_error,$esJuridico){
+        function editarCliente(&$mensaje,&$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID){
 
             $query = "CALL SP_EDITAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?,?)" ; 
             $queryValidaciones = "SELECT @VALIDACIONES"; 

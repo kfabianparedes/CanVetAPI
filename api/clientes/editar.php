@@ -1,7 +1,7 @@
 <?php
     header('Access-Control-Allow-Origin: *');
     header("Content-Type: application/json; charset=UTF-8");
-    header("Access-Control-Allow-Methods: POST");
+    header("Access-Control-Allow-Methods: PUT");
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: Content-Type, Authorization, User");
 
@@ -151,7 +151,7 @@
                 $DJ_TIPO_EMPRESA_ID = ''; 
             }
 
-            $exito = $clienteC->registrarCliente($mensaje,$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID);
+            $exito = $clienteC->editarCliente($mensaje,$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID);
             if($exito == true)
                 header('HTTP/1.1 200 OK');
             else{
@@ -361,6 +361,27 @@
                         }
                     }
 
+                    //validaciones de la variable CLIENTE_ID
+                    if(!isset($CLIENTE->CLIENTE_ID)){
+                        $m = "La variable CLIENTE_ID no ha sido enviada.";
+                        return false;
+                    }else{  
+                        if($CLIENTE->CLIENTE_ID == ""){
+                            $m = "La variable CLIENTE_ID no puede estar vacía o ser null.";
+                            return false; 
+                        }else{
+                            if(!is_numeric($CLIENTE->CLIENTE_ID)){
+                            $m = "La variable CLIENTE_ID solo acepta caracteres numéricos.";
+                            return false;  
+                            }else{
+                                if($CLIENTE->CLIENTE_ID < 1 ){
+                                    $m = "La variable CLIENTE_ID no puede ser menor o igual a 0.";
+                                    return false; 
+                                }
+                            }
+                        }
+                    }
+
                 }else{
 
                     //validación DJ_RAZON_SOCIAL
@@ -462,7 +483,7 @@
                         }
                     }
                     
-                    //validaciones de la variable USU_ID
+                    //validaciones de la variable CLIENTE_ID
                     if(!isset($CLIENTE->CLIENTE_ID)){
                         $m = "La variable CLIENTE_ID no ha sido enviada.";
                         return false;
