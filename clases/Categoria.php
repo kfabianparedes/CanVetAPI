@@ -67,17 +67,17 @@
                     return false; 
                 }
             
-            } catch (\Throwable $th) {
+            } catch (Throwable $th) {
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
-                $exito = false;
+                return false;
             }
             
         }
 
         function editarCategoria(&$mensaje,&$code_error,$NUEVO_NOMBRE){
             $queryValidarExistenciID="SELECT * FROM CATEGORIA where CAT_ID = ?";
-            $queryValidarExistenciaNombre="SELECT * FROM CATEGORIA where CAT_NOMBRE = ?";
+            $queryValidarExistenciaNombre="SELECT * FROM CATEGORIA where CAT_NOMBRE = ? AND CAT_ID <> ?";
             $query = "UPDATE CATEGORIA SET CAT_NOMBRE = ? WHERE CAT_ID = ?";
 
             try {
@@ -92,7 +92,7 @@
 
                     //COMPROBAMOS DE QUE EL NUEVO NOMBRE DE LA CATEGORIA EXISTA. 
                     $stmtNombre = $this->conn->prepare($queryValidarExistenciaNombre);
-                    $stmtNombre->bind_param("s",$NUEVO_NOMBRE);
+                    $stmtNombre->bind_param("ss",$NUEVO_NOMBRE,$this->CAT_ID);
                     $stmtNombre->execute();
                     $resultNombre = get_result($stmtNombre);
 
@@ -121,29 +121,44 @@
 
                 }
 
-            } catch (\Throwable $th) {
+            } catch (Throwable $th) {
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
-                $exito = false;
+                return false;
             }
 
         }
         function habilitarInhabilitarCategoria(&$mensaje,&$code_error){
-            
+
+            $queryValidarExistenciID="SELECT * FROM CATEGORIA where CAT_ID = ?";
             $query = "UPDATE CATEGORIA SET CAT_ESTADO = ? WHERE CAT_ID = ?";
 
             try {
-                //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA CATEGORIA 
-                $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("ss",$this->CAT_ESTADO,$this->CAT_ID);
-                $stmt->execute();
 
-                $mensaje = "Se ha actualizado la categoría con éxito";
-                return true;
-            } catch (\Throwable $th) {
+                //COMPROBAMOS DE QUE EXISTA EL ID DE LA CATEGORIA
+                $stmtId = $this->conn->prepare($queryValidarExistenciID);
+                $stmtId->bind_param("s",$this->CAT_ID);
+                $stmtId->execute();
+                $resultID = get_result($stmtId);
+
+                if(count($resultID) > 0 ){
+                    //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA CATEGORIA 
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bind_param("ss",$this->CAT_ESTADO,$this->CAT_ID);
+                    $stmt->execute();
+
+                    $mensaje = "Se ha actualizado la categoría con éxito";
+                    return true;
+                }else{
+                    $code_error = "error_noExistenciaId";
+                    $mensaje = "El Id de la categoria ingresado no existe.";
+                    return false; 
+                }   
+               
+            } catch (Throwable $th) {
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
-                $exito = false;
+                return false;
             }
 
         }

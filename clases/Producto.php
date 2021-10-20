@@ -145,7 +145,7 @@ class Producto{
         }catch (Throwable $th) {
             $code_error = "error_deBD";
             $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
-            $exito = false;
+            return false; 
         }
     }
     function obtenerProductoPorId(&$mensaje,&$exito,&$code_error){
@@ -307,16 +307,29 @@ class Producto{
    
 
     function habilitarInhabilitarProducto(&$mensaje,&$code_error){
+
         $query = "UPDATE PRODUCTO SET PRO_ESTADO = ? WHERE PRO_ID = ?";
-
+        $verificarExistenciaIdProducto = "select * from PRODUCTO where PRO_ID = ?"; 
             try {
-                //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA CATEGORIA 
-                $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("ss",$this->PRO_ESTADO,$this->PRO_ID);
-                $stmt->execute();
+                $stmtId = $this->conn->prepare($verificarExistenciaIdProducto);
+                $stmtId->bind_param("s",$this->PRO_ID);
+                $stmtId->execute();
+                $resultId = get_result($stmtId);
+                
+                if(count($resultId) > 0){
+                    //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA CATEGORIA 
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bind_param("ss",$this->PRO_ESTADO,$this->PRO_ID);
+                    $stmt->execute();
 
-                $mensaje = "Se ha actualizado el producto con éxito";
-                return true;
+                    $mensaje = "Se ha actualizado el producto con éxito";
+                    return true;
+                }else{
+                    $code_error = "error_existenciaId";
+                    $mensaje = "El producto no existe.";
+                    return false; 
+                }
+                
             } catch (Throwable $th) {
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";

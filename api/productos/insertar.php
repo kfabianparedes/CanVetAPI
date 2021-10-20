@@ -39,11 +39,6 @@
             if($d->PRO_NOMBRE == ""){
                 $mensaje = "la variable PRO_NOMBRE no puede estar vacía o ser null.";
                 return false; 
-            }else{
-                if(!preg_match("/^[a-zA-Z ñÑáéíóúÁÉÍÓÚ]+$/i", $d->PRO_NOMBRE)){
-                   $mensaje = "la variable PRO_NOMBRE no acepta caracteres numéricos.";
-                   return false;  
-                }
             }
         }
         if(!isset($d->PRO_TAMANIO_TALLA)){

@@ -18,7 +18,7 @@
 
     $data = json_decode(file_get_contents("php://input"));
     $mensaje = '';
-    $exito = "";
+    $exito = false;
     $code_error = null;
 
     //Instantiate database
@@ -30,20 +30,20 @@
 
     function esValido($d,&$m){
         if(!isset($d->PROV_ID)){
-            $mensaje = "la variable PROV_ID no ha sido enviada.";
+            $m = "la variable PROV_ID no ha sido enviada.";
             return false;
             echo "hola";
         }else{  
             if($d->PROV_ID == ""){
-                $mensaje = "la variable PROV_ID no puede estar vacía o ser null.";
+                $m = "la variable PROV_ID no puede estar vacía o ser null.";
                 return false; 
             }else{
                 if(!is_numeric($d->PROV_ID)){
-                   $mensaje = "la variable PROV_ID solo acepta caracteres numéricos.";
+                   $m = "la variable PROV_ID solo acepta caracteres numéricos.";
                    return false;  
                 }else{
                     if($d->PROV_ID < 1 ){
-                        $mensaje = "la variable PROV_ID no puede ser menor o igual a 0.";
+                        $m = "la variable PROV_ID no puede ser menor o igual a 0.";
                         return false; 
                     }
                 }
@@ -55,15 +55,15 @@
         }else{
             if($d->PROV_RUC!=""){
                 if(!ctype_digit($d->PROV_RUC)){
-                    $m = "El ruc del proveedor debe estar conformado por caracteres numéricos.";
+                    $m = "El RUC del proveedor debe estar conformado por caracteres numéricos.";
                     return false;
                 }
                 if(obtenerCantidadDeCaracteres($d->PROV_RUC)!=11){
-                    $m = "El ruc del proveedor debe tener una longitud de 11 caracteres numericos.";
+                    $m = "El RUC del proveedor debe tener una longitud de 11 caracteres numericos.";
                     return false;
                 }
             }else{
-                $m = "El campo ruc es un campo obligatorio.";
+                $m = "El campo RUC es un campo obligatorio.";
                     return false;
             }
         }
@@ -73,13 +73,13 @@
             return false;
         }else{
             if($d->PROV_NUMERO_CONTACTO!=""){
-                if(obtenerCantidadDeCaracteres($d->PROV_NUMERO_CONTACTO)<=20){
+                if(obtenerCantidadDeCaracteres($d->PROV_NUMERO_CONTACTO)==12){
                     if(!verificarCelular($d->PROV_NUMERO_CONTACTO)){
                         $m = "*Campo obligatorio* El numero de celular no tiene el formato permitido.";
                         return false;
                     }
                 }else{
-                    $m = "*Campo obligatorio* El numero de celular no debe exceder de 20 caracteres.";
+                    $m = "*Campo obligatorio* El numero de celular no debe tener más ni menos de 12 caracteres.";
                     return false;
                 }
             }else{

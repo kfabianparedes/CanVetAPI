@@ -199,6 +199,38 @@
             }
         }
         
+        function gananciasDiarias(&$mensaje,&$code_error,&$exito){
+
+            $query = ""; 
+
+            try {
+                //code...
+            } catch (Throwable $th) {
+                //throw $th;
+            }
+        }
+
+        function gananciasSemanales(&$mensaje,&$code_error,&$exito){
+
+            $query = ""; 
+
+            try {
+                //code...
+            } catch (Throwable $th) {
+                //throw $th;
+            }
+        }
+
+        function ganancias mensuales(&$mensaje,&$code_error,&$exito){
+
+            $query = ""; 
+
+            try {
+                //code...
+            } catch (Throwable $th) {
+                //throw $th;
+            }
+        }
 
     }
 
