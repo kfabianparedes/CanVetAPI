@@ -22,59 +22,41 @@ class Producto{
 
     function crearProducto(&$mensaje,&$code_error){
     
-        $verificarExistenciaNombre ="select * from PRODUCTO where PRO_NOMBRE = ?";
-        $verificarIdCategoria = "select * from CATEGORIA where CAT_ID =?"; 
-        $verificarIdProveedor = "select * from PROVEEDOR where PROV_ID =?"; 
-        $query  = "INSERT INTO PRODUCTO(PRO_NOMBRE,PRO_PRECIO_VENTA,PRO_PRECIO_COMPRA,PRO_STOCK,PRO_TAMANIO_TALLA,CAT_ID,PROV_ID,PRO_ESTADO) VALUES(?,?,?,?,?,?,?,1)";
-        
+        $verificarIdCategoria = "SELECT * FROM CATEGORIA WHERE CAT_ID =?"; 
+        $verificarIdProveedor = "SELECT * FROM PROVEEDOR WHERE PROV_ID =?"; 
+        $query = "INSERT INTO PRODUCTO(PRO_NOMBRE,PRO_PRECIO_VENTA,PRO_PRECIO_COMPRA,PRO_STOCK,PRO_TAMANIO_TALLA,CAT_ID,PROV_ID,PRO_ESTADO) VALUES(?,?,?,?,?,?,?,1)";
         try {
-            $stmtNombre = $this->conn->prepare($verificarExistenciaNombre);
-            $stmtNombre->bind_param("s",$this->PRO_NOMBRE);
-            $stmtNombre->execute();
-            $resultNombre = get_result($stmtNombre);
             //VERIFICAMOS QUE EL NOMBRE DEL NUEVO PRODUCTO NO ESTÉ REGISTRADO
-            if(count($resultNombre) < 1){
-                $stmtExistenciaCatID = $this->conn->prepare($verificarIdCategoria);
-                $stmtExistenciaCatID->bind_param("s",$this->CAT_ID);
-                $stmtExistenciaCatID->execute();
-                $resultCategoriaId = get_result($stmtExistenciaCatID);
-                //VERIFICAMOS QUE EXISTA EL ID DE LA CATEGORIA INGRESADA
-                if(count($resultCategoriaId) > 0){
-
-                    $stmtExistenciaProvID = $this->conn->prepare($verificarIdProveedor);
-                    $stmtExistenciaProvID->bind_param("s",$this->PROV_ID);
-                    $stmtExistenciaProvID->execute();
-                    $resultProveedorId = get_result($stmtExistenciaProvID);
-                    if(count($resultProveedorId) > 0){
-
-                        $stmt = $this->conn->prepare($query);
-                        $stmt->bind_param("sssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_STOCK,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID);
-                        $stmt->execute();
-                        $mensaje = "Se ha creado el producto con éxito";
-                        return true;
-
-                    }else{
-
-                        //SI YA EXISTE UN PRODUCTO CON EL NOMBRE MOSTRAMOS EL ERROR
-                        $code_error = "error_exitenciaProveedorId";
-                        $mensaje = "El id del proveedor no existe.";
-                        return false; 
-
+            $stmtExistenciaCatID = $this->conn->prepare($verificarIdCategoria);
+            $stmtExistenciaCatID->bind_param("s",$this->CAT_ID);
+            $stmtExistenciaCatID->execute();
+            $resultCategoriaId = get_result($stmtExistenciaCatID);
+            //VERIFICAMOS QUE EXISTA EL ID DE LA CATEGORIA INGRESADA
+            if(count($resultCategoriaId) > 0){
+                $stmtExistenciaProvID = $this->conn->prepare($verificarIdProveedor);
+                $stmtExistenciaProvID->bind_param("s",$this->PROV_ID);
+                $stmtExistenciaProvID->execute();
+                $resultProveedorId = get_result($stmtExistenciaProvID);
+                if(count($resultProveedorId) > 0){
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bind_param("sssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_STOCK,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID);
+                    if(!$stmt->execute()){
+                        $code_error ="error_ejecucionQuery";
+                        $mensaje = "Hubo un error al registrar el producto.";
+                        return false;
                     }
-
-
+                    $mensaje = "Se ha creado el producto con éxito";
+                    return true;
                 }else{
-
                     //SI YA EXISTE UN PRODUCTO CON EL NOMBRE MOSTRAMOS EL ERROR
-                    $code_error = "error_exitenciaCategoriaId";
-                    $mensaje = "El id de la categoria no existe.";
+                    $code_error = "error_exitenciaProveedorId";
+                    $mensaje = "El id del proveedor no existe.";
                     return false; 
-
                 }
             }else{
                 //SI YA EXISTE UN PRODUCTO CON EL NOMBRE MOSTRAMOS EL ERROR
-                $code_error = "error_exitenciaNombre";
-                $mensaje = "El nombre ingresado para crear el nuevo producto ya existe.";
+                $code_error = "error_exitenciaCategoriaId";
+                $mensaje = "El id de la categoria no existe.";
                 return false; 
             }
             
@@ -86,10 +68,9 @@ class Producto{
     }
     function actualizarProducto(&$mensaje,&$code_error,$fecha){
 
-        $verificarExistenciaIdProducto = "select * from PRODUCTO where PRO_ID = ?"; 
-        $verificarExistenciaNombre ="select * from PRODUCTO where PRO_NOMBRE = ? and PRO_ID <> ? ";
-        $verificarIdCategoria = "select * from CATEGORIA where CAT_ID =?"; 
-        $verificarIdProveedor = "select * from PROVEEDOR where PROV_ID =?"; 
+        $verificarExistenciaIdProducto = "SELECT * FROM PRODUCTO WHERE PRO_ID = ?"; 
+        $verificarIdCategoria = "SELECT * FROM CATEGORIA WHERE CAT_ID =?"; 
+        $verificarIdProveedor = "SELECT * FROM PROVEEDOR WHERE PROV_ID =?"; 
         $queryEditarSinPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ?,PROV_ID = ? where PRO_ID = ?"; //falta acabar
         $queryEditarConPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ? ,PROV_ID = ?,PRO_PRECIO_ANTERIOR = ?,PRO_FECHA_CAMBIO_PRECIO = ? where PRO_ID = ?"; //falta acabar
         try {
@@ -101,19 +82,12 @@ class Producto{
             
             if(count($resultId) > 0){
 
-                $stmtNombre = $this->conn->prepare($verificarExistenciaNombre);
-                $stmtNombre->bind_param("ss",$this->PRO_NOMBRE,$this->PRO_ID);
-                $stmtNombre->execute();
-                $resultNombre = get_result($stmtNombre);
+                $stmtExistenciaCatID = $this->conn->prepare($verificarIdCategoria);
+                $stmtExistenciaCatID->bind_param("s",$this->CAT_ID);
+                $stmtExistenciaCatID->execute();
+                $resultCategoriaId = get_result($stmtExistenciaCatID);
 
-                if(count($resultNombre) < 1){
-
-                    $stmtExistenciaCatID = $this->conn->prepare($verificarIdCategoria);
-                    $stmtExistenciaCatID->bind_param("s",$this->CAT_ID);
-                    $stmtExistenciaCatID->execute();
-                    $resultCategoriaId = get_result($stmtExistenciaCatID);
-
-                    //VERIFICAMOS QUE EXISTA EL ID DE LA CATEGORIA INGRESADA
+                //VERIFICAMOS QUE EXISTA EL ID DE LA CATEGORIA INGRESADA
                 if(count($resultCategoriaId) > 0){
 
                     $stmtExistenciaProvID = $this->conn->prepare($verificarIdProveedor);
@@ -126,7 +100,7 @@ class Producto{
                         $precioCompraAnterior = 0; 
                         while ($dato = array_shift($resultId)) {
                             $precioCompraAnterior = $dato['PRO_PRECIO_COMPRA'];
-                         }
+                        }
                         if($precioCompraAnterior == $this->PRO_PRECIO_COMPRA ){
 
                             $stmt = $this->conn->prepare($queryEditarSinPrecioAnterior);
@@ -157,33 +131,18 @@ class Producto{
 
 
                 }else{
-
                     //SI YA EXISTE UN PRODUCTO CON EL NOMBRE MOSTRAMOS EL ERROR
                     $code_error = "error_exitenciaCategoriaId";
                     $mensaje = "El id de la categoria no existe.";
                     return false; 
-
                 }
-
-                }else{
-
-                    //SI YA EXISTE UN PRODUCTO CON EL NOMBRE MOSTRAMOS EL ERROR
-                $code_error = "error_exitenciaNombre";
-                $mensaje = "El nombre ingresado para crear el nuevo producto ya existe.";
-                return false; 
-
-                }
-
             }else{
-                
                 $code_error = "error_exitenciaId";
                 $mensaje = "El producto no existe.";
                 return false; 
-
             }
 
-        } catch (Throwable $th) {
-
+        }catch (Throwable $th) {
             $code_error = "error_deBD";
             $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
             $exito = false;

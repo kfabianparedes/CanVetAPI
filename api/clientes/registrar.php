@@ -353,9 +353,6 @@
                                 $m = "La variable CLIENTE_TELEFONO no debe exceder los 12 caracteres.";
                                 return false;
                             }
-                        }else{
-                            $m = "La variable CLIENTE_TELEFONO no debe estar vacía o ser null.";
-                            return false;
                         }
                     }
 

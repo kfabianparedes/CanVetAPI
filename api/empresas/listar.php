@@ -1,26 +1,24 @@
 <?php
-    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Origin: *'); //Change
     header("Content-Type: application/json; charset=UTF-8");
-    header("Access-Control-Allow-Methods: POST");
+    header("Access-Control-Allow-Methods: GET");
     header("Access-Control-Max-Age: 3600");
-    header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, User");
 
-    //Include database and classes files
-    include_once '../../config/database.php';
     include_once '../../clases/Usuario.php';
+    include_once '../../clases/Empresa.php';
+    include_once '../../config/database.php';
     include_once '../../clases/Autorizacion.php';
-    include_once '../../clases/Caja.php';
-    include_once '../../util/validaciones.php';
-
+    
     if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
         return;
     }
 
-    $mensaje = '';
-    $exito = false;
-    $code_error = null;
     $headers = apache_request_headers();
     $auth = new Autorizacion();
+    $code_error = null;
+    $mensaje = '';
+    $exito = false;
 
     foreach ($headers as $header => $value) {
         if(strtolower($header) == $auth->FIRST_HEADER){//se compara si existe la cabecera authorization
@@ -124,90 +122,15 @@
     }
 
     if($exito){
-        $datos = json_decode(file_get_contents("php://input"));
-        
-        if(esValido($mensaje,$datos)){
-            $exito_ = false;
-            $caja = new Caja($db);
-            $caja->CAJA_APERTURA = $datos->CAJA_APERTURA;
-            $caja->CAJA_MONTO_INICIAL = $datos->CAJA_MONTO_INICIAL;
-            $caja->USU_ID = $datos->USU_ID;
-            $caja->CAJA_CODIGO = password_hash($caja->USU_ID,PASSWORD_DEFAULT);
-            $exito_ = $caja->abrirCaja($mensaje,$code_error,$caja->CAJA_ID);
-            if($exito_){
-                header('HTTP/1.1 200 OK');
-                echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"id_caja"=>$caja->CAJA_ID,"codigo_caja"=>$caja->CAJA_CODIGO,"exito"=>$exito_));
-            }else{
-                header('HTTP/1.1 400 Bad Request');
-                echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>false));
-            }
+        $_exito = false;
+        $empresas = array();
+        $empresa = new Empresa($db);
+        $empresas = $empresa->listarTipoEmpresas($mensaje,$code_error,$_exito);
+        if($_exito){
+            header('HTTP/1.1 200 OK');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$empresas, "mensaje"=>$mensaje,"exito"=>true));
         }else{
-            $code_error = "error_deCampo";
-            echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
             header('HTTP/1.1 400 Bad Request');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$empresas, "mensaje"=>$mensaje,"exito"=>false));
         }
     }
-
-    function esValido(&$m, &$d){
-        if(!isset($d)){
-            $m = "Se debe respetar el formato json.";
-            return false;
-        }else{
-            if(!isset($d->USU_ID)){
-                $m = "La variable USU_ID no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->USU_ID == ""){
-                    $m = "La variable USU_ID no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!is_numeric($d->USU_ID)){
-                        $m = "La variable USU_ID solo acepta caracteres numéricos.";
-                        return false;  
-                    }else{
-                        if($d->USU_ID < 1 ){
-                            $m = "La variable USU_ID no puede ser menor o igual a 0.";
-                            return false; 
-                        }
-                    }
-                }
-            }
-
-            if(!isset($d->CAJA_MONTO_INICIAL)){
-                $m = 'La variable CAJA_MONTO_INICIAL no ha sido enviada.';
-                return false;
-            }else{
-                if(!ctype_digit($d->CAJA_MONTO_INICIAL) || !is_numeric($d->CAJA_MONTO_INICIAL)){
-                    $m = 'La variable CAJA_MONTO_INICIAL no es un numero o es null.';
-                    return false;
-                }else{
-                    if($d->CAJA_MONTO_INICIAL < 0) { 
-                        $m = 'El valor de la variable CAJA_MONTO_INICIAL debe ser mayor o igual 0.';
-                        return false;
-                    }
-                }
-            }
-
-            if(!isset($d->CAJA_APERTURA)){
-                $m = "La variable CAJA_APERTURA no ha sido enviada.";
-                return false; 
-            }else{
-                if($d->CAJA_APERTURA==""){
-                    $m = "La variable CAJA_APERTURA no puede ser null.";
-                    return false;
-                }else{
-                    if(!verificarFecha($d->CAJA_APERTURA)){
-                        $m = "La variable CAJA_APERTURA no contiene una fecha válida o no tiene el formato permitido.";
-                        return false;
-                    }else{
-                        if(!esIgualFechaActual($d->CAJA_APERTURA)){
-                            $m = "La variable CAJA_APERTURA debe tener la fecha de hoy.";
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
-?>
