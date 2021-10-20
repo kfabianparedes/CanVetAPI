@@ -58,6 +58,11 @@
                             $mensaje = "El tipo de empresa ingresado no existe.";
                             return false; 
                             break;
+                        case 4:
+                            $code_error = "error_ExistenciaRazonSocial";
+                            $mensaje = "La razón social ingresada ya existe.";
+                            return false; 
+                            break;
                     }
 
                     $mensaje = "Solicitud ejecutada con exito";
@@ -184,6 +189,11 @@
                         case 4:
                             $code_error = "error_noExistenciaTipoEmpresa";
                             $mensaje = "El tipo de empresa ingresado no existe.";
+                            return false; 
+                            break;
+                        case 4:
+                            $code_error = "error_ExistenciaRazónSocial";
+                            $mensaje = "La razón social ingresada ya existe.";
                             return false; 
                             break;
                     }
