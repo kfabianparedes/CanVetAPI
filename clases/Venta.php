@@ -199,36 +199,181 @@
             }
         }
         
-        function gananciasDiarias(&$mensaje,&$code_error,&$exito){
+        function gananciasDiariasVenta(&$mensaje,&$code_error,&$exito){
 
-            $query = ""; 
-
+            $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ?"; 
+            $datos = 0;
             try {
-                //code...
+                
+
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                if(!$stmt->execute()){
+
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error al listar el registro de ventas.";
+                    $exito = false; 
+
+                }else{
+
+                    $result = get_result($stmt); 
+                
+                    if (count($result) > 0) {                
+                        while ($dato = array_shift($result)) {    
+                            $datos += $dato["VENTA_TOTAL"];
+                        }
+                    }
+
+                    $mensaje = "Solicitud ejecutada con exito";
+                    $exito = true;
+                    
+                }
+
+                return $datos;
+
             } catch (Throwable $th) {
-                //throw $th;
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos ;
+            }
+        }
+
+        function gananciasDiariasVentaPorUsuario(&$mensaje,&$code_error,&$exito){
+
+            $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND USU_ID = ?"; 
+            $queryValidarUsuId = "SELECT * FROM USUARIOS WHERE USU_ID = ?";
+            $datos = 0;
+            try {
+                $stmtUsuId = $this->conn->prepare($queryValidarUsuId);
+                $stmtUsuId->bind_param("s",$this->USU_ID);
+                $stmtUsuId->execute();
+                $resultUsuId = get_result($stmtUsuId);
+                if(count($resultUsuId) > 0 ){
+
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bind_param("ss",$this->VENTA_FECHA_REGISTRO,$this->USU_ID);
+                    if(!$stmt->execute()){
+    
+                        $code_error = "error_ejecucionQuery";
+                        $mensaje = "Hubo un error al listar el registro de ventas.";
+                        $exito = false; 
+    
+                    }else{
+    
+                        $result = get_result($stmt); 
+                    
+                        if (count($result) > 0) {                
+                            while ($dato = array_shift($result)) {    
+                                $datos += $dato["VENTA_TOTAL"];
+                            }
+                        }
+    
+                        $mensaje = "Solicitud ejecutada con exito";
+                        $exito = true;
+                        
+                    }
+                }else{
+
+                    $code_error = "error_existenciaUsuario";
+                    $mensaje = "El usuario ingresado no existe.";
+                    $exito = false; 
+
+                }
+
+               
+
+                return $datos;
+
+            } catch (Throwable $th) {
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos ;
             }
         }
 
         function gananciasSemanales(&$mensaje,&$code_error,&$exito){
-
-            $query = ""; 
-
+            
+            $query = "SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,%Y-%m) = ?"; 
+            $datos = 0;
             try {
-                //code...
+                
+
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                if(!$stmt->execute()){
+
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error al listar el registro de ventas.";
+                    $exito = false; 
+
+                }else{
+
+                    $result = get_result($stmt); 
+                
+                    if (count($result) > 0) {                
+                        while ($dato = array_shift($result)) {    
+                            $datos += $dato["VENTA_TOTAL"];
+                        }
+                    }
+
+                    $mensaje = "Solicitud ejecutada con exito";
+                    $exito = true;
+                    
+                }
+
+                return $datos;
+
             } catch (Throwable $th) {
-                //throw $th;
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos ;
             }
         }
 
-        function ganancias mensuales(&$mensaje,&$code_error,&$exito){
+        function gananciasMensuales(&$mensaje,&$code_error,&$exito){
 
-            $query = ""; 
-
+            $query = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m") = ?'; 
+            $datos = 0;
             try {
-                //code...
+                
+
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                if(!$stmt->execute()){
+
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error al listar el registro de ventas.";
+                    $exito = false; 
+
+                }else{
+
+                    $result = get_result($stmt); 
+                
+                    if (count($result) > 0) {                
+                        while ($dato = array_shift($result)) {    
+                            $datos += $dato["VENTA_TOTAL"];
+                        }
+                    }
+
+                    $mensaje = "Solicitud ejecutada con exito";
+                    $exito = true;
+                    
+                }
+
+                return $datos;
+
             } catch (Throwable $th) {
-                //throw $th;
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos ;
             }
         }
 

@@ -336,8 +336,9 @@
                         $m = "La variable VENTA_NRO_SERIE debe estar conformada por caracteres numéricos.";
                         return false;
                     }else{
-                        if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)!=5){
-                            $m = "La variable VENTA_NRO_SERIE debe tener una longitud de 5 caracteres numericos.";
+                        if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)<3 && 
+                        obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)>5 && ){
+                            $m = "La variable VENTA_NRO_SERIE debe tener una longitud de entre 3 y 5 caracteres numericos.";
                             return false;
                         }
                     }
@@ -356,8 +357,9 @@
                         $m = "La variable VENTA_NRO_COMPROBANTE debe estar conformada por caracteres numéricos.";
                         return false;
                     }else{
-                        if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_COMPROBANTE)!=10){
-                            $m = "La variable VENTA_NRO_COMPROBANTE debe tener una longitud de 10 caracteres numericos.";
+                        if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_COMPROBANTE)<7 && 
+                        obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_COMPROBANTE)>10){
+                            $m = "La variable VENTA_NRO_COMPROBANTE debe tener una longitud de entre 7 y 10 caracteres numericos.";
                             return false;
                         }
                     }
