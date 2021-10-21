@@ -297,7 +297,7 @@
 
         function gananciasSemanales(&$mensaje,&$code_error,&$exito){
             
-            $query = "SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,%Y-%m) = ?"; 
+            $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO =?"; 
             $datos = 0;
             try {
                 

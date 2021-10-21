@@ -337,7 +337,7 @@
                         return false;
                     }else{
                         if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)<3 && 
-                        obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)>5 && ){
+                        obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)>5){
                             $m = "La variable VENTA_NRO_SERIE debe tener una longitud de entre 3 y 5 caracteres numericos.";
                             return false;
                         }

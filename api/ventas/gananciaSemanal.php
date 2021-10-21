@@ -127,36 +127,78 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
     }
 
     if($exito){
+        $ventaC = new Venta($db);
+        $ventaC->VENTA_FECHA_REGISTRO = date("Y-m-d");                
 
-            $ventaC = new Venta($db);
-            // $ventaC->VENTA_FECHA_REGISTRO = date("Y");
-            $año = date("Y"); 
-            // $datos = $ventaC->gananciasMensuales($mensaje,$code_error,$exito);
-            $gananciaPorMeses = []; 
-            for ($i = 1; $i <= 12; $i++) {
-                if($i<10)
-                    $ventaC->VENTA_FECHA_REGISTRO = $año.'-0'.$i;
-                else
-                    $ventaC->VENTA_FECHA_REGISTRO = $año.'-'.$i;
-                $datos = $ventaC->gananciasMensuales($mensaje,$code_error,$exito);
-               
-                setlocale(LC_TIME, 'es_ES');
-                
-                $fecha = DateTime::createFromFormat('!m', $i);
-                $mes = strftime("%B", $fecha->getTimestamp());
-                array_push($gananciaPorMeses,array($mes=>$datos));
-                
-            }
-    
-            if($exito==true){
-                header('HTTP/1.1 200 OK');
-                echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaPorMeses, "mensaje"=>$mensaje,"exito"=>true));
-            }else{
-                header('HTTP/1.1 400 Bad Request');
-                echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaPorMeses, "mensaje"=>$mensaje,"exito"=>false));
+        $fecha  = date("Y-m-d");
+        $día = date("D");
+        $sumaDías = 0; 
+        switch($día){
+            case "Tue":
+                $sumaDías = 1; 
+                break;
+            case "Wed":
+                $sumaDías = 2; 
+                break;
+            case "Thu":
+                $sumaDías = 3; 
+                break;
+            case "Fri":
+                $sumaDías = 4; 
+                break;
+            case "Sat":
+                $sumaDías = 5; 
+                break;
+            case "Sun":
+                $sumaDías = 6; 
+                break;
+        }
+        $inicioSemana = strtotime('-'.$sumaDías.' day', strtotime($fecha));
+        $inicioSemana = date('Y-m-d', $inicioSemana); 
+        // $finSemana = strtotime('+'.$sumaDías .' day', strtotime($fecha));
+        // $finSemana = date('Y-m-d', $finSemana);
+        
+        $gananciaPorDia = []; 
+        for($i = 0; $i <= 6; $i++)
+        {
+            $diaSemana = strtotime('+'.$i.' day', strtotime($inicioSemana));
+            $diaSemana = date('Y-m-d', $diaSemana); 
+            $ventaC->VENTA_FECHA_REGISTRO = $diaSemana; 
+            $datos = $ventaC->gananciasSemanales($mensaje,$code_error,$exito);
+
+            switch($i){
+                case 0:
+                    $dia = 'Lunes'; 
+                    break;
+                case 1:
+                    $dia = 'Martes'; 
+                    break;
+                case 2:
+                    $dia = 'Miercoles'; 
+                    break;
+                case 3:
+                    $dia = 'Jueves'; 
+                    break;
+                case 4:
+                    $dia = 'Viernes'; 
+                    break;
+                case 5:
+                    $dia = 'Sabado';  
+                    break;
+                case 6:
+                    $dia = 'Domingo'; 
+                    break;
             }
 
-        
-        
-    } 
+            array_push($gananciaPorDia,array($dia=>$datos));
+        }
+
+        if($exito==true){
+            header('HTTP/1.1 200 OK');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaPorDia, "mensaje"=>$mensaje,"exito"=>true));
+        }else{
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaPorDia, "mensaje"=>$mensaje,"exito"=>false));
+        }
+    }  
 ?>
