@@ -25,12 +25,13 @@
 
         function registrar(&$mensaje,&$code_error,&$ventaId){
 
-            $query = "CALL SP_INSERTAR_VENTA(@P_VENTA_ID,@VAL_COMPROBANTE_ID,@VAL_USU_ID,@VAL_MDP_ID,@VAL_CLI_ID,?,?,?,?,?,?,?,?,?,?)"; 
+            $query = "CALL SP_INSERTAR_VENTA(@P_VENTA_ID,@VAL_NRO_COMPROBANTE,@VAL_COMPROBANTE_ID,@VAL_USU_ID,@VAL_MDP_ID,@VAL_CLI_ID,?,?,?,?,?,?,?,?,?,?)"; 
             $queryComprobanteID = "SELECT @VAL_COMPROBANTE_ID"; 
             $queryUsuID = "SELECT @VAL_USU_ID"; 
             $queryVentaId = "SELECT @P_VENTA_ID";
             $queryMdpID = "SELECT @VAL_MDP_ID"; 
             $queryCliId = "SELECT @VAL_CLI_ID"; 
+            $queryNroComprobante = "SELECT @VAL_NRO_COMPROBANTE"; 
 
             try {
 
@@ -66,6 +67,11 @@
                     $stmtCliId = $this->conn->prepare($queryCliId);
                     $stmtCliId->execute();
                     $resultCliId = get_result($stmtCliId); 
+                    
+                    //verificar si no se repite ningpun Nro de comprobante igual al ingresado 
+                    $stmtNroComprobante = $this->conn->prepare($queryNroComprobante);
+                    $stmtNroComprobante->execute();
+                    $resultNroComprobante = get_result($stmtNroComprobante); 
 
                     if (count($resultComprobanteId) > 0) {
                         //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
@@ -85,6 +91,10 @@
                     if (count($resultCliId) > 0) {
                         //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la compra que se va a ingresar
                         $valCliId = array_shift($resultCliId)["@VAL_CLI_ID"];
+                    }
+                    if (count($resultNroComprobante) > 0) {
+                        //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
+                        $valNroComprobante = array_shift($resultNroComprobante)["@VAL_NRO_COMPROBANTE"];
                     }
 
                     if(!$valComprobanteId){
@@ -116,28 +126,37 @@
 
                                 }
                                 else{
-                                    //verificar si existe el comprobante id 
-                                    $stmtVentaId = $this->conn->prepare($queryVentaId);
-                                    if(!$stmtVentaId->execute()){
+                                    if(!$valNroComprobante){
 
-                                        $code_error = "error_ejecucionQuery";
-                                        $mensaje = "Hubo un error al obtener el id de venta generado.";
-                                        return false; 
+                                        $code_error = "error_existenciaNroComprobante";
+                                        $mensaje = "El número de comprobante del número de serie ingresado ya existe.";
+                                        return false;
 
                                     }else{
 
-                                        $resultVentaId = get_result($stmtVentaId);
+                                        //verificar si existe el comprobante id 
+                                        $stmtVentaId = $this->conn->prepare($queryVentaId);
+                                        if(!$stmtVentaId->execute()){
 
-                                        if (count($resultVentaId) > 0) {
-                                            //se guarda el id de la compra creada en una variable
-                                            $ventaId = array_shift($resultVentaId)["@P_VENTA_ID"];
-                                        }else{
                                             $code_error = "error_ejecucionQuery";
                                             $mensaje = "Hubo un error al obtener el id de venta generado.";
                                             return false; 
-                                        }
 
+                                        }else{
+                                            
+                                            $resultVentaId = get_result($stmtVentaId);
+
+                                            if (count($resultVentaId) > 0) {
+                                                //se guarda el id de la compra creada en una variable
+                                                $ventaId = array_shift($resultVentaId)["@P_VENTA_ID"];
+                                            }else{
+                                                $code_error = "error_ejecucionQuery";
+                                                $mensaje = "Hubo un error al obtener el id de venta generado.";
+                                                return false; 
+                                            }
+                                        }
                                     }
+                                   
                                 }
                             }
                             
