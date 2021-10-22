@@ -16,7 +16,7 @@
             $this->conn = $db;
         }
 
-        function registrarMascota(){
+        function registrarMascota(&$mensaje,&$code_error){
 
             $query  = "
             INSERT INTO MASCOTA(MAS_NOMBRE,MAS_RAZA,MAS_COLOR,MAS_ESPECIE,MAS_ATENCIONES,CLIENTE_ID)
@@ -66,7 +66,7 @@
             }
         }
 
-        function editarMascota(){
+        function editarMascota(&$mensaje,&$code_error){
 
             $query  = "
             UPDATE MASCOTA SET MAS_NOMBRE = ?,MAS_RAZA = ?,MAS_COLOR = ?,MAS_ESPECIE = ?,MAS_ATENCIONES = ?,CLIENTE_ID = ? 
@@ -131,7 +131,7 @@
             }
         }
 
-        function listarMascotas(){
+        function listarMascotas(&$mensaje,&$code_error,&$exito){
             $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID)";
             $datos = [];  
             try {

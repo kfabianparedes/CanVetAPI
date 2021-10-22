@@ -127,7 +127,17 @@
     
         if($exito){
 
-            
+            $mascotaC = new Mascota($db);
+
+            $datos = $mascotaC->listarMascotas($mensaje,$code_error,$exito);
+    
+            if($exito==true){
+                header('HTTP/1.1 200 OK');
+                echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>true));
+            }else{
+                header('HTTP/1.1 400 Bad Request');
+                echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>false));
+            }
 
         }
 
