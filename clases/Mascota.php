@@ -90,8 +90,8 @@
                     if (count($resultIdCliente) > 0) {
                         
                         $stmt = $this->conn->prepare($query);
-                        $stmt->bind_param("ssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
-                        ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->CLIENTE_ID);
+                        $stmt->bind_param("sssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
+                        ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->CLIENTE_ID,$this->MAS_ID);
                         if(!$stmt->execute()){
     
                             $code_error = "error_ejecucionQuery";

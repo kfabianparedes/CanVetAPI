@@ -8,6 +8,7 @@
     
     //Include database and classes files
     include_once '../../config/database.php';
+    include_once '../../util/validaciones.php';
     include_once '../../clases/Mascota.php';
     include_once '../../clases/Usuario.php';
     include_once '../../clases/Autorizacion.php';
@@ -127,8 +128,28 @@
     
         if($exito){
 
-            if(esValido($mensaje,$datos)){
+            $datos = json_decode(file_get_contents("php://input"));
+            $mascotaC = new Mascota($db);
 
+            if(esValido($mensaje,$datos)){
+                
+                $mascotaC->MAS_ID = $datos->MAS_ID;
+                $mascotaC->MAS_NOMBRE = $datos->MAS_NOMBRE; 
+                $mascotaC->MAS_RAZA = $datos->MAS_RAZA;
+                $mascotaC->MAS_COLOR = $datos->MAS_COLOR;
+                $mascotaC->MAS_ESPECIE = $datos->MAS_ESPECIE; 
+                $mascotaC->MAS_ATENCIONES = $datos->MAS_ATENCIONES;
+                $mascotaC->CLIENTE_ID = $datos->CLIENTE_ID;
+
+                $exito = $mascotaC->editarMascota($mensaje,$code_error);
+            
+                if($exito == true)
+                    header('HTTP/1.1 200 OK');
+                else{
+                    header('HTTP/1.1 400 Bad Request');
+                }
+                echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
+            
             }else{
                 $code_error = "error_deCampo";
                 echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
@@ -249,6 +270,26 @@
                         }
                         else if(obtenerCantidadDeCaracteres($d->MAS_ESPECIE)>45){
                             $m = "La variable MAS_ESPECIE no puede ser mayor a 45 caracteres.";
+                            return false; 
+                        }
+                    }
+                }
+
+                //validamos el color de la mascota
+                if(!isset($d->MAS_COLOR)){
+                    $m = "La variable MAS_COLOR no ha sido enviada.";
+                    return false;
+                }else{  
+                    if($d->MAS_COLOR == ""){
+                        $m = "La variable MAS_COLOR no puede estar vacía o ser null.";
+                        return false; 
+                    }else{
+                        if(!esTextoAlfabetico(trim($d->MAS_COLOR))){
+                            $m = "La variable MAS_COLOR debe ser alfabético.";
+                            return false;
+                        }
+                        else if(obtenerCantidadDeCaracteres($d->MAS_COLOR)>45){
+                            $m = "La variable MAS_COLOR no puede ser mayor a 45 caracteres.";
                             return false; 
                         }
                     }
