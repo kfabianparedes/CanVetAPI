@@ -1,14 +1,13 @@
 <?php
     header('Access-Control-Allow-Origin: *');
     header("Content-Type: application/json; charset=UTF-8");
-    header("Access-Control-Allow-Methods: POST");
+    header("Access-Control-Allow-Methods: GET");
     header("Access-Control-Max-Age: 3600");
     header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
     
     
     //Include database and classes files
     include_once '../../config/database.php';
-    include_once '../../util/validaciones.php';
     include_once '../../clases/Mascota.php';
     include_once '../../clases/Usuario.php';
     include_once '../../clases/Autorizacion.php';
@@ -127,120 +126,10 @@
         }
     
         if($exito){
-            $datos = json_decode(file_get_contents("php://input"));
-            $mascotaC = new Mascota($db);
-            if(esValido($mensaje,$datos)){
 
-            }else{
-                $code_error = "error_deCampo";
-                echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
-                header('HTTP/1.1 400 Bad Request');
-            }
-
-        }
-
-    function esValido(&$m,$d){
-
-        if(is_null($d)){
-            $m = "Los datos ingresados deben respetar el formato json";
-            return false;
-        }else{
-            //validamos el id del cliente
-            if(!isset($d->CLIENTE_ID)){
-                $m = "El campo CLIENTE_ID no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->CLIENTE_ID) || ctype_digit($d->CLIENTE_ID)){
-                    $m = "El campo CLIENTE_ID debe ser numérico";
-                    return false;
-                }else{
-                    if($d->CLIENTE_ID <=0){
-                        $m = "El valor de CLIENTE_ID debe no debe ser negativo o igual a 0.";
-                        return false;
-                    }
-                }
-                
-            }
-
-            //validamos las atenciones de la mascota
-            if(!isset($d->MAS_ATENCIONES)){
-                $m = "El campo MAS_ATENCIONES no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->MAS_ATENCIONES) || ctype_digit($d->MAS_ATENCIONES)){
-                    $m = "El campo MAS_ATENCIONES debe ser numérico";
-                    return false;
-                }else{
-                    if($d->MAS_ATENCIONES <0){
-                        $m = "El valor de MAS_ATENCIONES debe no debe ser negativo.";
-                        return false;
-                    }
-                }
-                
-            }
-
-            //validamos el nombre de la mascota
-            if(!isset($d->MAS_NOMBRE)){
-                $m = "La variable MAS_NOMBRE no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->MAS_NOMBRE == ""){
-                    $m = "La variable MAS_NOMBRE no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!esTextoAlfabetico(trim($d->MAS_NOMBRE))){
-                        $m = "La variable USU_NOMBRES debe ser alfabético.";
-                        return false;
-                    }
-                    else if(obtenerCantidadDeCaracteres($d->MAS_NOMBRE)>45){
-                        $m = "La variable MAS_NOMBRE no puede ser mayor a 45 caracteres.";
-                        return false; 
-                    }
-                }
-            }
             
-            //validamos la raza de la mascota
-            if(!isset($d->MAS_RAZA)){
-                $m = "La variable MAS_RAZA no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->MAS_RAZA == ""){
-                    $m = "La variable MAS_RAZA no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!esTextoAlfabetico(trim($d->MAS_RAZA))){
-                        $m = "La variable MAS_RAZA debe ser alfabético.";
-                        return false;
-                    }
-                    else if(obtenerCantidadDeCaracteres($d->MAS_RAZA)>45){
-                        $m = "La variable MAS_RAZA no puede ser mayor a 45 caracteres.";
-                        return false; 
-                    }
-                }
-            }
 
-             //validamos la especie de la mascota
-             if(!isset($d->MAS_ESPECIE)){
-                $m = "La variable MAS_ESPECIE no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->MAS_ESPECIE == ""){
-                    $m = "La variable MAS_ESPECIE no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!esTextoAlfabetico(trim($d->MAS_ESPECIE))){
-                        $m = "La variable MAS_ESPECIE debe ser alfabético.";
-                        return false;
-                    }
-                    else if(obtenerCantidadDeCaracteres($d->MAS_ESPECIE)>45){
-                        $m = "La variable MAS_ESPECIE no puede ser mayor a 45 caracteres.";
-                        return false; 
-                    }
-                }
-            }
         }
 
-        return true; 
-    }
 
 ?>
