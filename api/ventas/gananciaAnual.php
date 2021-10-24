@@ -141,10 +141,47 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
                 $datos = $ventaC->gananciasMensuales($mensaje,$code_error,$exito);
                
                 setlocale(LC_TIME, 'es_ES');
-                
                 $fecha = DateTime::createFromFormat('!m', $i);
                 $mes = strftime("%B", $fecha->getTimestamp());
-                array_push($gananciaPorMeses,array($mes=>$datos));
+                switch ($mes) {
+                    case 'January':
+                        $mes ="Enero";
+                        break;
+                    case 'February':
+                        $mes ="Febrero";
+                        break;
+                    case 'March':
+                        $mes ="Marzo";
+                        break;
+                    case 'April':
+                        $mes ="Abril";
+                        break;
+                    case 'May':
+                        $mes ="Mayo";
+                        break;
+                    case 'June':
+                        $mes ="Junio";
+                        break;
+                    case 'July':
+                        $mes ="Julio";
+                        break;
+                    case 'August':
+                        $mes ="Agosto";
+                        break;
+                    case 'September':
+                        $mes ="Septiembre";
+                        break;
+                    case 'October':
+                        $mes ="Octubre";
+                        break;
+                    case 'November':
+                        $mes ="Noviembre";
+                        break;
+                    case 'December':
+                        $mes ="Diciembre";
+                        break;
+                }
+                array_push($gananciaPorMeses,array("name"=>$mes,"value"=>$datos));
                 
             }
     

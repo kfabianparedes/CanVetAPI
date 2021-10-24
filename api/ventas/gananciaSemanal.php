@@ -190,7 +190,7 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
                     break;
             }
 
-            array_push($gananciaPorDia,array($dia=>$datos));
+            array_push($gananciaPorDia,array("name"=>$dia,"value"=>$datos));
         }
 
         if($exito==true){

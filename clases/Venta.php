@@ -317,6 +317,7 @@
         function gananciasSemanales(&$mensaje,&$code_error,&$exito){
             
             $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO =?"; 
+            $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SERVICIO_ESTADO = 1';
             $datos = 0;
             try {
                 
@@ -340,8 +341,29 @@
                     }
 
                     $mensaje = "Solicitud ejecutada con exito";
-                    $exito = true;
+
+                    $stmt = $this->conn->prepare($queryServicio);
+                    $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                    if(!$stmt->execute()){
+
+                        $code_error = "error_ejecucionQuery";
+                        $mensaje = "Hubo un error al listar las ganancias.";
+                        $exito = false; 
+
+                    }else{
+
+                        $result = get_result($stmt); 
                     
+                        if (count($result) > 0) {                
+                            while ($dato = array_shift($result)) {    
+                                $datos += $dato["SERVICIO_PRECIO"];
+                            }
+                        }
+
+                        $mensaje = "Solicitud ejecutada con exito";
+                        $exito = true; 
+                        
+                    }
                 }
 
                 return $datos;
@@ -357,17 +379,18 @@
 
         function gananciasMensuales(&$mensaje,&$code_error,&$exito){
 
-            $query = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m") = ?'; 
+            $queryVenta = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m") = ?'; 
+            $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m") = ? AND SERVICIO_ESTADO = 1';
             $datos = 0;
             try {
                 
 
-                $stmt = $this->conn->prepare($query);
+                $stmt = $this->conn->prepare($queryVenta);
                 $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
-                    $mensaje = "Hubo un error al listar el registro de ventas.";
+                    $mensaje = "Hubo un error al listar las ganancias.";
                     $exito = false; 
 
                 }else{
@@ -381,8 +404,29 @@
                     }
 
                     $mensaje = "Solicitud ejecutada con exito";
-                    $exito = true;
                     
+                    $stmt = $this->conn->prepare($queryServicio);
+                    $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                    if(!$stmt->execute()){
+
+                        $code_error = "error_ejecucionQuery";
+                        $mensaje = "Hubo un error al listar las ganancias.";
+                        $exito = false; 
+
+                    }else{
+
+                        $result = get_result($stmt); 
+                    
+                        if (count($result) > 0) {                
+                            while ($dato = array_shift($result)) {    
+                                $datos += $dato["SERVICIO_PRECIO"];
+                            }
+                        }
+
+                        $mensaje = "Solicitud ejecutada con exito";
+                        $exito = true; 
+                        
+                    }
                 }
 
                 return $datos;
