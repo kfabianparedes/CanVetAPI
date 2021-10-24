@@ -135,12 +135,12 @@
             SELECT * FROM SERVICIO WHERE (? 
             BETWEEN SERVICIO_FECHA_HORA AND ADDDATE(SERVICIO_FECHA_HORA, INTERVAL 1 hour) OR 
             ADDDATE(?, INTERVAL 1 hour) BETWEEN SERVICIO_FECHA_HORA AND ADDDATE(SERVICIO_FECHA_HORA, INTERVAL 1 hour))  
-            AND SERVICIO_TIPO = 1  AND  SERVICIO_ESTADO = 0"; 
+            AND SERVICIO_TIPO = 1  AND  SERVICIO_ESTADO = 0 AND SERVICIO_ID <> ?"; 
 
             try {
 
                 $stmtServicio = $this->conn->prepare($queryValidarIdServicio);
-                $stmtServicio->bind_param("s",$this->TIPO_SERVICIO_ID);
+                $stmtServicio->bind_param("s",$this->SERVICIO_ID);
                 $stmtServicio->execute();
                 $resultServicio = get_result($stmtServicio); 
                 
@@ -162,7 +162,7 @@
                             if($this->SERVICIO_TIPO == 1 ){
                             
                                 $stmtHorarios = $this->conn->prepare($queryDisponibilidadHorarios);
-                                $stmtHorarios->bind_param("ss",$this->SERVICIO_FECHA_HORA,$this->SERVICIO_FECHA_HORA);
+                                $stmtHorarios->bind_param("sss",$this->SERVICIO_FECHA_HORA,$this->SERVICIO_FECHA_HORA,$this->SERVICIO_ID);
                                 $stmtHorarios->execute();
                                 $resultHorarios = get_result($stmtHorarios); 
     
