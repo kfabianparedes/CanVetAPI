@@ -87,17 +87,17 @@
                 # TOKEN = $2y$10$YYKcURLLTlYGMuKVTkklVeUVfXtpzUAwbRL35P03P1vNQjo91NaYW (La contraseña hasheada del usuario)
                 
     
-                if($auth->TYPE_USER == $auth->AUTH_ADM){
+                if($auth->TYPE_USER == $auth->AUTH_ADM || $auth->TYPE_USER == $auth->AUTH_EMP){
                     $database = new Database();
                     $db = $database->getConnection();
                     $usuario = new Usuario($db);
                     $exito_verify = $usuario->tokenVerify($TOKEN,$auth->ROL,$code_error,$mensaje);
                     // echo json_encode(array("exito verify"=>$exito_verify,"rol"=>$auth->ROL,"error"=>$code_error,"mensaje"=>$mensaje));
-                    if($exito_verify && $auth->ROL == 2){
+                    if($exito_verify && ($auth->ROL == 2 || $auth->ROL == 1)){
                         $exito = true;
                     }else{
                         $code_error = "error_autorizacion";
-                        $mensaje = 'Hubo un error de autorización, el usuario no es administrador.';
+                        $mensaje = 'Hubo un error de autorización, el usuario no está autorizado, vuelva a iniciar sesión.';
                         $exito = false;
                         echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
                         header('HTTP/1.0 401 Unauthorized');

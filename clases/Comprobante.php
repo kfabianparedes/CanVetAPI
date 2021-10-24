@@ -11,7 +11,7 @@
             $this->conn = $db;
         }
  
-        function listarComprobantes(&$mensaje,&$code_error){
+        function listarComprobantes(&$mensaje,&$code_error,&$exito){
            $listarComprobantes = "Select * from COMPROBANTE";
            $datos = [];
            try {
@@ -35,6 +35,8 @@
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;
+                return $datos;
+
 
            }
         }
