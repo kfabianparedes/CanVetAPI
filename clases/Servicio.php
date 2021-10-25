@@ -12,6 +12,7 @@
         public $SERVICIO_TIPO;
         public $SERVICIO_ESTADO; 
         public $TIPO_SERVICIO_ID; 
+        public $SERVICIO_ADELANTO;
 
         public function __construct($db){
             $this->conn = $db;
@@ -20,8 +21,8 @@
         function registrarServicio(&$mensaje,&$code_error){
 
             $queryRegistrar = " 
-                INSERT INTO SERVICIO(SERVICIO_PRECIO,SERVICIO_DESCRIPCION,SERVICIO_FECHA_HORA,SERVICIO_TIPO,SERVICIO_ESTADO,TIPO_SERVICIO_ID,MASCOTA_ID)
-                VALUES(?,?,?,?,0,?,?)
+                INSERT INTO SERVICIO(SERVICIO_PRECIO,SERVICIO_DESCRIPCION,SERVICIO_FECHA_HORA,SERVICIO_TIPO,SERVICIO_ESTADO,TIPO_SERVICIO_ID,MASCOTA_ID,SERVICIO_ADELANTO)
+                VALUES(?,?,?,?,0,?,?,?)
             ";
 
             $queryValidarMas =" SELECT * FROM MASCOTA WHERE MAS_ID = ?";
@@ -58,8 +59,8 @@
                             if(count($resultHorarios) < 3){
 
                                 $stmt = $this->conn->prepare($queryRegistrar);
-                                $stmt->bind_param("ssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID);
+                                $stmt->bind_param("sssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
+                                ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO);
                                 if(!$stmt->execute()){
 
                                     $code_error = "error_ejecucionQuery";
@@ -127,7 +128,7 @@
             $queryValidarIdServicio = "SELECT * FROM SERVICIO WHERE SERVICIO_ID = ?"; 
             $queryEditar ="
                 UPDATE SERVICIO SET SERVICIO_PRECIO = ?, SERVICIO_DESCRIPCION = ?,SERVICIO_FECHA_HORA = ?, SERVICIO_TIPO = ?,
-                TIPO_SERVICIO_ID = ?, MASCOTA_ID = ? WHERE SERVICIO_ID = ?
+                TIPO_SERVICIO_ID = ?, MASCOTA_ID = ?, SERVICIO_ADELANTO = ? WHERE SERVICIO_ID = ?
             ";
             $queryValidarTs =" SELECT * FROM TIPO_SERVICIO WHERE TIPO_SERVICIO_ID = ?";
             $queryValidarMas =" SELECT * FROM MASCOTA WHERE MAS_ID = ?";
@@ -169,8 +170,8 @@
                                 if(count($resultHorarios) < 3){
 
                                     $stmt = $this->conn->prepare($queryEditar);
-                                    $stmt->bind_param("sssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ID);
+                                    $stmt->bind_param("ssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
+                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->SERVICIO_ID);
                                     if(!$stmt->execute()){
 
                                         $code_error = "error_ejecucionQuery";

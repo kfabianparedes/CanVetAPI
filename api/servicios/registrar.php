@@ -134,6 +134,7 @@
         $servicioC->MASCOTA_ID = $datos->MASCOTA_ID;
         $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
         $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
+        $servicioC->SERVICIO_ADELANTO = $datos->SERVICIO_ADELANTO/100;
         if(isset($datos->SERVICIO_DESCRIPCION))
             $servicioC->SERVICIO_DESCRIPCION = $datos->SERVICIO_DESCRIPCION;
         else    
@@ -175,6 +176,26 @@
                 }
             }else{
                 $m = 'La variable SERVICIO_PRECIO no es un numero o es null.';
+                return false;
+            }
+        }
+
+         //validaciones de la variable SERVICIO_ADELANTO
+         if(!isset($d->SERVICIO_ADELANTO)){
+            $m = "La variable SERVICIO_ADELANTO no ha sido enviada.";
+            return false;
+        }else{  
+            if(ctype_digit($d->SERVICIO_ADELANTO) || is_numeric($d->SERVICIO_ADELANTO)){
+                if($d->SERVICIO_ADELANTO <= 0) { 
+                    $m = 'El valor de la variable SERVICIO_ADELANTO debe ser mayor a 0.';
+                    return false;
+                }
+                if($d->SERVICIO_ADELANTO > $d->SERVICIO_PRECIO) { 
+                    $m = 'El valor de la variable SERVICIO_ADELANTO no puede ser mayor a la variable SERVICIO_PRECIO';
+                    return false;
+                }
+            }else{
+                $m = 'La variable SERVICIO_ADELANTO no es un numero o es null.';
                 return false;
             }
         }
@@ -248,7 +269,7 @@
                     $m = "La variable SERVICIO_FECHA_HORA no contiene una fecha válida o no tiene el formato permitido.";
                     return false;
                 }else{
-                    if(esMenorFechaActual($d->SERVICIO_FECHA_HORA)  && !esIgualFechaActual($d->SERVICIO_FECHA_HORA)){
+                    if(($d->SERVICIO_FECHA_HORA) < date('Y-m-d')){
                         $m = "La variable SERVICIO_FECHA_HORA no puede ser menor a la fecha actual.";
                         return false;
                     }
