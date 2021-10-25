@@ -240,11 +240,12 @@
             }
         }
 
-        function listarServicios(&$mensaje,&$code_error,&$exito){
+        function listarServiciosPendientes(&$mensaje,&$code_error,&$exito){
 
-            $query = "SELECT SER.*,MAS.*,TS.TIPO_SERVICIO_NOMBRE FROM SERVICIO SER 
+            $query = "SELECT SER.*,MAS.*,CLI.* ,TS.TIPO_SERVICIO_NOMBRE FROM SERVICIO SER 
             INNER JOIN TIPO_SERVICIO TS ON (SER.TIPO_SERVICIO_ID = TS.TIPO_SERVICIO_ID)
-            INNER JOIN MASCOTA MAS ON (SER.MASCOTA_ID = MAS.MAS_ID)"; 
+            INNER JOIN MASCOTA MAS ON (SER.MASCOTA_ID = MAS.MAS_ID) 
+            INNER JOIN CLIENTE CLI ON(MAS.CLIENTE_ID = CLI.CLIENTE_ID) AND SER.SERVICIO_ESTADO = 0"; 
             $datos = []; 
             try {
                 

@@ -144,7 +144,6 @@
                 $DJ_RAZON_SOCIAL = $DATOS_JURIDICOS->DJ_RAZON_SOCIAL; 
                 $DJ_RUC = $DATOS_JURIDICOS->DJ_RUC; 
                 $DJ_TIPO_EMPRESA_ID = $DATOS_JURIDICOS->TIPO_EMPRESA_ID; 
-                echo  $DATOS_JURIDICOS->TIPO_EMPRESA_ID; 
             }else{
                 $DJ_RAZON_SOCIAL = ''; 
                 $DJ_RUC = ''; 
