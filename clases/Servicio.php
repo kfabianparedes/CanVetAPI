@@ -64,12 +64,12 @@
 
                                     $code_error = "error_ejecucionQuery";
                                     $mensaje = "Hubo un error registrar el servicio.";
-                                    $exito = false; 
+                                    return false; 
 
                                 }else{
 
                                     $mensaje = "Solicitud ejecutada con exito";
-                                    $exito = true;
+                                    return true;
                                     
                                 }
 
@@ -77,7 +77,7 @@
                                 
                                 $code_error = "error_conflictoHorarios";
                                 $mensaje = "No se pudo registrar la cita por conflicto de horarios.";
-                                $exito = false; 
+                                return false; 
 
                             }
 
@@ -89,12 +89,12 @@
 
                                 $code_error = "error_ejecucionQuery";
                                 $mensaje = "Hubo un error registrar el servicio.";
-                                $exito = false; 
+                                return false; 
 
                             }else{
 
                                 $mensaje = "Solicitud ejecutada con exito";
-                                $exito = true;
+                                return true;
                                 
                             }
                         }
@@ -175,12 +175,12 @@
 
                                         $code_error = "error_ejecucionQuery";
                                         $mensaje = "Hubo un error editar el servicio.";
-                                        $exito = false; 
+                                        return false; 
 
                                     }else{
 
                                         $mensaje = "Solicitud ejecutada con exito";
-                                        $exito = true;
+                                        return true;
                                         
                                     }
 
@@ -188,7 +188,7 @@
                                 
                                     $code_error = "error_conflictoHorarios";
                                     $mensaje = "No se pudo registrar la cita por conflicto de horarios.";
-                                    $exito = false; 
+                                    return false; 
     
                                 }
                             }else{
@@ -200,12 +200,12 @@
 
                                     $code_error = "error_ejecucionQuery";
                                     $mensaje = "Hubo un error editar el servicio.";
-                                    $exito = false; 
+                                    return false; 
 
                                 }else{
 
                                     $mensaje = "Solicitud ejecutada con exito";
-                                    $exito = true;
+                                    return true;
                                     
                                 }
 
@@ -301,12 +301,12 @@
 
                         $code_error = "error_ejecucionQuery";
                         $mensaje = "Hubo un error terminar el servicio.";
-                        $exito = false; 
+                        return false; 
 
                     }else{
 
                         $mensaje = "Solicitud ejecutada con exito";
-                        $exito = true;
+                        return true;
                         
                     }
 
