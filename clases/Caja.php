@@ -61,6 +61,8 @@
             $mensaje = "Solicitud ejecutada con éxito.";
             return true;
         }
-        
+        function cerrarCaja(&$mensaje, &$code_error,&$CAJA_ID){
+            
+        }
     }   
 ?>

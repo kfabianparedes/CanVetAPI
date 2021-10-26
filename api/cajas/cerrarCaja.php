@@ -1,27 +1,24 @@
 <?php
-header('Access-Control-Allow-Origin: *');
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
+    header('Access-Control-Allow-Origin: *');
+    header("Content-Type: application/json; charset=UTF-8");
+    header("Access-Control-Allow-Methods: PUT");
+    header("Access-Control-Max-Age: 3600");
+    header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
 
+    //Include database and classes files
+    include_once '../../config/database.php';
+    include_once '../../clases/Usuario.php';
+    include_once '../../clases/Autorizacion.php';
+    include_once '../../clases/Caja.php';
+    include_once '../../util/validaciones.php';
 
-//Include database and classes files
-include_once '../../config/database.php';
-include_once '../../clases/Venta.php';
-include_once '../../clases/Usuario.php';
-include_once '../../clases/Autorizacion.php';
-date_default_timezone_set("America/Lima");//Zona horaria de Peru
-//COMPROBAMOS QUE EL METODO USADO SEA GET
-if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
-    return;
-}
+    if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
+        return;
+    }
 
     $mensaje = '';
     $exito = false;
     $code_error = null;
-    $datos = [];
-    //Autorización
     $headers = apache_request_headers();
     $auth = new Autorizacion();
 
@@ -127,16 +124,121 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
     }
 
     if($exito){
-        $ventaC = new Venta($db);
-        $ventaC->VENTA_FECHA_REGISTRO = date("Y-m-d");                                        
-        $datos = $ventaC->gananciasDiariasVenta($mensaje,$code_error,$exito);
-
-        if($exito==true){
-            header('HTTP/1.1 200 OK');
-            echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>true));
+        $datos = json_decode(file_get_contents("php://input"));
+        
+        if(esValido($mensaje,$datos)){
+            $exito_ = false;
+            $caja = new Caja($db);
+            $caja->USU_ID = $datos->USU_ID;
+            $caja->CAJA_CIERRE = $datos->CAJA_CIERRE;
+            $caja->CAJA_MONTO_FINAL = $datos->CAJA_MONTO_FINAL;
+            $caja->CAJA_DESCUENTO_GASTOS = $datos->CAJA_DESCUENTO_GASTOS;
+            $caja->CAJA_CODIGO = $datos->CAJA_CODIGO;
+            $exito_ = $caja->cerrarCaja($mensaje,$code_error);
+            if($exito_){
+                header('HTTP/1.1 200 OK');
+                echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito_));
+            }else{
+                header('HTTP/1.1 400 Bad Request');
+                echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>false));
+            }
         }else{
+            $code_error = "error_deCampo";
+            echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
             header('HTTP/1.1 400 Bad Request');
-            echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>false));
         }
-    }  
+    }
+
+    function esValido(&$m, &$d){
+        if(!isset($d)){
+            $m = "Se debe respetar el formato json.";
+            return false;
+        }else{
+            if(!isset($d->USU_ID)){
+                $m = "La variable USU_ID no ha sido enviada.";
+                return false;
+            }else{  
+                if($d->USU_ID == ""){
+                    $m = "La variable USU_ID no puede estar vacía o ser null.";
+                    return false; 
+                }else{
+                    if(!is_numeric($d->USU_ID)){
+                        $m = "La variable USU_ID solo acepta caracteres numéricos.";
+                        return false;  
+                    }else{
+                        if($d->USU_ID < 1 ){
+                            $m = "La variable USU_ID no puede ser menor o igual a 0.";
+                            return false; 
+                        }
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_CIERRE)){
+                $m = "La variable CAJA_CIERRE no ha sido enviada.";
+                return false; 
+            }else{
+                if($d->CAJA_CIERRE==""){
+                    $m = "La variable CAJA_CIERRE no puede ser null.";
+                    return false;
+                }else{
+                    if(!verificarFecha($d->CAJA_CIERRE)){
+                        $m = "La variable CAJA_CIERRE no contiene una fecha válida o no tiene el formato permitido.";
+                        return false;
+                    }else{
+                        if(!esIgualFechaActual($d->CAJA_CIERRE)){
+                            $m = "La variable CAJA_CIERRE debe tener la fecha de hoy.";
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_MONTO_FINAL)){
+                $m = 'La variable CAJA_MONTO_FINAL no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_MONTO_FINAL) || !is_numeric($d->CAJA_MONTO_FINAL)){
+                    $m = 'La variable CAJA_MONTO_FINAL no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_FINAL < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_FINAL debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_DESCUENTO_GASTOS)){
+                $m = 'La variable CAJA_DESCUENTO_GASTOS no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_DESCUENTO_GASTOS) || !is_numeric($d->CAJA_DESCUENTO_GASTOS)){
+                    $m = 'La variable CAJA_DESCUENTO_GASTOS no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_DESCUENTO_GASTOS < 0) { 
+                        $m = 'El valor de la variable CAJA_DESCUENTO_GASTOS debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_CODIGO)){
+                $m = 'La variable CAJA_CODIGO no ha sido enviada.';
+                return false;
+            }else{
+                if($d->CAJA_CODIGO == ''){
+                    $m = 'La variable CAJA_CODIGO no es debe estar vacía o ser null.';
+                    return false;
+                }else{
+                    if(obtenerCantidadDeCaracteres($d->CAJA_CODIGO) < 50) { 
+                        $m = 'El valor de la variable CAJA_CODIGO debe ser mayor a 50.';
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 ?>
