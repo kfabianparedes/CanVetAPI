@@ -285,38 +285,51 @@
 
         function terminarServicio(&$mensaje,&$code_error){
 
-            $queryValidarIdServicio = "SELECT * FROM SERVICIO WHERE SERVICIO_ID = ?"; 
-            $query = "UPDATE SERVICIO SET SERVICIO_ESTADO = 1 WHERE SERVICIO_ID = ?";
+            $query = "CALL SP_FINALIZAR_SERVICIO(@VALIDACIONES,?)" ; 
+            $queryValidaciones = "SELECT @VALIDACIONES"; 
 
             try {
 
-                $stmtServicio = $this->conn->prepare($queryValidarIdServicio);
-                $stmtServicio->bind_param("s",$this->SERVICIO_ID);
-                $stmtServicio->execute();
-                $resultServicio = get_result($stmtServicio); 
-                
-                if(count($resultServicio)){
 
-                    $stmt = $this->conn->prepare($query);
-                    $stmt->bind_param("s",$this->SERVICIO_ID);
-                    if(!$stmt->execute()){
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$this->SERVICIO_ID);
+                if(!$stmt->execute()){
 
-                        $code_error = "error_ejecucionQuery";
-                        $mensaje = "Hubo un error terminar el servicio.";
-                        return false; 
-
-                    }else{
-
-                        $mensaje = "Solicitud ejecutada con exito";
-                        return true;
-                        
-                    }
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error terminar el servicio.";
+                    return false; 
 
                 }else{
-                    $code_error = "error_NoExistenciaServicio";
-                    $mensaje = "El id del servicio ingresado no existe.";
-                    return false;
+
+                    
+                    $stmtValidaciones = $this->conn->prepare($queryValidaciones);
+                    $stmtValidaciones->execute();
+                    $resultValidaciones = get_result($stmtValidaciones); 
+
+                    if (count($resultValidaciones) > 0) {
+                        //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
+                        $validaciones = array_shift($resultValidaciones)["@VALIDACIONES"];
+                    }
+
+                    switch ($validaciones) {
+                        case 1:
+                            $code_error = "error_noExistenciaIdServicio";
+                            $mensaje = "El id del servicio ingresado no existe.";
+                            return false; 
+                            break;
+                        case 2:
+                            $code_error = "error_servicioTerminado";
+                            $mensaje = "El servicio ya está terminado.";
+                            return false; 
+                            break;
+                    }
+
+                    $mensaje = "Solicitud ejecutada con exito";
+                    return true;
+                    
                 }
+
+                
 
             } catch (Throwable $th) {
 
