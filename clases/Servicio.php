@@ -84,8 +84,8 @@
 
                         }else{
                             $stmt = $this->conn->prepare($queryRegistrar);
-                            $stmt->bind_param("ssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                            ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID);
+                            $stmt->bind_param("sssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
+                            ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO);
                             if(!$stmt->execute()){
 
                                 $code_error = "error_ejecucionQuery";
