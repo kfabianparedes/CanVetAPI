@@ -161,7 +161,7 @@
                 $m = "El campo SERVICIO_ID no ha sido enviado";
                 return false;
             }else{
-                if(!is_numeric($d->SERVICIO_ID) || ctype_digit($d->SERVICIO_ID)){
+                if(!is_numeric($d->SERVICIO_ID)){
                     $m = "El campo SERVICIO_ID debe ser numérico";
                     return false;
                 }else{
