@@ -222,19 +222,29 @@
 
             $queryEfectivo = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 1" ; 
             $queryTarjeta = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 2" ; 
-            $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SERVICIO_ESTADO = 1 ' ; 
+            $queryYape = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 3" ; 
+            $queryServicioEfectivo = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? 
+             AND MDP_ID = 1 AND SERVICIO_ESTADO = 1 ' ; 
+             $queryServicioTarjeta = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? 
+             AND MDP_ID = 1 AND SERVICIO_ESTADO = 2 ' ; 
+             $queryServicioYape = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? 
+             AND MDP_ID = 1 AND SERVICIO_ESTADO = 3 ' ; 
+
             $datosVentasTarjeta = 0;
             $datosVentasEfectivo = 0;
-            $datosServicio = 0;
+            $datosVentasYape = 0;
+            $datosServicioEfectivo = 0;
+            $datosServicioTarjeta = 0;
+            $datosServicioYape = 0;
             try {
                 
-
+                //ventas efectivo
                 $stmt = $this->conn->prepare($queryEfectivo);
                 $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
-                    $mensaje = "Hubo un error al listar el registro de ventas.";
+                    $mensaje = "Hubo un error al listar el monto ganado en ventas con efectivo.";
                     $exito = false; 
 
                 }else{
@@ -246,13 +256,13 @@
                             $datosVentasEfectivo += $dato["VENTA_TOTAL"];
                         }
                     }
-                    
+                    //servicios tarjeta
                     $stmt = $this->conn->prepare($queryTarjeta);
                     $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
                     if(!$stmt->execute()){
 
                         $code_error = "error_ejecucionQuery";
-                        $mensaje = "Hubo un error al listar el registro de ventas.";
+                        $mensaje = "Hubo un error al listar el monto ganado en ventas con tarjeta.";
                         $exito = false; 
 
                     }else{
@@ -264,13 +274,13 @@
                                 $datosVentasTarjeta += $dato["VENTA_TOTAL"];
                             }
                         }
-
-                        $stmt = $this->conn->prepare($queryServicio);
+                        //servicios yape 
+                        $stmt = $this->conn->prepare($queryYape);
                         $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
                         if(!$stmt->execute()){
 
                             $code_error = "error_ejecucionQuery";
-                            $mensaje = "Hubo un error al listar el registro de ventas.";
+                            $mensaje = "Hubo un error al listar el monto ganado en ventas con yape.";
                             $exito = false; 
 
                         }else{
@@ -279,17 +289,76 @@
                         
                             if (count($result) > 0) {                
                                 while ($dato = array_shift($result)) {    
-                                    $datosServicio += $dato["SERVICIO_PRECIO"];
+                                    $datosVentasYape += $dato["VENTA_TOTAL"];
                                 }
                             }
+                            //servicios
+                            //efectivo
+                            $stmt = $this->conn->prepare($queryServicioEfectivo);
+                            $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                            if(!$stmt->execute()){
 
-                            $mensaje = "Solicitud ejecutada con exito";
-                            $exito = true;
+                                $code_error = "error_ejecucionQuery";
+                                $mensaje = "Hubo un error al listar el monto ganado en servicios con efectivo.";
+                                $exito = false; 
+
+                            }else{
+
+                                $result = get_result($stmt); 
                             
+                                if (count($result) > 0) {                
+                                    while ($dato = array_shift($result)) {    
+                                        $datosServicioEfectivo += $dato["SERVICIO_PRECIO"];
+                                    }
+                                }
+                                //servicios tarjeta
+                                $stmt = $this->conn->prepare($queryServicioTarjeta);
+                                $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                                if(!$stmt->execute()){
+
+                                    $code_error = "error_ejecucionQuery";
+                                    $mensaje = "Hubo un error al listar el monto ganado en servicios con tarjeta.";
+                                    $exito = false; 
+
+                                }else{
+
+                                    $result = get_result($stmt); 
+                                
+                                    if (count($result) > 0) {                
+                                        while ($dato = array_shift($result)) {    
+                                            $datosServicioTarjeta += $dato["SERVICIO_PRECIO"];
+                                        }
+                                    }
+                                    //servicios yape
+                                    $stmt = $this->conn->prepare($queryServicioYape);
+                                    $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                                    if(!$stmt->execute()){
+
+                                        $code_error = "error_ejecucionQuery";
+                                        $mensaje = "Hubo un error al listar el monto ganado en servicios con yape.";
+                                        $exito = false; 
+
+                                    }else{
+
+                                        $result = get_result($stmt); 
+                                    
+                                        if (count($result) > 0) {                
+                                            while ($dato = array_shift($result)) {    
+                                                $datosServicioYape += $dato["SERVICIO_PRECIO"];
+                                            }
+                                        }
+                                    
+                                    $mensaje = "Solicitud ejecutada con exito";
+                                    $exito = true;
+                            
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                $datos = array("gananciasVentasEfectivo" => $datosVentasEfectivo, "gananciasVentasTarjeta" => $datosVentasTarjeta, "gananciasServicios" => $datosServicio);
+                $datos = array("gananciasVentasEfectivo" => $datosVentasEfectivo, "gananciasVentasTarjeta" => $datosVentasTarjeta, "gananciasVentasYape" => $datosVentasYape,
+                "gananciasServiciosEfectivo" => $datosServicioEfectivo, "gananciasServiciosTarjeta" => $datosServicioTarjeta, "gananciasServiciosYape" => $datosServicioYape);
 
                 return $datos;
 
@@ -298,7 +367,8 @@
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;
-                $datos = array("gananciasVentasEfectivo" => $datosVentasEfectivo, "gananciasVentasTarjeta" => $datosVentasTarjeta, "gananciasServicios" => $datosServicio);
+                $datos = array("gananciasVentasEfectivo" => $datosVentasEfectivo, "gananciasVentasTarjeta" => $datosVentasTarjeta, "gananciasVentasYape" => $datosVentasYape,
+                "gananciasServiciosEfectivo" => $datosServicioEfectivo, "gananciasServiciosTarjeta" => $datosServicioTarjeta, "gananciasServiciosYape" => $datosServicioYape);
                 return $datos ;
             }
         }
@@ -362,7 +432,8 @@
             
             $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO =?"; 
             $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SERVICIO_ESTADO = 1';
-            $datos = 0;
+            $datosVentas = 0;
+            $datosServicios = 0; 
             try {
                 
 
@@ -380,7 +451,7 @@
                 
                     if (count($result) > 0) {                
                         while ($dato = array_shift($result)) {    
-                            $datos += $dato["VENTA_TOTAL"];
+                            $datosVentas += $dato["VENTA_TOTAL"];
                         }
                     }
 
@@ -400,7 +471,7 @@
                     
                         if (count($result) > 0) {                
                             while ($dato = array_shift($result)) {    
-                                $datos += $dato["SERVICIO_PRECIO"];
+                                $datosServicios += $dato["SERVICIO_PRECIO"];
                             }
                         }
 
@@ -410,14 +481,14 @@
                     }
                 }
 
-                return $datos;
+                return array("MONTO_VENTAS"=>$datosVentas,"MONTO_SERVICIOS"=>$datosServicios);
 
             } catch (Throwable $th) {
 
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;
-                return $datos ;
+                return array("MONTO_VENTAS"=>$datosVentas,"MONTO_SERVICIOS"=>$datosServicios);
             }
         }
 

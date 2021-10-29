@@ -140,6 +140,7 @@
             $servicioC->SERVICIO_FECHA_HORA = $datos->SERVICIO_FECHA_HORA." ".$datos->HORA_SERVICIO;
             $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
             $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
+            $servicioC->MDP_ID = $datos->MDP_ID;
             $servicioC->SERVICIO_ADELANTO = $datos->SERVICIO_ADELANTO/100;
 
             $exito = $servicioC->editarServicio($mensaje,$code_error);
@@ -268,6 +269,22 @@
                 }else{
                     if($d->SERVICIO_TIPO < 0 || $d->SERVICIO_TIPO > 1){
                         $m = "El valor de SERVICIO_TIPO debe ser 0 o 1.";
+                        return false;
+                    }
+                }
+            }
+
+            //validamos el MDP_ID
+            if(!isset($d->MDP_ID)){
+                $m = "El campo MDP_ID no ha sido enviado";
+                return false;
+            }else{
+                if(!is_numeric($d->MDP_ID) || ctype_digit($d->MDP_ID)){
+                    $m = "El campo MDP_ID debe ser numérico";
+                    return false;
+                }else{
+                    if($d->MDP_ID <=0){
+                        $m = "El valor de MDP_ID debe no debe ser negativo o igual a 0.";
                         return false;
                     }
                 }

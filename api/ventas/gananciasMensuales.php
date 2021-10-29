@@ -128,17 +128,107 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
 
     if($exito){
 
+        $ventaC = new Venta($db); 
+        $anio = date("Y"); // año actual
+        $mes = date("m");  //mes actual
+        $cantidadDiasMes = cal_days_in_month(CAL_GREGORIAN,$mes,$anio);//se obtiene la cantidad de meses
+        $semana = 7; //esta variable nos ayudará a divir las semanas 
+
+        $gananciaSemana = []; //guardará los montos por semana
+        $datosVentas = 0; 
+        $datosServicios = 0;     
+        
+        for( $i = 1; $i <= $cantidadDiasMes ; $i++ ){   
             $ventaC = new Venta($db);
-            $ventaC->VENTA_FECHA_REGISTRO = date("Y-m");                     
-            $datos = $ventaC->gananciasMensuales($mensaje,$code_error,$exito);
-    
-            if($exito==true){
-                header('HTTP/1.1 200 OK');
-                echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>true));
+            //si no acaba la semana continuará
+            if($i < $semana){
+
+                
+                $diaSemana = date("Y-m-d",strtotime($anio."-".$mes."-".$i));
+                $ventaC->VENTA_FECHA_REGISTRO = $diaSemana; 
+                $datos = $ventaC->gananciasSemanales($mensaje,$code_error,$exito);
+
+                $datosVentas += $datos['MONTO_VENTAS'];
+                $datosServicios += $datos['MONTO_SERVICIOS'];
+                continue;
+            
             }else{
-                header('HTTP/1.1 400 Bad Request');
-                echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>false));
+
+
+                $diaSemana = date("Y-m-d",strtotime($anio."-".$mes."-".$i));
+                $ventaC->VENTA_FECHA_REGISTRO = $diaSemana; 
+                $datos = $ventaC->gananciasSemanales($mensaje,$code_error,$exito);
+
+                $datosVentas += $datos['MONTO_VENTAS'];
+                $datosServicios += $datos['MONTO_SERVICIOS'];
+
+                $series = [];
+                array_push($series,array("name"=>"Ventas","value"=>$datosVentas));
+                array_push($series,array("name"=>"Servicios","value"=>$datosServicios));
+
+                array_push($gananciaSemana,array("name"=>$semana-6 ."-".$semana,"series"=>$series));
+                $semana +=7; 
+
+                $datosVentas = 0 ; 
+                $datosServicios = 0 ;
+                //si es que la semana ya se salió o es igual al del rango del mes
+                if($semana >= $cantidadDiasMes){
+                    //se crea una variable temporal que almacena el día siguiente de la última semana registrada
+                    $temp = $semana - 6 ;
+
+                    //si es que es que temp es igual a la cantidad del mes quiere decir que solo queda un día por reportar.
+                    if($temp == $cantidadDiasMes){
+                        $diaSemana = date("Y-m-d",strtotime($anio."-".$mes."-".$temp));
+                        $ventaC->VENTA_FECHA_REGISTRO = $diaSemana; 
+                        $datos = $ventaC->gananciasSemanales($mensaje,$code_error,$exito);
+
+                        $datosVentas += $datos['MONTO_VENTAS'];
+                        $datosServicios += $datos['MONTO_SERVICIOS'];
+                        $series = [];
+                        array_push($series,array("name"=>"Ventas","value"=>$datosVentas));
+                        array_push($series,array("name"=>"Servicios","value"=>$datosServicios));
+                        array_push($gananciaSemana,array("name"=>$temp,"series"=>$series));
+                        echo $temp. "\n";
+                    
+                    //sino quiere decir que un faltan más de un día por reportar
+                    }else{
+
+                        //se hace un for recorriendo todos los días que aún faltan reportar
+                        for($j = $temp; $j <= $cantidadDiasMes ; $j++ ){
+
+                            $diaSemana = date("Y-m-d",strtotime($anio."-".$mes."-".$j));
+                            $ventaC->VENTA_FECHA_REGISTRO = $diaSemana; 
+                            $datos = $ventaC->gananciasSemanales($mensaje,$code_error,$exito);
+
+                            $datosVentas += $datos['MONTO_VENTAS'];
+                            $datosServicios += $datos['MONTO_SERVICIOS'];
+                            $series = [];
+                            array_push($series,array("name"=>"Ventas","value"=>$datosVentas));
+                            array_push($series,array("name"=>"Servicios","value"=>$datosServicios));
+
+                        }
+                        //se registran los días alcanzados en el bucle anterior
+                        array_push($gananciaSemana,array("name"=>$temp ."-".$cantidadDiasMes,"series"=>$series));
+                        
+                        // echo $temp . ' ' . $cantidadDiasMes . "\n";
+
+                        
+                    }
+                    //se rompe el bucle ya que todos los días del mes fueron reportados 
+                    break;
+                }
+                
             }
+        }
+
+
+        if($exito==true){
+            header('HTTP/1.1 200 OK');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaSemana, "mensaje"=>$mensaje,"exito"=>true));
+        }else{
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaSemana, "mensaje"=>$mensaje,"exito"=>false));
+        }
 
         
         

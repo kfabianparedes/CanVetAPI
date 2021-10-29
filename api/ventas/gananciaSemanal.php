@@ -159,6 +159,8 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
         // $finSemana = date('Y-m-d', $finSemana);
         
         $gananciaPorDia = []; 
+        $gananciaPorDiaSeparado = []; 
+        $total = [];
         for($i = 0; $i <= 6; $i++)
         {
             $diaSemana = strtotime('+'.$i.' day', strtotime($inicioSemana));
@@ -189,13 +191,26 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
                     $dia = 'Domingo'; 
                     break;
             }
-
-            array_push($gananciaPorDia,array("name"=>$dia,"value"=>$datos));
+            $series = [];
+            array_push($series,array("name"=>"Ventas","value"=>$datos['MONTO_VENTAS']));
+            array_push($series,array("name"=>"Servicios","value"=>$datos['MONTO_SERVICIOS']));
+            // for ($i = 0; $i <= 1; $i++){
+            //     if($i == 0)
+            //         array_push($series,array("name"=>$dia,"value"=>$datos['MONTO_VENTAS']));
+            //     else
+            //         array_push($series,array("name"=>$dia,"value"=>$datos['MONTO_SERVICIOS']));
+            // }
+            array_push($gananciaPorDia,array("name"=>$dia,"value"=> $datos['MONTO_VENTAS'] + $datos['MONTO_SERVICIOS']));
+            
+            array_push($gananciaPorDiaSeparado,array("name"=>$dia,"series"=>$series));
         }
+
+        array_push($total,array("single"=>$gananciaPorDia));
+        array_push($total,array("multi"=>$gananciaPorDiaSeparado));
 
         if($exito==true){
             header('HTTP/1.1 200 OK');
-            echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaPorDia, "mensaje"=>$mensaje,"exito"=>true));
+            echo json_encode( array("error"=>$code_error, "resultado"=>$total, "mensaje"=>$mensaje,"exito"=>true));
         }else{
             header('HTTP/1.1 400 Bad Request');
             echo json_encode( array("error"=>$code_error, "resultado"=>$gananciaPorDia, "mensaje"=>$mensaje,"exito"=>false));
