@@ -327,44 +327,46 @@
             if(!isset($VENTA->VENTA_NRO_SERIE)){
                 $m = "La variable VENTA_NRO_SERIE no ha sido enviada.";
                 return false;
-            }else{  
-                if($VENTA->VENTA_NRO_SERIE == ""){
-                    $m = "La variable VENTA_NRO_SERIE no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!ctype_digit($VENTA->VENTA_NRO_SERIE)){
-                        $m = "La variable VENTA_NRO_SERIE debe estar conformada por caracteres numéricos.";
-                        return false;
-                    }else{
-                        if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)<3 && 
-                        obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)>5){
-                            $m = "La variable VENTA_NRO_SERIE debe tener una longitud de entre 3 y 5 caracteres numericos.";
-                            return false;
-                        }
-                    }
-                }
             }
+            else{  
+            //     if($VENTA->VENTA_NRO_SERIE == ""){
+            //         $m = "La variable VENTA_NRO_SERIE no puede estar vacía o ser null.";
+            //         return false; 
+            //     }else{
+            //         if(!ctype_digit($VENTA->VENTA_NRO_SERIE)){
+            //             $m = "La variable VENTA_NRO_SERIE debe estar conformada por caracteres numéricos.";
+            //             return false;
+            //         }else{
+            //             if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)<3 && 
+            //             obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_SERIE)>5){
+            //                 $m = "La variable VENTA_NRO_SERIE debe tener una longitud de entre 3 y 5 caracteres numericos.";
+            //                 return false;
+            //             }
+            //         }
+            //     }
+            // }
             //validaciones de la variable COMPRA_NRO_COMPROBANTE
             if(!isset($VENTA->VENTA_NRO_COMPROBANTE)){
                 $m = "La variable VENTA_NRO_COMPROBANTE no ha sido enviada.";
                 return false;
-            }else{  
-                if($VENTA->VENTA_NRO_COMPROBANTE == ""){
-                    $m = "La variable VENTA_NRO_COMPROBANTE no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!ctype_digit($VENTA->VENTA_NRO_COMPROBANTE)){
-                        $m = "La variable VENTA_NRO_COMPROBANTE debe estar conformada por caracteres numéricos.";
-                        return false;
-                    }else{
-                        if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_COMPROBANTE)<7 && 
-                        obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_COMPROBANTE)>10){
-                            $m = "La variable VENTA_NRO_COMPROBANTE debe tener una longitud de entre 7 y 10 caracteres numericos.";
-                            return false;
-                        }
-                    }
-                }
             }
+            else{  
+            //     if($VENTA->VENTA_NRO_COMPROBANTE == ""){
+            //         $m = "La variable VENTA_NRO_COMPROBANTE no puede estar vacía o ser null.";
+            //         return false; 
+            //     }else{
+            //         if(!ctype_digit($VENTA->VENTA_NRO_COMPROBANTE)){
+            //             $m = "La variable VENTA_NRO_COMPROBANTE debe estar conformada por caracteres numéricos.";
+            //             return false;
+            //         }else{
+            //             if(obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_COMPROBANTE)<7 && 
+            //             obtenerCantidadDeCaracteres($VENTA->VENTA_NRO_COMPROBANTE)>10){
+            //                 $m = "La variable VENTA_NRO_COMPROBANTE debe tener una longitud de entre 7 y 10 caracteres numericos.";
+            //                 return false;
+            //             }
+            //         }
+            //     }
+            // }
 
             //validaciones de la variable COMPRA_SUBTOTAL
             if(!isset($VENTA->VENTA_SUBTOTAL)){

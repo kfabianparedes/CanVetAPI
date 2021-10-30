@@ -19,8 +19,8 @@
         function registrarMascota(&$mensaje,&$code_error){
 
             $query  = "
-            INSERT INTO MASCOTA(MAS_NOMBRE,MAS_RAZA,MAS_COLOR,MAS_ESPECIE,MAS_ATENCIONES,CLIENTE_ID)
-            VALUES(?,?,?,?,?,?);
+            INSERT INTO MASCOTA(MAS_NOMBRE,MAS_RAZA,MAS_COLOR,MAS_ESPECIE,MAS_ATENCIONES,MAS_ESTADO,CLIENTE_ID)
+            VALUES(?,?,?,?,?,?,?);
             "; 
             $queryValidarIdCliente = "SELECT * FROM CLIENTE WHERE CLIENTE_ID";
                 
@@ -34,8 +34,8 @@
                 if (count($resultIdCliente) > 0) {
                     
                     $stmt = $this->conn->prepare($query);
-                    $stmt->bind_param("ssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
-                    ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->CLIENTE_ID);
+                    $stmt->bind_param("sssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
+                    ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->MAS_ESTADO,$this->CLIENTE_ID);
                     if(!$stmt->execute()){
 
                         $code_error = "error_ejecucionQuery";
@@ -69,7 +69,7 @@
         function editarMascota(&$mensaje,&$code_error){
 
             $query  = "
-            UPDATE MASCOTA SET MAS_NOMBRE = ?,MAS_RAZA = ?,MAS_COLOR = ?,MAS_ESPECIE = ?,MAS_ATENCIONES = ?,CLIENTE_ID = ? 
+            UPDATE MASCOTA SET MAS_NOMBRE = ?,MAS_RAZA = ?,MAS_COLOR = ?,MAS_ESPECIE = ?,MAS_ATENCIONES = ?,CLIENTE_ID = ?, MAS_ESTADO = ?
             WHERE MAS_ID = ?";
             $queryValidarIdMascota = "SELECT * FROM MASCOTA WHERE MAS_ID = ?";
             $queryValidarIdCliente = "SELECT * FROM CLIENTE WHERE CLIENTE_ID = ?";
@@ -90,8 +90,8 @@
                     if (count($resultIdCliente) > 0) {
                         
                         $stmt = $this->conn->prepare($query);
-                        $stmt->bind_param("sssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
-                        ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->CLIENTE_ID,$this->MAS_ID);
+                        $stmt->bind_param("ssssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
+                        ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->CLIENTE_ID,$this->MAS_ESTADO,$this->MAS_ID);
                         if(!$stmt->execute()){
     
                             $code_error = "error_ejecucionQuery";
@@ -132,7 +132,7 @@
         }
 
         function listarMascotas(&$mensaje,&$code_error,&$exito){
-            $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID)";
+            $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) WHERE MAS_ESTADO = 1";
             $datos = [];  
             try {
 

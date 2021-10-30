@@ -1,28 +1,26 @@
 <?php
-
-    header('Access-Control-Allow-Origin: *');
-    header("Content-Type: application/json; charset=UTF-8");
-    header("Access-Control-Allow-Methods: GET");
-    header("Access-Control-Max-Age: 3600");
-    header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
-
-
-    //Include database and classes files
-    include_once '../../config/database.php';
-    include_once '../../clases/DetalleCompra.php';
-    include_once '../../clases/Usuario.php';
-    include_once '../../clases/Autorizacion.php';
-
-    //COMPROBAMOS QUE EL METODO USADO SEA GET
-    if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
-        return;
-    }
-
+   header('Access-Control-Allow-Origin: *');
+   header("Content-Type: application/json; charset=UTF-8");
+   header("Access-Control-Allow-Methods: GET");
+   header("Access-Control-Max-Age: 3600");
+   header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
+   
+   
+   //Include database and classes files
+   include_once '../../config/database.php';
+   include_once '../../clases/Cliente.php';
+   include_once '../../clases/Usuario.php';
+   include_once '../../clases/Autorizacion.php';
+   
+   //COMPROBAMOS QUE EL METODO USADO SEA GET
+   if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
+       return;
+   }
+   
     $mensaje = '';
     $exito = false;
     $code_error = null;
-    $datos = [];
-     //Autorización
+    //Autorización
     $headers = apache_request_headers();
     $auth = new Autorizacion();
 
@@ -88,17 +86,17 @@
             # TOKEN = $2y$10$YYKcURLLTlYGMuKVTkklVeUVfXtpzUAwbRL35P03P1vNQjo91NaYW (La contraseña hasheada del usuario)
             
 
-            if($auth->TYPE_USER == $auth->AUTH_ADM){
+            if($auth->TYPE_USER == $auth->AUTH_ADM || $auth->TYPE_USER == $auth->AUTH_EMP){
                 $database = new Database();
                 $db = $database->getConnection();
                 $usuario = new Usuario($db);
                 $exito_verify = $usuario->tokenVerify($TOKEN,$auth->ROL,$code_error,$mensaje);
                 // echo json_encode(array("exito verify"=>$exito_verify,"rol"=>$auth->ROL,"error"=>$code_error,"mensaje"=>$mensaje));
-                if($exito_verify && $auth->ROL == 2){
+                if($exito_verify && ($auth->ROL == 2 || $auth->ROL == 1)){
                     $exito = true;
                 }else{
                     $code_error = "error_autorizacion";
-                    $mensaje = 'Hubo un error de autorización, el usuario no es administrador.';
+                    $mensaje = 'Hubo un error de autorización, el usuario no está autorizado, vuelva a iniciar sesión.';
                     $exito = false;
                     echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
                     header('HTTP/1.0 401 Unauthorized');
@@ -128,51 +126,17 @@
     }
 
     if($exito){
-    if(esValido($mensaje)){
+        $clienteC = new Cliente($db);
+        $clientes = array();
+        $clientes = $clienteC->listarClientes($mensaje,$code_error,$exito);
 
-        $detCompra = new DetalleCompra($db);
-        $detCompra->COMPRA_ID = $_GET['COMPRA_ID'];
-        $datos = $detCompra->listarDetallesPorIdCompra($mensaje, $code_error,$exito);
-
-        if($exito==true){
+        if($exito){
             header('HTTP/1.1 200 OK');
-            echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>true));
+            echo json_encode( array("error"=>$code_error, "resultado"=>$clientes, "mensaje"=>$mensaje,"exito"=>$exito));
         }else{
             header('HTTP/1.1 400 Bad Request');
-            echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>false));
+            echo json_encode( array("error"=>$code_error, "resultado"=>$clientes, "mensaje"=>$mensaje,"exito"=>false));
         }
+    } 
 
-    }else{
-
-        $code_error = "error_deCampo";
-        echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
-        header('HTTP/1.1 400 Bad Request');
-
-    }
-    }
-
-
-    function esValido(&$m){ 
-    
-    if(!isset($_GET['COMPRA_ID'])){
-        $m = "El campo COMPRA_ID no ha sido enviado";
-        return false;
-    }else{
-        if($_GET['COMPRA_ID'] == ''){
-            $m = "El campo COMPRA_ID no puede estar vacío o ser null.";
-            return false;
-        }else{
-            if(!is_numeric($_GET['COMPRA_ID'])){
-                $m = "El campo COMPRA_ID debe ser numérico";
-                return false;
-            }else{
-                if($_GET['COMPRA_ID'] <=0){
-                    $m = "El valor de PROV_ID debe no debe ser negativo o igual a 0.";
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
 ?>

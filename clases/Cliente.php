@@ -210,5 +210,35 @@
             }
 
         }
+
+        function listarClientes(&$mensaje,&$code_error,&$exito){
+            $query = "SELECT * FROM CLIENTE";
+            $datos = array();
+            try {
+                $stmt = $this->conn->prepare($query);
+                if(!$stmt->execute()){
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error al listar el registro cliente normales.";
+                    $exito = false; 
+                    return $datos;
+                }
+
+                $result = get_result($stmt); 
+                if (count($result) > 0) {                
+                    while ($dato = array_shift($result)) {    
+                        $datos[] = $dato;
+                    }
+                }
+                $mensaje = "Solicitud ejecutada con exito";
+                    $exito = true;
+                return $datos; 
+
+            } catch (Throwable $th) {
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos;
+            }
+        }
     }
 ?>

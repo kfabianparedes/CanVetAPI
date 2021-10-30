@@ -138,7 +138,7 @@
                 $mascotaC->MAS_ESPECIE = $datos->MAS_ESPECIE; 
                 $mascotaC->MAS_ATENCIONES = $datos->MAS_ATENCIONES;
                 $mascotaC->CLIENTE_ID = $datos->CLIENTE_ID;
-
+                $mascotaC->MAS_ESTADO = $datos->MAS_ESTADO;
                 $exito = $mascotaC->registrarMascota($mensaje,$code_error);
                 if($exito == true)
                     header('HTTP/1.1 200 OK');
@@ -235,7 +235,7 @@
             }
 
              //validamos la especie de la mascota
-             if(!isset($d->MAS_ESPECIE)){
+            if(!isset($d->MAS_ESPECIE)){
                 $m = "La variable MAS_ESPECIE no ha sido enviada.";
                 return false;
             }else{  
@@ -272,6 +272,22 @@
                         return false; 
                     }
                 }
+            }
+
+            if(!isset($d->MAS_ESTADO)){
+                $m = "El campo MAS_ESTADO no ha sido enviado";
+                return false;
+            }else{
+                if(!is_numeric($d->MAS_ESTADO)){
+                    $m = "El campo MAS_ESTADO debe ser numérico";
+                    return false;
+                }else{
+                    if($d->MAS_ESTADO <0 || $d->MAS_ESTADO>1){
+                        $m = "El valor de MAS_ESTADO debe estar entre 0 y 1.";
+                        return false;
+                    }
+                }
+                
             }
         }
 
