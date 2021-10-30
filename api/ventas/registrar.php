@@ -328,7 +328,7 @@
                 $m = "La variable VENTA_NRO_SERIE no ha sido enviada.";
                 return false;
             }
-            else{  
+            // else{  
             //     if($VENTA->VENTA_NRO_SERIE == ""){
             //         $m = "La variable VENTA_NRO_SERIE no puede estar vacía o ser null.";
             //         return false; 
@@ -350,7 +350,7 @@
                 $m = "La variable VENTA_NRO_COMPROBANTE no ha sido enviada.";
                 return false;
             }
-            else{  
+            // else{  
             //     if($VENTA->VENTA_NRO_COMPROBANTE == ""){
             //         $m = "La variable VENTA_NRO_COMPROBANTE no puede estar vacía o ser null.";
             //         return false; 

@@ -25,19 +25,17 @@
 
         function registrar(&$mensaje,&$code_error,&$ventaId){
 
-            $query = "CALL SP_INSERTAR_VENTA(@P_VENTA_ID,@VAL_NRO_COMPROBANTE,@VAL_COMPROBANTE_ID,@VAL_USU_ID,@VAL_MDP_ID,@VAL_CLI_ID,?,?,?,?,?,?,?,?,?,?)"; 
+            $query = "CALL SP_INSERTAR_VENTA(@P_VENTA_ID,@VAL_COMPROBANTE_ID,@VAL_USU_ID,@VAL_MDP_ID,@VAL_CLI_ID,?,?,?,?,?,?,?,?)"; 
             $queryComprobanteID = "SELECT @VAL_COMPROBANTE_ID"; 
             $queryUsuID = "SELECT @VAL_USU_ID"; 
             $queryVentaId = "SELECT @P_VENTA_ID";
             $queryMdpID = "SELECT @VAL_MDP_ID"; 
             $queryCliId = "SELECT @VAL_CLI_ID"; 
-            $queryNroComprobante = "SELECT @VAL_NRO_COMPROBANTE"; 
 
             try {
 
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("ssssssssss",$this->VENTA_FECHA_EMISION_COMPROBANTE,
-                $this->VENTA_NRO_SERIE,$this->VENTA_NRO_COMPROBANTE,$this->VENTA_FECHA_REGISTRO,
+                $stmt->bind_param("ssssssss",$this->VENTA_FECHA_EMISION_COMPROBANTE,$this->VENTA_FECHA_REGISTRO,
                 $this->VENTA_SUBTOTAL,$this->VENTA_TOTAL,$this->COMPROBANTE_ID,$this->USU_ID,$this->METODO_DE_PAGO_ID,$this->CLIENTE_ID);
                 //verificamos que se haya realizado correctamente el ingreso de la compra
                 if(!$stmt->execute()){
@@ -69,9 +67,9 @@
                     $resultCliId = get_result($stmtCliId); 
                     
                     //verificar si no se repite ningpun Nro de comprobante igual al ingresado 
-                    $stmtNroComprobante = $this->conn->prepare($queryNroComprobante);
-                    $stmtNroComprobante->execute();
-                    $resultNroComprobante = get_result($stmtNroComprobante); 
+                    // $stmtNroComprobante = $this->conn->prepare($queryNroComprobante);
+                    // $stmtNroComprobante->execute();
+                    // $resultNroComprobante = get_result($stmtNroComprobante); 
 
                     if (count($resultComprobanteId) > 0) {
                         //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
@@ -92,10 +90,10 @@
                         //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la compra que se va a ingresar
                         $valCliId = array_shift($resultCliId)["@VAL_CLI_ID"];
                     }
-                    if (count($resultNroComprobante) > 0) {
-                        //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
-                        $valNroComprobante = array_shift($resultNroComprobante)["@VAL_NRO_COMPROBANTE"];
-                    }
+                    // if (count($resultNroComprobante) > 0) {
+                    //     //obtenemos verdadero o falso dependiendo si es que se repite el nro de comprobante de la guía que se ingresará 
+                    //     $valNroComprobante = array_shift($resultNroComprobante)["@VAL_NRO_COMPROBANTE"];
+                    // }
 
                     if(!$valComprobanteId){
 
@@ -126,13 +124,13 @@
 
                                 }
                                 else{
-                                    if(!$valNroComprobante){
+                                    // if(!$valNroComprobante){
 
-                                        $code_error = "error_existenciaNroComprobante";
-                                        $mensaje = "El número de comprobante del número de serie ingresado ya existe.";
-                                        return false;
+                                    //     $code_error = "error_existenciaNroComprobante";
+                                    //     $mensaje = "El número de comprobante del número de serie ingresado ya existe.";
+                                    //     return false;
 
-                                    }else{
+                                    // }else{
 
                                         //verificar si existe el comprobante id 
                                         $stmtVentaId = $this->conn->prepare($queryVentaId);
@@ -155,7 +153,7 @@
                                                 return false; 
                                             }
                                         }
-                                    }
+                                    // }
                                    
                                 }
                             }
