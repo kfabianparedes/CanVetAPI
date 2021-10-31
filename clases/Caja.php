@@ -10,6 +10,12 @@
         public $CAJA_MONTO_FINAL;
         public $CAJA_DESCUENTO_GASTOS;
         public $CAJA_CODIGO;
+        public $CAJA_MONTO_EFECTIVO_VENTAS;
+        public $CAJA_MONTO_TARJETA_VENTAS;
+        public $CAJA_MONTO_YAPE_VENTAS;
+        public $CAJA_MONTO_EFECTIVO_SERVICIOS;
+        public $CAJA_MONTO_YAPE_SERVICIOS;
+        public $CAJA_MONTO_TARJETA_SERVICIOS;
         public $USU_ID;
 
         public function __construct($db){
@@ -63,6 +69,78 @@
         }
         function cerrarCaja(&$mensaje, &$code_error,&$CAJA_ID){
             
+        }
+
+        function reportesCaja(&$mensaje, &$code_error,&$exito){
+
+            $query = 'SELECT 
+            CAJA_MONTO_EFECTIVO_VENTAS,CAJA_MONTO_TARJETA_VENTAS,CAJA_MONTO_YAPE_VENTAS,CAJA_MONTO_EFECTIVO_SERVICIOS,
+            CAJA_MONTO_TARJETA_SERVICIOS,CAJA_MONTO_YAPE_SERVICIOS
+            FROM CAJA WHERE DATE_FORMAT(CAJA_APERTURA,"%Y-%m") = ?'; 
+
+            $anioMes = date('Y-m'); 
+            echo $anioMes;
+            $anioMesAnterior = strtotime('-1 month', strtotime($anioMes));
+            $anioMesAnterior = date('Y-m', $anioMesAnterior); 
+
+            $datos = [];
+            $datosMesActual =[];
+            $datosMesAterior =[];
+            try {
+
+                //reporte del mes 
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$anioMes);
+                if(!$stmt->execute()){
+
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error reportar los cierres de caja del mes actual.";
+                    $exito = false; 
+
+                }else{
+                    
+                    $result = get_result($stmt); 
+                
+                    if (count($result) > 0) {                
+                        while ($dato = array_shift($result)) {    
+                            $datosMesActual[] = $dato;
+                        }
+                    }
+
+                    //reporte del mes anterior 
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bind_param("s",$anioMesAnterior);
+                    if(!$stmt->execute()){
+
+                        $code_error = "error_ejecucionQuery";
+                        $mensaje = "Hubo un error reportar los cierres de caja del mes anterior.";
+                        $exito = false; 
+
+                    }else{
+                        
+                        $resulta = get_result($stmt); 
+                    
+                        if (count($resulta) > 0) {                
+                            while ($dato = array_shift($resulta)) {    
+                                $datosMesAterior[] = $dato;
+                            }
+                        }
+
+                        $mensaje = "El reporte se realizó con éxito";
+                        $exito = true; 
+                    }
+                }
+
+            $datos = array("mes_actual"=>$datosMesActual,"mes_anterior"=>$datosMesAterior);
+            return $datos;  
+            } catch (Throwable $th) {
+                
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos;
+
+            }
         }
     }   
 ?>
