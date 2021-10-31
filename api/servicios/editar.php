@@ -188,7 +188,7 @@
                 return false;
             }else{  
                 if(ctype_digit($d->SERVICIO_ADELANTO) || is_numeric($d->SERVICIO_ADELANTO)){
-                    if($d->SERVICIO_ADELANTO <= 0) { 
+                    if($d->SERVICIO_ADELANTO <0) { 
                         $m = 'El valor de la variable SERVICIO_ADELANTO debe ser mayor a 0.';
                         return false;
                     }
@@ -279,7 +279,7 @@
                 $m = "El campo MDP_ID no ha sido enviado";
                 return false;
             }else{
-                if(!is_numeric($d->MDP_ID) || ctype_digit($d->MDP_ID)){
+                if(!is_numeric($d->MDP_ID)){
                     $m = "El campo MDP_ID debe ser numérico";
                     return false;
                 }else{
