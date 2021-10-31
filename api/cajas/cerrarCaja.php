@@ -129,11 +129,17 @@
         if(esValido($mensaje,$datos)){
             $exito_ = false;
             $caja = new Caja($db);
-            $caja->USU_ID = $datos->USU_ID;
             $caja->CAJA_CIERRE = $datos->CAJA_CIERRE;
-            $caja->CAJA_MONTO_FINAL = $datos->CAJA_MONTO_FINAL;
-            $caja->CAJA_DESCUENTO_GASTOS = $datos->CAJA_DESCUENTO_GASTOS;
+            $caja->CAJA_MONTO_FINAL = $datos->CAJA_MONTO_FINAL/100;
+            $caja->CAJA_DESCUENTO_GASTOS = $datos->CAJA_DESCUENTO_GASTOS/100;
             $caja->CAJA_CODIGO = $datos->CAJA_CODIGO;
+            $caja->CAJA_MONTO_EFECTIVO_VENTAS = $datos->CAJA_MONTO_EFECTIVO_VENTAS/100;
+            $caja->CAJA_MONTO_TARJETA_VENTAS = $datos->CAJA_MONTO_TARJETA_VENTAS/100;
+            $caja->CAJA_MONTO_YAPE_VENTAS = $datos->CAJA_MONTO_YAPE_VENTAS/100;
+            $caja->CAJA_MONTO_EFECTIVO_SERVICIOS = $datos->CAJA_MONTO_EFECTIVO_SERVICIOS/100;
+            $caja->CAJA_MONTO_YAPE_SERVICIOS = $datos->CAJA_MONTO_YAPE_SERVICIOS/100;
+            $caja->CAJA_MONTO_TARJETA_SERVICIOS = $datos->CAJA_MONTO_TARJETA_SERVICIOS/100;
+
             $exito_ = $caja->cerrarCaja($mensaje,$code_error);
             if($exito_){
                 header('HTTP/1.1 200 OK');
@@ -154,44 +160,10 @@
             $m = "Se debe respetar el formato json.";
             return false;
         }else{
-            if(!isset($d->USU_ID)){
-                $m = "La variable USU_ID no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->USU_ID == ""){
-                    $m = "La variable USU_ID no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!is_numeric($d->USU_ID)){
-                        $m = "La variable USU_ID solo acepta caracteres numéricos.";
-                        return false;  
-                    }else{
-                        if($d->USU_ID < 1 ){
-                            $m = "La variable USU_ID no puede ser menor o igual a 0.";
-                            return false; 
-                        }
-                    }
-                }
-            }
 
             if(!isset($d->CAJA_CIERRE)){
                 $m = "La variable CAJA_CIERRE no ha sido enviada.";
                 return false; 
-            }else{
-                if($d->CAJA_CIERRE==""){
-                    $m = "La variable CAJA_CIERRE no puede ser null.";
-                    return false;
-                }else{
-                    if(!verificarFecha($d->CAJA_CIERRE)){
-                        $m = "La variable CAJA_CIERRE no contiene una fecha válida o no tiene el formato permitido.";
-                        return false;
-                    }else{
-                        if(!esIgualFechaActual($d->CAJA_CIERRE)){
-                            $m = "La variable CAJA_CIERRE debe tener la fecha de hoy.";
-                            return false;
-                        }
-                    }
-                }
             }
 
             if(!isset($d->CAJA_MONTO_FINAL)){
@@ -224,6 +196,96 @@
                 }
             }
 
+            if(!isset($d->CAJA_MONTO_EFECTIVO_VENTAS)){
+                $m = 'La variable CAJA_MONTO_EFECTIVO_VENTAS no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_MONTO_EFECTIVO_VENTAS) || !is_numeric($d->CAJA_MONTO_EFECTIVO_VENTAS)){
+                    $m = 'La variable CAJA_MONTO_EFECTIVO_VENTAS no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_EFECTIVO_VENTAS < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_EFECTIVO_VENTAS debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_MONTO_TARJETA_VENTAS)){
+                $m = 'La variable CAJA_MONTO_TARJETA_VENTAS no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_MONTO_TARJETA_VENTAS) || !is_numeric($d->CAJA_MONTO_TARJETA_VENTAS)){
+                    $m = 'La variable CAJA_MONTO_TARJETA_VENTAS no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_TARJETA_VENTAS < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_TARJETA_VENTAS debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_MONTO_YAPE_VENTAS)){
+                $m = 'La variable CAJA_MONTO_YAPE_VENTAS no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_MONTO_YAPE_VENTAS) || !is_numeric($d->CAJA_MONTO_YAPE_VENTAS)){
+                    $m = 'La variable CAJA_MONTO_YAPE_VENTAS no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_YAPE_VENTAS < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_YAPE_VENTAS debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_MONTO_EFECTIVO_SERVICIOS)){
+                $m = 'La variable CAJA_MONTO_EFECTIVO_SERVICIOS no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_MONTO_EFECTIVO_SERVICIOS) || !is_numeric($d->CAJA_MONTO_EFECTIVO_SERVICIOS)){
+                    $m = 'La variable CAJA_MONTO_EFECTIVO_SERVICIOS no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_EFECTIVO_SERVICIOS < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_EFECTIVO_SERVICIOS debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_MONTO_TARJETA_SERVICIOS)){
+                $m = 'La variable CAJA_MONTO_TARJETA_SERVICIOS no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_MONTO_TARJETA_SERVICIOS) || !is_numeric($d->CAJA_MONTO_TARJETA_SERVICIOS)){
+                    $m = 'La variable CAJA_MONTO_TARJETA_SERVICIOS no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_TARJETA_SERVICIOS < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_TARJETA_SERVICIOS debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
+            if(!isset($d->CAJA_MONTO_YAPE_SERVICIOS)){
+                $m = 'La variable CAJA_MONTO_YAPE_SERVICIOS no ha sido enviada.';
+                return false;
+            }else{
+                if(!ctype_digit($d->CAJA_MONTO_YAPE_SERVICIOS) || !is_numeric($d->CAJA_MONTO_YAPE_SERVICIOS)){
+                    $m = 'La variable CAJA_MONTO_YAPE_SERVICIOS no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_YAPE_SERVICIOS < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_YAPE_SERVICIOS debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
             if(!isset($d->CAJA_CODIGO)){
                 $m = 'La variable CAJA_CODIGO no ha sido enviada.';
                 return false;
@@ -239,6 +301,14 @@
                 }
             }
         }
+
+        if(($d->CAJA_MONTO_EFECTIVO_VENTAS + $d->CAJA_MONTO_TARJETA_VENTAS + $d->CAJA_MONTO_YAPE_VENTAS + $d->CAJA_MONTO_EFECTIVO_SERVICIOS +
+         $d->CAJA_MONTO_TARJETA_SERVICIOS + $d->CAJA_MONTO_YAPE_SERVICIOS) - $d->CAJA_DESCUENTO_GASTOS   != $d->CAJA_MONTO_FINAL){
+            $m = "Los montos enviados no concuerdan.";
+            return false;
+        }
+
+
         return true;
     }
 ?>

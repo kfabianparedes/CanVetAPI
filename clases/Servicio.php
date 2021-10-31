@@ -222,7 +222,7 @@
                                 
                                     $stmt = $this->conn->prepare($queryEditar);
                                     $stmt->bind_param("sssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->MDP_ID,$this->SERVICIO_ID);
+                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->SERVICIO_ID);
                                     if(!$stmt->execute()){
     
                                         $code_error = "error_ejecucionQuery";

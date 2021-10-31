@@ -67,8 +67,68 @@
             $mensaje = "Solicitud ejecutada con éxito.";
             return true;
         }
-        function cerrarCaja(&$mensaje, &$code_error,&$CAJA_ID){
+
+        function cerrarCaja(&$mensaje, &$code_error){
             
+            $existeCaja = "SELECT * FROM CAJA WHERE CAJA_CODIGO = ?"; 
+            $query = "UPDATE CAJA SET 
+                CAJA_DESCUENTO_GASTOS = ? , CAJA_MONTO_EFECTIVO_VENTAS = ?, CAJA_MONTO_TARJETA_VENTAS = ?, CAJA_MONTO_YAPE_VENTAS = ?, CAJA_MONTO_EFECTIVO_SERVICIOS = ?,
+                CAJA_MONTO_TARJETA_SERVICIOS = ?, CAJA_MONTO_YAPE_SERVICIOS = ?, CAJA_MONTO_FINAL = ? WHERE CAJA_CODIGO = ?
+            ";
+            $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_MONTO_FINAL IS NOT NULL " ;
+
+
+            try {
+                $stmtExisteCaja = $this->conn->prepare($existeCaja);
+                $stmtExisteCaja->bind_param("s",$this->CAJA_CODIGO);
+                $stmtExisteCaja->execute();
+                $resultExisteCaja= get_result($stmtExisteCaja);
+                //validamos si existe el id del usuario ingresado
+                if(count($resultExisteCaja) > 0){
+
+                    $stmtCajaCerrada = $this->conn->prepare($cajaCerrada);
+                    $stmtCajaCerrada->execute();
+                    $resultCajaCerrada= get_result($stmtCajaCerrada);
+                    //validamos si existe el id del usuario ingresado
+                    if(count($resultCajaCerrada) == 0){
+                        
+                        $stmt = $this->conn->prepare($query);
+                        $stmt->bind_param("sssssssss",$this->CAJA_DESCUENTO_GASTOS,$this->CAJA_MONTO_EFECTIVO_VENTAS,$this->CAJA_MONTO_TARJETA_VENTAS,
+                        $this->CAJA_MONTO_YAPE_VENTAS,$this->CAJA_MONTO_EFECTIVO_SERVICIOS,$this->CAJA_MONTO_TARJETA_SERVICIOS,$this->CAJA_MONTO_YAPE_SERVICIOS,$this->CAJA_MONTO_FINAL
+                        ,$this->CAJA_CODIGO);
+                        //verificamos que se haya realizado correctamente el ingreso de la compra
+                        if(!$stmt->execute()){
+
+                            $code_error = "error_ejecucionQuery";
+                            $mensaje = "Hubo un error cerrar la caja.";
+                            return false; 
+
+                        }else{
+
+                            $mensaje = "Caja cerrada con éxito.";
+                            return true; 
+
+                        }
+
+                    }else{
+                        $code_error = "error_cajaCerrada";
+                        $mensaje = "La caja ya está cerrada.";
+                        return false; 
+                    }
+
+                }else{
+                    $code_error = "error_noExistenciaCaja";
+                    $mensaje = "No existe una caja abierta con el código ingresado.";
+                    return false; 
+                }
+
+            } catch (Throwable $th) {
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                return false;
+
+            }
         }
 
         function reportesCaja(&$mensaje, &$code_error,&$exito){
