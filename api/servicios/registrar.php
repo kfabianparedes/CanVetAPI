@@ -230,7 +230,7 @@
             $m = "El campo MDP_ID no ha sido enviado";
             return false;
         }else{
-            if(!is_numeric($d->MDP_ID) || ctype_digit($d->MDP_ID)){
+            if(!is_numeric($d->MDP_ID)){
                 $m = "El campo MDP_ID debe ser numérico";
                 return false;
             }else{

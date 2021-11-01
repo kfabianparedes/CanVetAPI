@@ -9,6 +9,7 @@
         public $MAS_COLOR;
         public $MAS_ESPECIE; 
         public $MAS_ATENCIONES;
+        public $MAS_ESTADO;
         public $CLIENTE_ID;
         
 
@@ -131,7 +132,35 @@
             }
         }
 
-        function listarMascotas(&$mensaje,&$code_error,&$exito){
+        function listar(&$mensaje,&$code_error,&$exito){
+            $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID);";
+            $datos = [];  
+            try {
+
+                $stmt = $this->conn->prepare($query);
+                $stmt->execute();
+                $result = get_result($stmt); 
+                
+                if (count($result) > 0) {                
+                    while ($dato = array_shift($result)) {    
+                        $datos[] = $dato;
+                    }
+                }
+                $mensaje = "Solicitud ejecutada con exito";
+                $exito = true;
+                return $datos;    
+
+            } catch (Throwable $th) {
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos;
+            
+            }
+        }
+
+        function listarActivos(&$mensaje,&$code_error,&$exito){
             $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) WHERE MAS_ESTADO = 1";
             $datos = [];  
             try {
@@ -158,5 +187,42 @@
             
             }
         }
+
+
+        function cambiarEstadoMascota(&$mensaje,&$code_error){
+
+            $query_="SELECT * FROM MASCOTA where MAS_ID = ?";
+            $query = "UPDATE MASCOTA SET MAS_ESTADO = ? WHERE MAS_ID = ?";
+
+            try {
+
+                //COMPROBAMOS DE QUE EXISTA EL ID DE LA MASCOTA
+                $stmt_ = $this->conn->prepare($query_);
+                $stmt_->bind_param("s",$this->MAS_ID);
+                $stmt_->execute();
+                $result_ = get_result($stmt_);
+
+                if(count($result_) > 0 ){
+                    //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA MASCOTA 
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bind_param("ss",$this->MAS_ESTADO,$this->MAS_ID);
+                    $stmt->execute();
+
+                    $mensaje = "Se ha actualizado el estado de la MASCOTA con éxito";
+                    return true;
+                }else{
+                    $code_error = "error_noExistenciaId";
+                    $mensaje = "El ID de la MASCOTA ingresado no existe.";
+                    return false; 
+                }   
+               
+            } catch (Throwable $th) {
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                return false;
+            }
+
+        }
+
     }
 ?>

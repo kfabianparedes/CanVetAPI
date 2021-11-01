@@ -134,15 +134,9 @@
         if(esValido($mensaje,$datos)){
             
             $mascotaC->MAS_ID = $datos->MAS_ID;
-            $mascotaC->MAS_NOMBRE = $datos->MAS_NOMBRE; 
-            $mascotaC->MAS_RAZA = $datos->MAS_RAZA;
-            $mascotaC->MAS_COLOR = $datos->MAS_COLOR;
-            $mascotaC->MAS_ESPECIE = $datos->MAS_ESPECIE; 
-            $mascotaC->MAS_ATENCIONES = $datos->MAS_ATENCIONES;
-            $mascotaC->CLIENTE_ID = $datos->CLIENTE_ID;
             $mascotaC->MAS_ESTADO = $datos->MAS_ESTADO;
 
-            $exito = $mascotaC->editarMascota($mensaje,$code_error);
+            $exito = $mascotaC->cambiarEstadoMascota($mensaje,$code_error);
         
             if($exito == true)
                 header('HTTP/1.1 200 OK');
@@ -170,7 +164,7 @@
                 $m = "El campo MAS_ID no ha sido enviado";
                 return false;
             }else{
-                if(!is_numeric($d->MAS_ID) || ctype_digit($d->MAS_ID)){
+                if(!is_numeric($d->MAS_ID)){
                     $m = "El campo MAS_ID debe ser numérico";
                     return false;
                 }else{
@@ -182,119 +176,6 @@
                 
             }
 
-            //validamos el id del cliente
-            if(!isset($d->CLIENTE_ID)){
-                $m = "El campo CLIENTE_ID no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->CLIENTE_ID) || ctype_digit($d->CLIENTE_ID)){
-                    $m = "El campo CLIENTE_ID debe ser numérico";
-                    return false;
-                }else{
-                    if($d->CLIENTE_ID <=0){
-                        $m = "El valor de CLIENTE_ID debe no debe ser negativo o igual a 0.";
-                        return false;
-                    }
-                }
-                
-            }
-
-            //validamos las atenciones de la mascota
-            if(!isset($d->MAS_ATENCIONES)){
-                $m = "El campo MAS_ATENCIONES no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->MAS_ATENCIONES) || ctype_digit($d->MAS_ATENCIONES)){
-                    $m = "El campo MAS_ATENCIONES debe ser numérico";
-                    return false;
-                }else{
-                    if($d->MAS_ATENCIONES <0){
-                        $m = "El valor de MAS_ATENCIONES debe no debe ser negativo.";
-                        return false;
-                    }
-                }
-                
-            }
-
-            //validamos el nombre de la mascota
-            if(!isset($d->MAS_NOMBRE)){
-                $m = "La variable MAS_NOMBRE no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->MAS_NOMBRE == ""){
-                    $m = "La variable MAS_NOMBRE no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!esTextoAlfabetico(trim($d->MAS_NOMBRE))){
-                        $m = "La variable USU_NOMBRES debe ser alfabético.";
-                        return false;
-                    }
-                    else if(obtenerCantidadDeCaracteres($d->MAS_NOMBRE)>45){
-                        $m = "La variable MAS_NOMBRE no puede ser mayor a 45 caracteres.";
-                        return false; 
-                    }
-                }
-            }
-            
-            //validamos la raza de la mascota
-            if(!isset($d->MAS_RAZA)){
-                $m = "La variable MAS_RAZA no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->MAS_RAZA == ""){
-                    $m = "La variable MAS_RAZA no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!esTextoAlfabetico(trim($d->MAS_RAZA))){
-                        $m = "La variable MAS_RAZA debe ser alfabético.";
-                        return false;
-                    }
-                    else if(obtenerCantidadDeCaracteres($d->MAS_RAZA)>45){
-                        $m = "La variable MAS_RAZA no puede ser mayor a 45 caracteres.";
-                        return false; 
-                    }
-                }
-            }
-
-                //validamos la especie de la mascota
-                if(!isset($d->MAS_ESPECIE)){
-                $m = "La variable MAS_ESPECIE no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->MAS_ESPECIE == ""){
-                    $m = "La variable MAS_ESPECIE no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!esTextoAlfabetico(trim($d->MAS_ESPECIE))){
-                        $m = "La variable MAS_ESPECIE debe ser alfabético.";
-                        return false;
-                    }
-                    else if(obtenerCantidadDeCaracteres($d->MAS_ESPECIE)>45){
-                        $m = "La variable MAS_ESPECIE no puede ser mayor a 45 caracteres.";
-                        return false; 
-                    }
-                }
-            }
-
-            //validamos el color de la mascota
-            if(!isset($d->MAS_COLOR)){
-                $m = "La variable MAS_COLOR no ha sido enviada.";
-                return false;
-            }else{  
-                if($d->MAS_COLOR == ""){
-                    $m = "La variable MAS_COLOR no puede estar vacía o ser null.";
-                    return false; 
-                }else{
-                    if(!esTextoAlfabetico(trim($d->MAS_COLOR))){
-                        $m = "La variable MAS_COLOR debe ser alfabético.";
-                        return false;
-                    }
-                    else if(obtenerCantidadDeCaracteres($d->MAS_COLOR)>45){
-                        $m = "La variable MAS_COLOR no puede ser mayor a 45 caracteres.";
-                        return false; 
-                    }
-                }
-            }
 
             if(!isset($d->MAS_ESTADO)){
                 $m = "El campo MAS_ESTADO no ha sido enviado";

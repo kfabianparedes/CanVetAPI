@@ -129,7 +129,7 @@
 
             $mascotaC = new Mascota($db);
 
-            $datos = $mascotaC->listar($mensaje,$code_error,$exito);
+            $datos = $mascotaC->listarActivos($mensaje,$code_error,$exito);
     
             if($exito==true){
                 header('HTTP/1.1 200 OK');
