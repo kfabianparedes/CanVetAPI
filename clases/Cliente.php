@@ -10,6 +10,7 @@
         public $CLIENTE_APELLIDOS;
         public $CLIENTE_TELEFONO;
         public $CLIENTE_DIRECCION;
+        public $CLIENTE_EMAIL;
 
         public function __construct($db){
             $this->conn = $db;
@@ -17,14 +18,14 @@
         
         function registrarCliente(&$mensaje,&$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID){
 
-            $query = "CALL SP_INSERTAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?)" ; 
+            $query = "CALL SP_INSERTAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?,?)" ; 
             $queryValidaciones = "SELECT @VALIDACIONES"; 
 
             try {
 
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("sssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
-                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID);
+                $stmt->bind_param("ssssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
+                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_EMAIL);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
@@ -61,6 +62,11 @@
                         case 4:
                             $code_error = "error_ExistenciaRazonSocial";
                             $mensaje = "La razón social ingresada ya existe.";
+                            return false; 
+                            break;
+                        case 5:
+                            $code_error = "error_ExistenciaCorreoCliente";
+                            $mensaje = "El correo ingresado ya existe.";
                             return false; 
                             break;
                     }

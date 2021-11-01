@@ -138,6 +138,7 @@
             $clienteC->CLIENTE_APELLIDOS =$CLIENTE->CLIENTE_APELLIDOS;
             $clienteC->CLIENTE_TELEFONO =$CLIENTE->CLIENTE_TELEFONO;
             $clienteC->CLIENTE_DIRECCION =$CLIENTE->CLIENTE_DIRECCION;
+            $clienteC->CLIENTE_EMAIL =$CLIENTE->CLIENTE_EMAIL;
             if($esJuridico == 1){
                 $DATOS_JURIDICOS = $datos->DATOS_JURIDICOS; 
                 $DJ_RAZON_SOCIAL = $DATOS_JURIDICOS->DJ_RAZON_SOCIAL; 
@@ -169,7 +170,7 @@
         if(!isset($d)){
             $m = "Se debe respetar el formato json.";
             return false;
-        }else{
+        }else{  
 
             //validaciones de datos juridicos
             if(!isset( $d->DATOS_JURIDICOS)){
@@ -248,6 +249,8 @@
                                 return false;
                         }
                     }
+
+                    
 
                 }
             }
@@ -457,6 +460,22 @@
                         }
                     }
 
+                }
+                if(!isset($CLIENTE->CLIENTE_EMAIL)){
+                    $m = "La variable CLIENTE_EMAIL no ha sido enviada.";
+                    return false;
+                }else{
+                    if($CLIENTE->CLIENTE_EMAIL != ""){
+                        if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_EMAIL)>60){
+                            $m = "La variable CLIENTE_EMAIL no debe exceder los 60 caracteres.";
+                            return false;
+                        }else{
+                            if(!filter_var($CLIENTE->CLIENTE_EMAIL, FILTER_VALIDATE_EMAIL)){
+                                $m = "La variable CLIENTE_EMAIL no tiene un formato valido.";
+                                return false;
+                            }
+                        }
+                    }
                 }
 
             }
