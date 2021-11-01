@@ -151,14 +151,14 @@
 
         function editarCliente(&$mensaje,&$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID){
 
-            $query = "CALL SP_EDITAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?,?)" ; 
+            $query = "CALL SP_EDITAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?,?,?)" ; 
             $queryValidaciones = "SELECT @VALIDACIONES"; 
 
             try {
                 
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("ssssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
-                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_ID);
+                $stmt->bind_param("sssssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
+                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_ID,$this->CLIENTE_EMAIL);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
@@ -197,9 +197,14 @@
                             $mensaje = "El tipo de empresa ingresado no existe.";
                             return false; 
                             break;
-                        case 4:
+                        case 5:
                             $code_error = "error_ExistenciaRazónSocial";
                             $mensaje = "La razón social ingresada ya existe.";
+                            return false; 
+                            break;
+                        case 6:
+                            $code_error = "error_ExistenciaCorreoCliente";
+                            $mensaje = "El correo ingresado ya existe.";
                             return false; 
                             break;
                     }
