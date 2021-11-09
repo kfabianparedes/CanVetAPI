@@ -161,7 +161,7 @@
         }
 
         function listarActivos(&$mensaje,&$code_error,&$exito){
-            $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) WHERE MAS_ESTADO = 1";
+            $query = "SELECT *, (SELECT COUNT(*) FROM DATOS_JURIDICOS WHERE CLIENTE_ID = CLI.CLIENTE_ID) as TIPO_CLIENTE FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) WHERE MAS_ESTADO = 1;";
             $datos = [];  
             try {
 
