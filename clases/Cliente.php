@@ -10,7 +10,7 @@
         public $CLIENTE_APELLIDOS;
         public $CLIENTE_TELEFONO;
         public $CLIENTE_DIRECCION;
-        public $CLIENTE_EMAIL;
+        public $CLIENTE_CORREO;
 
         public function __construct($db){
             $this->conn = $db;
@@ -25,7 +25,7 @@
 
                 $stmt = $this->conn->prepare($query);
                 $stmt->bind_param("ssssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
-                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_EMAIL);
+                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_CORREO);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";
@@ -158,7 +158,7 @@
                 
                 $stmt = $this->conn->prepare($query);
                 $stmt->bind_param("sssssssssss",$esJuridico,$this->CLIENTE_DNI,$this->CLIENTE_NOMBRES,$this->CLIENTE_APELLIDOS
-                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_ID,$this->CLIENTE_EMAIL);
+                ,$this->CLIENTE_TELEFONO,$this->CLIENTE_DIRECCION,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID,$this->CLIENTE_ID,$this->CLIENTE_CORREO);
                 if(!$stmt->execute()){
 
                     $code_error = "error_ejecucionQuery";

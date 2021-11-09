@@ -139,7 +139,7 @@
             $clienteC->CLIENTE_APELLIDOS =$CLIENTE->CLIENTE_APELLIDOS;
             $clienteC->CLIENTE_TELEFONO =$CLIENTE->CLIENTE_TELEFONO;
             $clienteC->CLIENTE_DIRECCION =$CLIENTE->CLIENTE_DIRECCION;
-            $clienteC->CLIENTE_EMAIL =$CLIENTE->CLIENTE_EMAIL;
+            $clienteC->CLIENTE_CORREO =$CLIENTE->CLIENTE_CORREO;
             if($esJuridico == 1){
                 $DATOS_JURIDICOS = $datos->DATOS_JURIDICOS; 
                 $DJ_RAZON_SOCIAL = $DATOS_JURIDICOS->DJ_RAZON_SOCIAL; 
@@ -506,17 +506,17 @@
 
                 }
 
-                if(!isset($CLIENTE->CLIENTE_EMAIL)){
-                    $m = "La variable CLIENTE_EMAIL no ha sido enviada.";
+                if(!isset($CLIENTE->CLIENTE_CORREO)){
+                    $m = "La variable CLIENTE_CORREO no ha sido enviada.";
                     return false;
                 }else{
-                    if($CLIENTE->CLIENTE_EMAIL != ""){
-                        if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_EMAIL)>60){
-                            $m = "La variable CLIENTE_EMAIL no debe exceder los 60 caracteres.";
+                    if($CLIENTE->CLIENTE_CORREO != ""){
+                        if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_CORREO)>60){
+                            $m = "La variable CLIENTE_CORREO no debe exceder los 60 caracteres.";
                             return false;
                         }else{
-                            if(!filter_var($CLIENTE->CLIENTE_EMAIL, FILTER_VALIDATE_EMAIL)){
-                                $m = "La variable CLIENTE_EMAIL no tiene un formato valido.";
+                            if(!filter_var($CLIENTE->CLIENTE_CORREO, FILTER_VALIDATE_EMAIL)){
+                                $m = "La variable CLIENTE_CORREO no tiene un formato valido.";
                                 return false;
                             }
                         }
