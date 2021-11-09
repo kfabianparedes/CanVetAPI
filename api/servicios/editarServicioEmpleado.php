@@ -83,17 +83,17 @@
             # TOKEN = $2y$10$YYKcURLLTlYGMuKVTkklVeUVfXtpzUAwbRL35P03P1vNQjo91NaYW (La contraseña hasheada del usuario)
             
 
-            if($auth->TYPE_USER == $auth->AUTH_ADM){
+            if($auth->TYPE_USER == $auth->AUTH_ADM || $auth->TYPE_USER == $auth->AUTH_EMP){
                 $database = new Database();
                 $db = $database->getConnection();
                 $usuario = new Usuario($db);
                 $exito_verify = $usuario->tokenVerify($TOKEN,$auth->ROL,$code_error,$mensaje);
                 // echo json_encode(array("exito verify"=>$exito_verify,"rol"=>$auth->ROL,"error"=>$code_error,"mensaje"=>$mensaje));
-                if($exito_verify && $auth->ROL == 2){
+                if($exito_verify && ($auth->ROL == 2 || $auth->ROL == 1)){
                     $exito = true;
                 }else{
                     $code_error = "error_autorizacion";
-                    $mensaje = 'Hubo un error de autorización, el usuario no es administrador.';
+                    $mensaje = 'Hubo un error de autorización, el usuario no está autorizado, vuelva a iniciar sesión.';
                     $exito = false;
                     echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
                     header('HTTP/1.0 401 Unauthorized');
@@ -130,20 +130,12 @@
             
             $servicioC = new Servicio($db);
 
-            $servicioC->SERVICIO_PRECIO = $datos->SERVICIO_PRECIO/100; 
-            if(isset($datos->SERVICIO_DESCRIPCION))
-                $servicioC->SERVICIO_DESCRIPCION = $datos->SERVICIO_DESCRIPCION;
-            else    
-                $servicioC->SERVICIO_DESCRIPCION = '';
-            $servicioC->MASCOTA_ID = $datos->MASCOTA_ID;
+            
             $servicioC->SERVICIO_ID = $datos->SERVICIO_ID;
             $servicioC->SERVICIO_FECHA_HORA = $datos->SERVICIO_FECHA_HORA." ".$datos->HORA_SERVICIO;
-            $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
-            $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
-            $servicioC->MDP_ID = $datos->MDP_ID;
-            $servicioC->SERVICIO_ADELANTO = $datos->SERVICIO_ADELANTO/100;
+            
 
-            $exito = $servicioC->editarServicio($mensaje,$code_error);
+            $exito = $servicioC->editarServicioPorEmpleado($mensaje,$code_error);
             if($exito == true)
                 header('HTTP/1.1 200 OK');
             else{
@@ -166,81 +158,6 @@
             return false;
         }else{
 
-            //validaciones de la variable SERVICIO_PRECIO
-            if(!isset($d->SERVICIO_PRECIO)){
-                $m = "La variable SERVICIO_PRECIO no ha sido enviada.";
-                return false;
-            }else{  
-                if(ctype_digit($d->SERVICIO_PRECIO) || is_numeric($d->SERVICIO_PRECIO)){
-                    if($d->SERVICIO_PRECIO <= 0) { 
-                        $m = 'El valor de la variable SERVICIO_PRECIO debe ser mayor a 0.';
-                        return false;
-                    }
-                }else{
-                    $m = 'La variable SERVICIO_PRECIO no es un numero o es null.';
-                    return false;
-                }
-            }
-
-            //validaciones de la variable SERVICIO_ADELANTO
-            if(!isset($d->SERVICIO_ADELANTO)){
-                $m = "La variable SERVICIO_ADELANTO no ha sido enviada.";
-                return false;
-            }else{  
-                if(ctype_digit($d->SERVICIO_ADELANTO) || is_numeric($d->SERVICIO_ADELANTO)){
-                    if($d->SERVICIO_ADELANTO <0) { 
-                        $m = 'El valor de la variable SERVICIO_ADELANTO debe ser mayor a 0.';
-                        return false;
-                    }
-                    if($d->SERVICIO_ADELANTO > $d->SERVICIO_PRECIO) { 
-                        $m = 'El valor de la variable SERVICIO_ADELANTO no puede ser mayor a la variable SERVICIO_PRECIO';
-                        return false;
-                    }
-                }else{
-                    $m = 'La variable SERVICIO_ADELANTO no es un numero o es null.';
-                    return false;
-                }
-            }
-
-            //validaciones de la descripción del servicio
-            if(isset($d->SERVICIO_DESCRIPCION)){
-                if(obtenerCantidadDeCaracteres($d->SERVICIO_DESCRIPCION)>200){
-                    $m = "La variable SERVICIO_DESCRIPCION supera los 200 caracteres permitidos.";
-                    return false;
-                }
-            }
-
-            //validamos el TIPO_SERVICIO_ID
-            if(!isset($d->TIPO_SERVICIO_ID)){
-                $m = "El campo TIPO_SERVICIO_ID no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->TIPO_SERVICIO_ID)){
-                    $m = "El campo TIPO_SERVICIO_ID debe ser numérico";
-                    return false;
-                }else{
-                    if($d->TIPO_SERVICIO_ID <=0){
-                        $m = "El valor de TIPO_SERVICIO_ID debe no debe ser negativo o igual a 0.";
-                        return false;
-                    }
-                }
-            }
-
-            //validamos el MASCOTA_ID
-            if(!isset($d->MASCOTA_ID)){
-                $m = "El campo MASCOTA_ID no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->MASCOTA_ID)){
-                    $m = "El campo MASCOTA_ID debe ser numérico";
-                    return false;
-                }else{
-                    if($d->MASCOTA_ID <=0){
-                        $m = "El valor de MASCOTA_ID debe no debe ser negativo o igual a 0.";
-                        return false;
-                    }
-                }
-            }
 
             //validamos el SERVICIO_ID
             if(!isset($d->SERVICIO_ID)){
@@ -253,38 +170,6 @@
                 }else{
                     if($d->SERVICIO_ID <=0){
                         $m = "El valor de SERVICIO_ID debe no debe ser negativo o igual a 0.";
-                        return false;
-                    }
-                }
-            }
-
-            //validamos el SERVICIO_ESTADO
-            if(!isset($d->SERVICIO_TIPO)){
-                $m = "El campo SERVICIO_TIPO no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->SERVICIO_TIPO)){
-                    $m = "El campo SERVICIO_TIPO debe ser numérico";
-                    return false;
-                }else{
-                    if($d->SERVICIO_TIPO < 0 || $d->SERVICIO_TIPO > 1){
-                        $m = "El valor de SERVICIO_TIPO debe ser 0 o 1.";
-                        return false;
-                    }
-                }
-            }
-
-            //validamos el MDP_ID
-            if(!isset($d->MDP_ID)){
-                $m = "El campo MDP_ID no ha sido enviado";
-                return false;
-            }else{
-                if(!is_numeric($d->MDP_ID)){
-                    $m = "El campo MDP_ID debe ser numérico";
-                    return false;
-                }else{
-                    if($d->MDP_ID <=0){
-                        $m = "El valor de MDP_ID debe no debe ser negativo o igual a 0.";
                         return false;
                     }
                 }

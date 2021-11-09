@@ -135,6 +135,8 @@
         $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
         $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
         $servicioC->MDP_ID = $datos->MDP_ID;
+        $servicioC->USU_ID = $datos->USU_ID;
+        $servicioC->COMPROBANTE_ID = $datos->COMPROBANTE_ID;
         $servicioC->SERVICIO_ADELANTO = $datos->SERVICIO_ADELANTO/100;
         if(isset($datos->SERVICIO_DESCRIPCION))
             $servicioC->SERVICIO_DESCRIPCION = $datos->SERVICIO_DESCRIPCION;
@@ -220,6 +222,38 @@
             }else{
                 if($d->TIPO_SERVICIO_ID <=0){
                     $m = "El valor de TIPO_SERVICIO_ID debe no debe ser negativo o igual a 0.";
+                    return false;
+                }
+            }
+        }
+
+        //validamos el USU_ID
+        if(!isset($d->USU_ID)){
+            $m = "El campo USU_ID no ha sido enviado";
+            return false;
+        }else{
+            if(!is_numeric($d->USU_ID) || ctype_digit($d->USU_ID)){
+                $m = "El campo USU_ID debe ser numérico";
+                return false;
+            }else{
+                if($d->USU_ID <=0){
+                    $m = "El valor de USU_ID debe no debe ser negativo o igual a 0.";
+                    return false;
+                }
+            }
+        }
+
+        //validamos el COMPROBANTE_ID
+        if(!isset($d->COMPROBANTE_ID)){
+            $m = "El campo COMPROBANTE_ID no ha sido enviado";
+            return false;
+        }else{
+            if(!is_numeric($d->COMPROBANTE_ID) || ctype_digit($d->COMPROBANTE_ID)){
+                $m = "El campo COMPROBANTE_ID debe ser numérico";
+                return false;
+            }else{
+                if($d->COMPROBANTE_ID <=0){
+                    $m = "El valor de COMPROBANTE_ID debe no debe ser negativo o igual a 0.";
                     return false;
                 }
             }

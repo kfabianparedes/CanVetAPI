@@ -174,7 +174,6 @@
 
             }
         }
-
         function listar(&$mensaje,&$code_error,&$exito){
 
             $query = "SELECT * FROM VENTA";
@@ -215,7 +214,6 @@
 
             }
         }
-        
         function gananciasDiariasVenta(&$mensaje,&$code_error,&$exito){
 
             $queryEfectivo = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 1" ; 
@@ -370,7 +368,6 @@
                 return $datos ;
             }
         }
-
         function gananciasDiariasVentaPorUsuario(&$mensaje,&$code_error,&$exito){
 
             $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND USU_ID = ?"; 
@@ -425,7 +422,6 @@
                 return $datos ;
             }
         }
-
         function gananciasSemanales(&$mensaje,&$code_error,&$exito){
             
             $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO =?"; 
@@ -489,7 +485,6 @@
                 return array("MONTO_VENTAS"=>$datosVentas,"MONTO_SERVICIOS"=>$datosServicios);
             }
         }
-
         function gananciasMensuales(&$mensaje,&$code_error,&$exito){
 
             $queryVenta = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m") = ?'; 
@@ -552,8 +547,23 @@
                 return $datos ;
             }
         }
+        function listarVentasMesAnterioryActual(&$mensaje,&$code_error,&$exito){
 
+            $query = " SELECT * FROM VENTAS V 
+            INNER JOIN "; 
+
+            try {
+
+                
+            } catch (Throwable $th) {
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos ;
+
+            }
+        }
     }
-
 
 ?>
