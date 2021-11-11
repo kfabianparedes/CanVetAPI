@@ -510,8 +510,6 @@
                             $datos += $dato["VENTA_TOTAL"];
                         }
                     }
-
-                    $mensaje = "Solicitud ejecutada con exito";
                     
                     $stmt = $this->conn->prepare($queryServicio);
                     $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
@@ -549,17 +547,289 @@
         }
         function listarVentasMesAnterioryActual(&$mensaje,&$code_error,&$exito){
 
-            $query = " SELECT * FROM VENTAS V 
-            INNER JOIN "; 
+            #querys para obtener los reportes. 
+            $queryVentasFacturas = '
+            SELECT * FROM VENTA V 
+            INNER JOIN CLIENTE CLI ON (V.CLIENTE_ID = CLI.CLIENTE_ID)
+            INNER JOIN DATOS_JURIDICOS DJ ON (DJ.CLIENTE_ID = CLI.CLIENTE_ID )
+            WHERE V.COMPROBANTE_ID = 1 AND 
+            DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m") = ?
+            ;
+            '; 
+
+            $queryVentasBoletas = '
+            SELECT * FROM VENTA V 
+            INNER JOIN CLIENTE CLI ON (V.CLIENTE_ID = CLI.CLIENTE_ID)
+            WHERE V.COMPROBANTE_ID = 2 AND 
+            DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m") = ?
+            ;
+            '; 
+
+            $queryServiciosFacturas = '
+            SELECT * FROM SERVICIO SER
+			INNER JOIN MASCOTA MAS ON (MAS.MAS_ID = SER.MASCOTA_ID)
+            INNER JOIN CLIENTE CLI ON (CLI.CLIENTE_ID = MAS.CLIENTE_ID)
+            INNER JOIN DATOS_JURIDICOS DJ ON (DJ.CLIENTE_ID = CLI.CLIENTE_ID)
+            WHERE SER.COMPROBANTE_ID = 1 AND 
+            DATE_FORMAT(SER.SERVICIO_FECHA_HORA,"%Y-%m") = ?
+            ;	
+            '; 
+
+            $queryServiciosBoletas = '
+            SELECT * FROM SERVICIO SER
+			INNER JOIN MASCOTA MAS ON (MAS.MAS_ID = SER.MASCOTA_ID)
+            INNER JOIN CLIENTE CLI ON (CLI.CLIENTE_ID = MAS.CLIENTE_ID)
+             WHERE SER.COMPROBANTE_ID = 2 AND 
+            DATE_FORMAT(SER.SERVICIO_FECHA_HORA,"%Y-%m") = ?
+            ;	
+            '; 
+
+            #hallamos el mes actual y el mes anterior en formato de Año-Mes
+            $anioMes = date('Y-m');
+            $anioMesAnterior = strtotime('-1 month', strtotime($anioMes));
+            $anioMesAnterior = date('Y-m', $anioMesAnterior); 
+
+            #variable que almacenará los datos de los reportes y será enviada al frontend
+            $datos = [];
+            $datosMesAnterior = [];
+            $datosMesActual = [];
 
             try {
+                #****************** MES ACTUAL***********************#
+                #****************** VENTAS FACTURA ************************#
 
+                #obteniendo ventas con tipo de comprobante FACTURA 
+                $stmt = $this->conn->prepare($queryVentasFacturas);
+                $stmt->bind_param("s",$anioMes);
+                if(!$stmt->execute()){
+
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error al listar las ventas con comprobante factura.";
+                    $exito = false; 
+
+                }else{
+
+                    $result = get_result($stmt); 
+                
+                    if (count($result) > 0) {                
+                        while ($dato = array_shift($result)) {    
+                            $datos[] = $dato;
+                        }
+                    }
+                    #SE PONEN LAS VENTAS OBTENIDAS DE TIPO FACTURA EN EL ARRAY DE MES ACTUAL
+                    array_push($datosMesActual,array( "VENTAS_FACTURA" => $datos));
+                    
+                    #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                    $datos = [];
+
+                        #****************** VENTAS BOLETA ************************#
+
+                        #obteniendo ventas con tipo de comprobante BOLETA 
+                        $stmt = $this->conn->prepare($queryVentasBoletas);
+                        $stmt->bind_param("s",$anioMes);
+                        if(!$stmt->execute()){
+
+                            $code_error = "error_ejecucionQuery";
+                            $mensaje = "Hubo un error al listar las ventas con comprobante boleta.";
+                            $exito = false; 
+
+                        }else{
+
+                            $result = get_result($stmt); 
+                        
+                            if (count($result) > 0) {                
+                                while ($dato = array_shift($result)) {    
+                                    $datos[] = $dato;
+                                }
+                            }
+                            #SE PONEN LAS VENTAS OBTENIDAS DE TIPO BOLETA EN EL ARRAY DE MES ACTUAL
+                            array_push($datosMesActual,array( "VENTAS_BOLETA" => $datos));
+                            
+                            #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                            $datos = [];
+
+                                #****************** SERVICIOS FACTURAS ************************#
+
+                                #obteniendo servicios con tipo de comprobante FACTURA 
+                                $stmt = $this->conn->prepare($queryServiciosFacturas);
+                                $stmt->bind_param("s",$anioMes);
+                                if(!$stmt->execute()){
+
+                                    $code_error = "error_ejecucionQuery";
+                                    $mensaje = "Hubo un error al listar los servicios con comprobante factura.";
+                                    $exito = false; 
+
+                                }else{
+
+                                    $result = get_result($stmt); 
+                                
+                                    if (count($result) > 0) {                
+                                        while ($dato = array_shift($result)) {    
+                                            $datos[] = $dato;
+                                        }
+                                    }
+                                    #SE PONEN LAS SERVICIOS OBTENIDOS DE TIPO FACTURA EN EL ARRAY DE MES ACTUAL
+                                    array_push($datosMesActual,array("SERVICIOS_FACTURA" => $datos));
+                                    
+                                    #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                                    $datos = [];
+
+                                        #****************** SERVICIOS BOLETAS ************************#
+
+                                        #obteniendo servicios con tipo de comprobante BOLETAS 
+                                        $stmt = $this->conn->prepare($queryServiciosFacturas);
+                                        $stmt->bind_param("s",$anioMes);
+                                        if(!$stmt->execute()){
+
+                                            $code_error = "error_ejecucionQuery";
+                                            $mensaje = "Hubo un error al listar los servicios con comprobante boleta.";
+                                            $exito = false; 
+
+                                        }else{
+
+                                            $result = get_result($stmt); 
+                                        
+                                            if (count($result) > 0) {                
+                                                while ($dato = array_shift($result)) {    
+                                                    $datos[] = $dato;
+                                                }
+                                            }
+                                            #SE PONEN LAS SERVICIOS OBTENIDOS DE TIPO BOLETAS EN EL ARRAY DE MES ACTUAL
+                                            array_push($datosMesActual,array("SERVICIOS_BOLETAS" => $datos));
+                                            
+                                            #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                                            $datos = [];
+
+                                            #****************** MES ANTERIOR ***********************#
+                                            #****************** VENTAS FACTURA ************************#
+
+                                            #obteniendo ventas con tipo de comprobante FACTURA 
+                                            $stmt = $this->conn->prepare($queryVentasFacturas);
+                                            $stmt->bind_param("s",$anioMesAnterior);
+                                            if(!$stmt->execute()){
+
+                                                $code_error = "error_ejecucionQuery";
+                                                $mensaje = "Hubo un error al listar las ventas con comprobante factura.";
+                                                $exito = false; 
+
+                                            }else{
+
+                                                $result = get_result($stmt); 
+                                            
+                                                if (count($result) > 0) {                
+                                                    while ($dato = array_shift($result)) {    
+                                                        $datos[] = $dato;
+                                                    }
+                                                }
+                                                #SE PONEN LAS VENTAS OBTENIDAS DE TIPO FACTURA EN EL ARRAY DE MES ACTUAL
+                                                array_push($datosMesAnterior,array("VENTAS_FACTURA" => $datos));
+                                                
+                                                #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                                                $datos = [];
+
+                                                    #****************** VENTAS BOLETA ************************#
+
+                                                    #obteniendo ventas con tipo de comprobante BOLETA 
+                                                    $stmt = $this->conn->prepare($queryVentasBoletas);
+                                                    $stmt->bind_param("s",$anioMesAnterior);
+                                                    if(!$stmt->execute()){
+
+                                                        $code_error = "error_ejecucionQuery";
+                                                        $mensaje = "Hubo un error al listar las ventas con comprobante boleta.";
+                                                        $exito = false; 
+
+                                                    }else{
+
+                                                        $result = get_result($stmt); 
+                                                    
+                                                        if (count($result) > 0) {                
+                                                            while ($dato = array_shift($result)) {    
+                                                                $datos[] = $dato;
+                                                            }
+                                                        }
+                                                        #SE PONEN LAS VENTAS OBTENIDAS DE TIPO BOLETA EN EL ARRAY DE MES ACTUAL
+                                                        array_push($datosMesAnterior,array("VENTAS_BOLETA" => $datos));
+                                                        
+                                                        #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                                                        $datos = [];
+
+                                                            #****************** SERVICIOS FACTURAS ************************#
+
+                                                            #obteniendo servicios con tipo de comprobante FACTURA 
+                                                            $stmt = $this->conn->prepare($queryServiciosFacturas);
+                                                            $stmt->bind_param("s",$anioMesAnterior);
+                                                            if(!$stmt->execute()){
+
+                                                                $code_error = "error_ejecucionQuery";
+                                                                $mensaje = "Hubo un error al listar los servicios con comprobante factura.";
+                                                                $exito = false; 
+
+                                                            }else{
+
+                                                                $result = get_result($stmt); 
+                                                            
+                                                                if (count($result) > 0) {                
+                                                                    while ($dato = array_shift($result)) {    
+                                                                        $datos[] = $dato;
+                                                                    }
+                                                                }
+                                                                #SE PONEN LAS SERVICIOS OBTENIDOS DE TIPO FACTURA EN EL ARRAY DE MES ACTUAL
+                                                                array_push($datosMesAnterior,array("SERVICIOS_FACTURA" => $datos));
+                                                                
+                                                                #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                                                                $datos = [];
+
+                                                                    #****************** SERVICIOS BOLETAS ************************#
+
+                                                                    #obteniendo servicios con tipo de comprobante BOLETAS 
+                                                                    $stmt = $this->conn->prepare($queryServiciosFacturas);
+                                                                    $stmt->bind_param("s",$anioMesAnterior);
+                                                                    if(!$stmt->execute()){
+
+                                                                        $code_error = "error_ejecucionQuery";
+                                                                        $mensaje = "Hubo un error al listar los servicios con comprobante boleta.";
+                                                                        $exito = false; 
+
+                                                                    }else{
+
+                                                                        $result = get_result($stmt); 
+                                                                    
+                                                                        if (count($result) > 0) {                
+                                                                            while ($dato = array_shift($result)) {    
+                                                                                $datos[] = $dato;
+                                                                            }
+                                                                        }
+                                                                        #SE PONEN LAS SERVICIOS OBTENIDOS DE TIPO BOLETAS EN EL ARRAY DE MES ACTUAL
+                                                                        array_push($datosMesAnterior,array("SERVICIOS_BOLETA" => $datos));
+                                                                        
+                                                                        #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
+                                                                        $datos = [];
+
+                                                                        $mensaje = "Reporte realizado con éxito.";
+                                                                        $exito = true;
+                                                                    }    
+                                                            }
+
+                                                    }
+                                                
+                                            }
+                                            
+                                        }    
+                                }
+
+                        }
+                    
+                }
+
+                $datos = array("MES_ACTUAL" => $datosMesActual, "MES_ANTERIOR" => $datosMesAnterior);
+                return $datos ; 
                 
             } catch (Throwable $th) {
 
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;
+                $datos = array("MES_ACTUAL" => $datosMesActual, "MES_ANTERIOR" => $datosMesAnterior);
                 return $datos ;
 
             }

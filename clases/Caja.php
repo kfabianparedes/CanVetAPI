@@ -135,11 +135,10 @@
 
             $query = 'SELECT 
             CAJA_MONTO_EFECTIVO_VENTAS,CAJA_MONTO_TARJETA_VENTAS,CAJA_MONTO_YAPE_VENTAS,CAJA_MONTO_EFECTIVO_SERVICIOS,
-            CAJA_MONTO_TARJETA_SERVICIOS,CAJA_MONTO_YAPE_SERVICIOS
+            CAJA_MONTO_TARJETA_SERVICIOS,CAJA_MONTO_YAPE_SERVICIOS,CAJA_CODIGO
             FROM CAJA WHERE DATE_FORMAT(CAJA_APERTURA,"%Y-%m") = ?'; 
 
             $anioMes = date('Y-m'); 
-            echo $anioMes;
             $anioMesAnterior = strtotime('-1 month', strtotime($anioMes));
             $anioMesAnterior = date('Y-m', $anioMesAnterior); 
 

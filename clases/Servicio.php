@@ -77,22 +77,44 @@
 
                                 if (count($resultTipoEmpleado) > 0) {
                                     
-
-                                    if(array_shift($result)['TIPO_CLIENTE'] == 1 && $this->COMPROBANTE_ID !=1 ){
-
-                                        $code_error = "error_ComprobanteTipoCliente";
-                                        $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
-                                        return false; 
-
-                                    }else{
-                                        if(array_shift($result)['TIPO_CLIENTE'] == 0 && $this->COMPROBANTE_ID !=2 ){
-
+                                    if($this->COMPROBANTE_ID == 1){
+                                        
+                                        if(array_shift($result)['TIPO_CLIENTE'] != 1){
+                                            
                                             $code_error = "error_ComprobanteTipoCliente";
                                             $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
                                             return false; 
+
                                         }
 
+                                    }else{
+                                        if($this->COMPROBANTE_ID == 2){
+                                            
+                                            if(array_shift($result)['TIPO_CLIENTE'] != 0){
+                                            
+                                                $code_error = "error_ComprobanteTipoCliente";
+                                                $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
+                                                return false; 
+    
+                                            }
+                                        }
                                     }
+                                    
+                                    // if(array_shift($result)['TIPO_CLIENTE'] == 1 && $this->COMPROBANTE_ID !=1 ){
+
+                                    //     $code_error = "error_ComprobanteTipoCliente";
+                                    //     $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
+                                    //     return false; 
+
+                                    // }else{
+                                    //     if(array_shift($result)['TIPO_CLIENTE'] == 0 && $this->COMPROBANTE_ID !=2 ){
+
+                                    //         $code_error = "error_ComprobanteTipoCliente";
+                                    //         $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
+                                    //         return false; 
+                                    //     }
+
+                                    // }
 
                                     $stmtMDP = $this->conn->prepare($queryValidarMDP);
                                     $stmtMDP->bind_param("s",$this->MDP_ID);
