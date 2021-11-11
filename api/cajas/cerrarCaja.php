@@ -170,7 +170,7 @@
                 $m = 'La variable CAJA_MONTO_FINAL no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_FINAL) || !is_numeric($d->CAJA_MONTO_FINAL)){
+                if(!ctype_digit($d->CAJA_MONTO_FINAL)){
                     $m = 'La variable CAJA_MONTO_FINAL no es un numero o es null.';
                     return false;
                 }else{
@@ -185,7 +185,7 @@
                 $m = 'La variable CAJA_DESCUENTO_GASTOS no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_DESCUENTO_GASTOS) || !is_numeric($d->CAJA_DESCUENTO_GASTOS)){
+                if(!is_numeric($d->CAJA_DESCUENTO_GASTOS)){
                     $m = 'La variable CAJA_DESCUENTO_GASTOS no es un numero o es null.';
                     return false;
                 }else{
@@ -200,7 +200,7 @@
                 $m = 'La variable CAJA_MONTO_EFECTIVO_VENTAS no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_EFECTIVO_VENTAS) || !is_numeric($d->CAJA_MONTO_EFECTIVO_VENTAS)){
+                if(!is_numeric($d->CAJA_MONTO_EFECTIVO_VENTAS)){
                     $m = 'La variable CAJA_MONTO_EFECTIVO_VENTAS no es un numero o es null.';
                     return false;
                 }else{
@@ -215,7 +215,7 @@
                 $m = 'La variable CAJA_MONTO_TARJETA_VENTAS no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_TARJETA_VENTAS) || !is_numeric($d->CAJA_MONTO_TARJETA_VENTAS)){
+                if(!is_numeric($d->CAJA_MONTO_TARJETA_VENTAS)){
                     $m = 'La variable CAJA_MONTO_TARJETA_VENTAS no es un numero o es null.';
                     return false;
                 }else{
@@ -230,7 +230,7 @@
                 $m = 'La variable CAJA_MONTO_YAPE_VENTAS no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_YAPE_VENTAS) || !is_numeric($d->CAJA_MONTO_YAPE_VENTAS)){
+                if(!is_numeric($d->CAJA_MONTO_YAPE_VENTAS)){
                     $m = 'La variable CAJA_MONTO_YAPE_VENTAS no es un numero o es null.';
                     return false;
                 }else{
@@ -245,7 +245,7 @@
                 $m = 'La variable CAJA_MONTO_EFECTIVO_SERVICIOS no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_EFECTIVO_SERVICIOS) || !is_numeric($d->CAJA_MONTO_EFECTIVO_SERVICIOS)){
+                if(!is_numeric($d->CAJA_MONTO_EFECTIVO_SERVICIOS)){
                     $m = 'La variable CAJA_MONTO_EFECTIVO_SERVICIOS no es un numero o es null.';
                     return false;
                 }else{
@@ -260,7 +260,7 @@
                 $m = 'La variable CAJA_MONTO_TARJETA_SERVICIOS no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_TARJETA_SERVICIOS) || !is_numeric($d->CAJA_MONTO_TARJETA_SERVICIOS)){
+                if(!is_numeric($d->CAJA_MONTO_TARJETA_SERVICIOS)){
                     $m = 'La variable CAJA_MONTO_TARJETA_SERVICIOS no es un numero o es null.';
                     return false;
                 }else{
@@ -275,7 +275,7 @@
                 $m = 'La variable CAJA_MONTO_YAPE_SERVICIOS no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_YAPE_SERVICIOS) || !is_numeric($d->CAJA_MONTO_YAPE_SERVICIOS)){
+                if(!is_numeric($d->CAJA_MONTO_YAPE_SERVICIOS)){
                     $m = 'La variable CAJA_MONTO_YAPE_SERVICIOS no es un numero o es null.';
                     return false;
                 }else{

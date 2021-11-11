@@ -75,7 +75,7 @@
                 CAJA_DESCUENTO_GASTOS = ? , CAJA_MONTO_EFECTIVO_VENTAS = ?, CAJA_MONTO_TARJETA_VENTAS = ?, CAJA_MONTO_YAPE_VENTAS = ?, CAJA_MONTO_EFECTIVO_SERVICIOS = ?,
                 CAJA_MONTO_TARJETA_SERVICIOS = ?, CAJA_MONTO_YAPE_SERVICIOS = ?, CAJA_MONTO_FINAL = ? WHERE CAJA_CODIGO = ?
             ";
-            $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_MONTO_FINAL IS NOT NULL " ;
+            $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_MONTO_FINAL IS NOT NULL AND CAJA_CODIGO = ?" ;
 
 
             try {
@@ -87,6 +87,7 @@
                 if(count($resultExisteCaja) > 0){
 
                     $stmtCajaCerrada = $this->conn->prepare($cajaCerrada);
+                    $stmtCajaCerrada->bind_param("s",$this->CAJA_CODIGO);
                     $stmtCajaCerrada->execute();
                     $resultCajaCerrada= get_result($stmtCajaCerrada);
                     //validamos si existe el id del usuario ingresado
