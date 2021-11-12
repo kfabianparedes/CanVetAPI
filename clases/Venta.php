@@ -216,15 +216,15 @@
         }
         function gananciasDiariasVenta(&$mensaje,&$code_error,&$exito){
 
-            $queryEfectivo = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 1" ; 
-            $queryTarjeta = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 2" ; 
-            $queryYape = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 3" ; 
+            $queryEfectivo = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 1 AND USU_ID = ?" ; 
+            $queryTarjeta = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 2 AND USU_ID = ?" ; 
+            $queryYape = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND METODO_DE_PAGO_ID = 3 AND USU_ID = ?" ; 
             $queryServicioEfectivo = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? 
-             AND MDP_ID = 1 AND SERVICIO_ESTADO = 1 ' ; 
+             AND MDP_ID = 1 AND SERVICIO_ESTADO = 1 AND USU_ID = ? ' ; 
              $queryServicioTarjeta = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? 
-             AND MDP_ID = 1 AND SERVICIO_ESTADO = 2 ' ; 
+             AND MDP_ID = 1 AND SERVICIO_ESTADO = 2 AND USU_ID = ?' ; 
              $queryServicioYape = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? 
-             AND MDP_ID = 1 AND SERVICIO_ESTADO = 3 ' ; 
+             AND MDP_ID = 1 AND SERVICIO_ESTADO = 3 AND USU_ID = ?' ; 
 
             $datosVentasTarjeta = 0;
             $datosVentasEfectivo = 0;
@@ -695,7 +695,7 @@
                                                 }
                                             }
                                             #SE PONEN LAS SERVICIOS OBTENIDOS DE TIPO BOLETAS EN EL ARRAY DE MES ACTUAL
-                                            array_push($datosMesActual,array("SERVICIOS_BOLETAS" => $datos));
+                                            array_push($datosMesActual,array("SERVICIOS_BOLETA" => $datos));
                                             
                                             #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
                                             $datos = [];
