@@ -125,38 +125,38 @@
     if($exito){
     $datos = json_decode(file_get_contents("php://input"));
     
-    if(esValido($mensaje,$datos)){
-        
-        $servicioC = new Servicio($db);
+        if(esValido($mensaje,$datos)){
+            
+            $servicioC = new Servicio($db);
 
-        $servicioC->SERVICIO_PRECIO = $datos->SERVICIO_PRECIO/100;
-        $servicioC->SERVICIO_FECHA_HORA = $datos->SERVICIO_FECHA_HORA." ".$datos->HORA_SERVICIO;
-        $servicioC->MASCOTA_ID = $datos->MASCOTA_ID;
-        $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
-        $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
-        $servicioC->MDP_ID = $datos->MDP_ID;
-        $servicioC->USU_ID = $datos->USU_ID;
-        $servicioC->COMPROBANTE_ID = $datos->COMPROBANTE_ID;
-        $servicioC->SERVICIO_ADELANTO = $datos->SERVICIO_ADELANTO/100;
-        if(isset($datos->SERVICIO_DESCRIPCION))
-            $servicioC->SERVICIO_DESCRIPCION = $datos->SERVICIO_DESCRIPCION;
-        else    
-            $servicioC->SERVICIO_DESCRIPCION = '';
+            $servicioC->SERVICIO_PRECIO = $datos->SERVICIO_PRECIO/100;
+            $servicioC->SERVICIO_FECHA_HORA = $datos->SERVICIO_FECHA_HORA." ".$datos->HORA_SERVICIO;
+            $servicioC->MASCOTA_ID = $datos->MASCOTA_ID;
+            $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
+            $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
+            $servicioC->MDP_ID = $datos->MDP_ID;
+            $servicioC->USU_ID = $datos->USU_ID;
+            $servicioC->COMPROBANTE_ID = $datos->COMPROBANTE_ID;
+            $servicioC->SERVICIO_ADELANTO = $datos->SERVICIO_ADELANTO/100;
+            if(isset($datos->SERVICIO_DESCRIPCION))
+                $servicioC->SERVICIO_DESCRIPCION = $datos->SERVICIO_DESCRIPCION;
+            else    
+                $servicioC->SERVICIO_DESCRIPCION = '';
 
-        $exito = $servicioC->registrarServicio($mensaje,$code_error);
+            $exito = $servicioC->registrarServicio($mensaje,$code_error,$datos->CAJA_CODIGO);
 
-        if($exito == true)
-            header('HTTP/1.1 200 OK');
-        else{
+            if($exito == true)
+                header('HTTP/1.1 200 OK');
+            else{
+                header('HTTP/1.1 400 Bad Request');
+            }
+            echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
+
+        }else{
+            $code_error = "error_deCampo";
+            echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
             header('HTTP/1.1 400 Bad Request');
         }
-        echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
-
-    }else{
-        $code_error = "error_deCampo";
-        echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
-        header('HTTP/1.1 400 Bad Request');
-    }
 
     }
 
@@ -166,6 +166,21 @@
         $m = "Los datos ingresados deben respetar el formato json";
         return false;
     }else{
+
+        if(!isset($d->CAJA_CODIGO)){
+            $m = 'La variable CAJA_CODIGO no ha sido enviada.';
+            return false;
+        }else{
+            if($d->CAJA_CODIGO == ''){
+                $m = 'La variable CAJA_CODIGO no es debe estar vacía o ser null.';
+                return false;
+            }else{
+                if(obtenerCantidadDeCaracteres($d->CAJA_CODIGO) < 50) { 
+                    $m = 'El valor de la variable CAJA_CODIGO debe ser mayor a 50.';
+                    return false;
+                }
+            }
+        }
 
         //validaciones de la variable SERVICIO_PRECIO
         if(!isset($d->SERVICIO_PRECIO)){

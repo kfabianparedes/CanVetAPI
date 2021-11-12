@@ -21,12 +21,14 @@
             $this->conn = $db;
         }
 
-        function registrarServicio(&$mensaje,&$code_error){
+        function registrarServicio(&$mensaje,&$code_error,$CAJA_CODIGO){
 
             $queryRegistrar = " 
                 INSERT INTO SERVICIO(SERVICIO_PRECIO,SERVICIO_DESCRIPCION,SERVICIO_FECHA_HORA,SERVICIO_TIPO,SERVICIO_ESTADO,TIPO_SERVICIO_ID,MASCOTA_ID,SERVICIO_ADELANTO,MDP_ID,USU_ID,COMPROBANTE_ID)
                 VALUES(?,?,?,?,0,?,?,?,?,?,?)
             ";
+            
+            $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_CIERRE IS NULL AND CAJA_CODIGO = ?" ; 
 
             $queryValidarMas =" SELECT * FROM MASCOTA WHERE MAS_ID = ?";
             $queryValidarTs =" SELECT * FROM TIPO_SERVICIO WHERE TIPO_SERVICIO_ID = ?";
@@ -41,164 +43,181 @@
             AND SERVICIO_TIPO = 1  AND  SERVICIO_ESTADO = 0"; 
 
             try {
-                $stmtUsuId = $this->conn->prepare($queryUsuId);
-                $stmtUsuId->bind_param("s",$this->USU_ID);
-                $stmtUsuId->execute();
-                $resultUsuId = get_result($stmtUsuId); 
 
-                if(count($resultUsuId) > 0){
-                    $stmtTs = $this->conn->prepare($queryValidarTs);
-                    $stmtTs->bind_param("s",$this->TIPO_SERVICIO_ID);
-                    $stmtTs->execute();
-                    $resultITs = get_result($stmtTs); 
+                $stmtExisteCaja = $this->conn->prepare($cajaCerrada);
+                $stmtExisteCaja->bind_param("s",$CAJA_CODIGO);
+                $stmtExisteCaja->execute();
+                $resultExisteCaja= get_result($stmtExisteCaja);
+                //validamos si existe el id del usuario ingresado
+                if(count($resultExisteCaja) > 0){
                     
-    
-                    if (count($resultITs) > 0) {
+                    $stmtUsuId = $this->conn->prepare($queryUsuId);
+                    $stmtUsuId->bind_param("s",$this->USU_ID);
+                    $stmtUsuId->execute();
+                    $resultUsuId = get_result($stmtUsuId); 
 
-                        $stmtComprobanteId = $this->conn->prepare($queryComprobanteId);
-                        $stmtComprobanteId->bind_param("s",$this->COMPROBANTE_ID);
-                        $stmtComprobanteId->execute();
-                        $resultIComprobanteId = get_result($stmtComprobanteId); 
+                    if(count($resultUsuId) > 0){
+                        $stmtTs = $this->conn->prepare($queryValidarTs);
+                        $stmtTs->bind_param("s",$this->TIPO_SERVICIO_ID);
+                        $stmtTs->execute();
+                        $resultITs = get_result($stmtTs); 
                         
-                        if (count($resultIComprobanteId) > 0) {
-
-                            $stmtMas = $this->conn->prepare($queryValidarMas);
-                            $stmtMas->bind_param("s",$this->MASCOTA_ID);
-                            $stmtMas->execute();
-                            $stmtMas = get_result($stmtMas); 
-                            
-                            if (count($stmtMas) > 0) {
         
+                        if (count($resultITs) > 0) {
+
+                            $stmtComprobanteId = $this->conn->prepare($queryComprobanteId);
+                            $stmtComprobanteId->bind_param("s",$this->COMPROBANTE_ID);
+                            $stmtComprobanteId->execute();
+                            $resultIComprobanteId = get_result($stmtComprobanteId); 
+                            
+                            if (count($resultIComprobanteId) > 0) {
+
+                                $stmtMas = $this->conn->prepare($queryValidarMas);
+                                $stmtMas->bind_param("s",$this->MASCOTA_ID);
+                                $stmtMas->execute();
+                                $stmtMas = get_result($stmtMas); 
                                 
-                                $stmtTipoEmpleado = $this->conn->prepare($query);
-                                $stmtTipoEmpleado->bind_param("s",$this->MASCOTA_ID);
-                                $stmtTipoEmpleado->execute();
-                                $resultTipoEmpleado = get_result($stmtTipoEmpleado); 
-
-                                if (count($resultTipoEmpleado) > 0) {
+                                if (count($stmtMas) > 0) {
+            
                                     
-                                    if($this->COMPROBANTE_ID == 1){
+                                    $stmtTipoEmpleado = $this->conn->prepare($query);
+                                    $stmtTipoEmpleado->bind_param("s",$this->MASCOTA_ID);
+                                    $stmtTipoEmpleado->execute();
+                                    $resultTipoEmpleado = get_result($stmtTipoEmpleado); 
+
+                                    if (count($resultTipoEmpleado) > 0) {
                                         
-                                        if(array_shift($resultTipoEmpleado)['TIPO_CLIENTE'] != 1){
+                                        if($this->COMPROBANTE_ID == 1){
                                             
-                                            $code_error = "error_ComprobanteTipoCliente";
-                                            $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
-                                            return false; 
-
-                                        }
-
-                                    }else{
-                                        if($this->COMPROBANTE_ID == 2){
-                                            
-                                            if(array_shift($resultTipoEmpleado)['TIPO_CLIENTE'] != 0){
-                                            
+                                            if(array_shift($resultTipoEmpleado)['TIPO_CLIENTE'] != 1){
+                                                
                                                 $code_error = "error_ComprobanteTipoCliente";
                                                 $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
                                                 return false; 
-    
+
+                                            }
+
+                                        }else{
+                                            if($this->COMPROBANTE_ID == 2){
+                                                
+                                                if(array_shift($resultTipoEmpleado)['TIPO_CLIENTE'] != 0){
+                                                
+                                                    $code_error = "error_ComprobanteTipoCliente";
+                                                    $mensaje = "El tipo de cliente y el comprobante no concuerdan.";
+                                                    return false; 
+        
+                                                }
                                             }
                                         }
-                                    }
 
-                                    $stmtMDP = $this->conn->prepare($queryValidarMDP);
-                                    $stmtMDP->bind_param("s",$this->MDP_ID);
-                                    $stmtMDP->execute();
-                                    $resultMDP = get_result($stmtMDP); 
-                                    
-                                    if (count($resultMDP) > 0) {
-            
-                                        if($this->SERVICIO_TIPO == 1 ){
+                                        $stmtMDP = $this->conn->prepare($queryValidarMDP);
+                                        $stmtMDP->bind_param("s",$this->MDP_ID);
+                                        $stmtMDP->execute();
+                                        $resultMDP = get_result($stmtMDP); 
                                         
-                                            $stmtHorarios = $this->conn->prepare($queryDisponibilidadHorarios);
-                                            $stmtHorarios->bind_param("ss",$this->SERVICIO_FECHA_HORA,$this->SERVICIO_FECHA_HORA);
-                                            $stmtHorarios->execute();
-                                            $resultHorarios = get_result($stmtHorarios); 
+                                        if (count($resultMDP) > 0) {
                 
-                                            if(count($resultHorarios) < 3){
-                
+                                            if($this->SERVICIO_TIPO == 1 ){
+                                            
+                                                $stmtHorarios = $this->conn->prepare($queryDisponibilidadHorarios);
+                                                $stmtHorarios->bind_param("ss",$this->SERVICIO_FECHA_HORA,$this->SERVICIO_FECHA_HORA);
+                                                $stmtHorarios->execute();
+                                                $resultHorarios = get_result($stmtHorarios); 
+                    
+                                                if(count($resultHorarios) < 3){
+                    
+                                                    $stmt = $this->conn->prepare($queryRegistrar);
+                                                    $stmt->bind_param("ssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
+                                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID);
+                                                    if(!$stmt->execute()){
+                    
+                                                        $code_error = "error_ejecucionQuery";
+                                                        $mensaje = "Hubo un error registrar el servicio.";
+                                                        return false; 
+                    
+                                                    }else{
+                    
+                                                        $mensaje = "Solicitud ejecutada con exito";
+                                                        return true;
+                                                        
+                                                    }
+                    
+                                                }else{
+                                                    
+                                                    $code_error = "error_conflictoHorarios";
+                                                    $mensaje = "No se pudo registrar la cita por conflicto de horarios.";
+                                                    return false; 
+                    
+                                                }
+                    
+                                            }else{
                                                 $stmt = $this->conn->prepare($queryRegistrar);
                                                 $stmt->bind_param("ssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
                                                 ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID);
                                                 if(!$stmt->execute()){
-                
+                    
                                                     $code_error = "error_ejecucionQuery";
                                                     $mensaje = "Hubo un error registrar el servicio.";
                                                     return false; 
-                
+                    
                                                 }else{
-                
+                    
                                                     $mensaje = "Solicitud ejecutada con exito";
                                                     return true;
                                                     
                                                 }
-                
-                                            }else{
-                                                
-                                                $code_error = "error_conflictoHorarios";
-                                                $mensaje = "No se pudo registrar la cita por conflicto de horarios.";
-                                                return false; 
-                
                                             }
-                
                                         }else{
-                                            $stmt = $this->conn->prepare($queryRegistrar);
-                                            $stmt->bind_param("ssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                            ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID);
-                                            if(!$stmt->execute()){
                 
-                                                $code_error = "error_ejecucionQuery";
-                                                $mensaje = "Hubo un error registrar el servicio.";
-                                                return false; 
+                                            $code_error = "error_NoExistenciaDeMDP";
+                                            $mensaje = "El id ingresado del método de pago no existe.";
+                                            return false;
                 
-                                            }else{
-                
-                                                $mensaje = "Solicitud ejecutada con exito";
-                                                return true;
-                                                
-                                            }
                                         }
+                
                                     }else{
-            
-                                        $code_error = "error_NoExistenciaDeMDP";
-                                        $mensaje = "El id ingresado del método de pago no existe.";
+
+                                        $code_error = "error_NoTipoCliente";
+                                        $mensaje = "No se pudo obtener el tipo de cliente";
                                         return false;
-            
+
                                     }
-            
+                                    
                                 }else{
-
-                                    $code_error = "error_NoTipoCliente";
-                                    $mensaje = "No se pudo obtener el tipo de cliente";
+            
+                                    $code_error = "error_NoExistenciaDeMascota";
+                                    $mensaje = "El id ingresado de la mascota no existe.";
                                     return false;
-
+            
                                 }
-                                
                             }else{
-        
-                                $code_error = "error_NoExistenciaDeMascota";
-                                $mensaje = "El id ingresado de la mascota no existe.";
+
+                                $code_error = "error_NoExistenciaComprobante";
+                                $mensaje = "El id ingresado del comprobante no existe.";
                                 return false;
         
+
                             }
+        
                         }else{
-
-                            $code_error = "error_NoExistenciaComprobante";
-                            $mensaje = "El id ingresado del comprobante no existe.";
+                            $code_error = "error_NoExistenciaDeTipoServicio";
+                            $mensaje = "El id ingresado del tipo de servicio no existe.";
                             return false;
-    
-
                         }
-    
                     }else{
-                        $code_error = "error_NoExistenciaDeTipoServicio";
-                        $mensaje = "El id ingresado del tipo de servicio no existe.";
+                        $code_error = "error_NoExistenciaDeUsuario";
+                        $mensaje = "El id ingresado del usuario no existe.";
                         return false;
                     }
+                
                 }else{
-                    $code_error = "error_NoExistenciaDeUsuario";
-                    $mensaje = "El id ingresado del usuario no existe.";
-                    return false;
+                    
+                    $code_error = "error_NoCajaAbierta";
+                    $mensaje = "Para realizar un servicio tiene que tener una caja abierta.";
+                    return false; 
+
                 }
+                
                 
 
             } catch (Throwable $th) {

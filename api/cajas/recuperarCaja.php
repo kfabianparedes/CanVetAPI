@@ -1,29 +1,25 @@
 <?php
-header('Access-Control-Allow-Origin: *');
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: *"); //To allow for sending custom headers
+    header('Access-Control-Allow-Origin: *'); //Change
+    header("Content-Type: application/json; charset=UTF-8");
+    header("Access-Control-Allow-Methods: GET");
+    header("Access-Control-Max-Age: 3600");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, User");
 
+    include_once '../../clases/Usuario.php';
+    include_once '../../clases/Caja.php';
+    include_once '../../config/database.php';
+    include_once '../../util/validaciones.php';
+    include_once '../../clases/Autorizacion.php';
+    
+    if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
+        return;
+    }
 
-//Include database and classes files
-include_once '../../config/database.php';
-include_once '../../clases/Venta.php';
-include_once '../../clases/Usuario.php';
-include_once '../../clases/Autorizacion.php';
-date_default_timezone_set("America/Lima");//Zona horaria de Peru
-//COMPROBAMOS QUE EL METODO USADO SEA GET
-if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
-    return;
-}
-
-    $mensaje = '';
-    $exito = false;
-    $code_error = null;
-    $datos = [];
-    //Autorización
     $headers = apache_request_headers();
     $auth = new Autorizacion();
+    $code_error = null;
+    $mensaje = '';
+    $exito = false;
 
     foreach ($headers as $header => $value) {
         if(strtolower($header) == $auth->FIRST_HEADER){//se compara si existe la cabecera authorization
@@ -127,25 +123,27 @@ if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
     }
 
     if($exito){
-
+    
         if(esValido($mensaje)){
+            
+            $cajaC = new Caja($db);
+            $cajaC = $_GET['USU_ID'];
 
-            $ventaC = new Venta($db);    
-            $ventaC->USU_ID = $_GET['USU_ID'];  
-            $datos = $ventaC->gananciasDiariasVenta($mensaje,$code_error,$exito);
+            $datos = $cajaC->recuperarCajaEmpleado($mensaje,$code_error,$exito);
 
-            if($exito==true){
+            if($exito == true)
                 header('HTTP/1.1 200 OK');
-                echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>true));
-            }else{
+            else{
                 header('HTTP/1.1 400 Bad Request');
-                echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>false));
             }
+            echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
+
         }else{
             $code_error = "error_deCampo";
             echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
             header('HTTP/1.1 400 Bad Request');
         }
+
     }
 
     function esValido(&$m){

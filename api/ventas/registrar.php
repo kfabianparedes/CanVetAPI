@@ -142,7 +142,7 @@
 
             $db->begin_transaction(); // INICIO DE LAS TRANSACCIONES. 
 
-            $exito = $ventaC->registrar($mensaje,$code_error,$VentaId);
+            $exito = $ventaC->registrar($mensaje,$code_error,$VentaId,$VENTA->CAJA_CODIGO);
 
             if($exito){
 
@@ -196,6 +196,21 @@
         }else{
             
             $VENTA = $d->VENTA;
+
+            if(!isset($VENTA->CAJA_CODIGO)){
+                $m = 'La variable CAJA_CODIGO no ha sido enviada.';
+                return false;
+            }else{
+                if($VENTA->CAJA_CODIGO == ''){
+                    $m = 'La variable CAJA_CODIGO no es debe estar vacía o ser null.';
+                    return false;
+                }else{
+                    if(obtenerCantidadDeCaracteres($VENTA->CAJA_CODIGO) < 50) { 
+                        $m = 'El valor de la variable CAJA_CODIGO debe ser mayor a 50.';
+                        return false;
+                    }
+                }
+            }
 
             //validamos METODO_DE_PAGO_ID
             if(!isset($VENTA->METODO_DE_PAGO_ID)){
