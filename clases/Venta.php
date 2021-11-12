@@ -677,7 +677,7 @@
                                         #****************** SERVICIOS BOLETAS ************************#
 
                                         #obteniendo servicios con tipo de comprobante BOLETAS 
-                                        $stmt = $this->conn->prepare($queryServiciosFacturas);
+                                        $stmt = $this->conn->prepare($queryServiciosBoletas);
                                         $stmt->bind_param("s",$anioMes);
                                         if(!$stmt->execute()){
 
@@ -782,7 +782,7 @@
                                                                     #****************** SERVICIOS BOLETAS ************************#
 
                                                                     #obteniendo servicios con tipo de comprobante BOLETAS 
-                                                                    $stmt = $this->conn->prepare($queryServiciosFacturas);
+                                                                    $stmt = $this->conn->prepare($queryServiciosBoletas);
                                                                     $stmt->bind_param("s",$anioMesAnterior);
                                                                     if(!$stmt->execute()){
 
