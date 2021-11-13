@@ -244,7 +244,7 @@
              AND MDP_ID = 2 AND SERVICIO_ESTADO = 1 AND USU_ID = ?' ; 
              $queryServicioYape = 'SELECT * FROM SERVICIO WHERE (SERVICIO_FECHA_HORA BETWEEN ? AND ?) 
              AND MDP_ID = 3 AND SERVICIO_ESTADO = 1 AND USU_ID = ?' ; 
-            $queryBuscarHoraRegistroCaja = "SELECT CAJA_APERTURA FROM CAJA WHERE USU_ID = ? ";
+            $queryBuscarHoraRegistroCaja = "SELECT CAJA_APERTURA FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NOT NULL";
 
             $datosVentasTarjeta = 0;
             $datosVentasEfectivo = 0;
