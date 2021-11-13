@@ -27,7 +27,7 @@
             $_query = "SELECT @P_CAJA_ABIERTA";
             $query_ = "SELECT @P_CAJA_ID";
             $horaDeRegistro = date("H:i:s");
-            $this->CAJA_APERTURA.' '.$horaDeRegistro ;
+            $this->CAJA_APERTURA = $this->CAJA_APERTURA.' '.$horaDeRegistro ;
             try {
 
                 $stmt = $this->conn->prepare($query);
@@ -75,7 +75,7 @@
             $existeCaja = "SELECT * FROM CAJA WHERE CAJA_CODIGO = ?"; 
             $query = "UPDATE CAJA SET 
                 CAJA_DESCUENTO_GASTOS = ? , CAJA_MONTO_EFECTIVO_VENTAS = ?, CAJA_MONTO_TARJETA_VENTAS = ?, CAJA_MONTO_YAPE_VENTAS = ?, CAJA_MONTO_EFECTIVO_SERVICIOS = ?,
-                CAJA_MONTO_TARJETA_SERVICIOS = ?, CAJA_MONTO_YAPE_SERVICIOS = ?, CAJA_MONTO_FINAL = ?, CAJA_CIERRE = ?WHERE CAJA_CODIGO = ?
+                CAJA_MONTO_TARJETA_SERVICIOS = ?, CAJA_MONTO_YAPE_SERVICIOS = ?, CAJA_MONTO_FINAL = ?, CAJA_CIERRE = ? WHERE CAJA_CODIGO = ?
             ";
             $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_MONTO_FINAL IS NOT NULL AND CAJA_CODIGO = ?" ;
             $this->CAJA_CIERRE = date("Y-m-d H:i:s");
@@ -215,7 +215,7 @@
             $queryValidarUsuario = "SELECT * FROM USUARIOS WHERE USU_ID = ?";
 
             $diaActual = date("Y-m-d");
-            $datos = [];
+            $datos ;
             try {
 
                 $stmtValidarUsuario = $this->conn->prepare($queryValidarUsuario);
@@ -238,10 +238,10 @@
                         
                         $result = get_result($stmt); 
                         if (count($result) > 0) {                
-                            while ($dato = array_shift($result)) {    
-                                $datos[]= $dato;
-                            }
+                            $datos = array_shift($result);
                         }
+
+                           
 
                         $mensaje = "Solicitud realizada con éxito.";
                         $exito = true;
