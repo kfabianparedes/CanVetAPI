@@ -210,7 +210,7 @@
             $query  = '
             SELECT CAJA_CODIGO, CAJA_ID FROM CAJA WHERE USU_ID = ? 
             AND DATE_FORMAT(CAJA_APERTURA,"%Y-%m-%d") = ?
-            AND CAJA_CIERRE IS NOT NULL';
+            AND CAJA_CIERRE IS NULL';
 
             $queryValidarUsuario = "SELECT * FROM USUARIOS WHERE USU_ID = ?";
 
@@ -227,7 +227,7 @@
 
                     
                     $stmt = $this->conn->prepare($query);
-                    $stmt->bind_param("s",$anioMes);
+                    $stmt->bind_param("ss",$this->USU_ID,$diaActual);
                     if(!$stmt->execute()){
     
                         $code_error = "error_ejecucionQuery";

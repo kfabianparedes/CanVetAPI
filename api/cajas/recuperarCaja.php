@@ -122,54 +122,55 @@
         header('HTTP/1.0 401 Unauthorized');
     }
 
-    if($exito){
-    
-        if(esValido($mensaje)){
-            
-            $cajaC = new Caja($db);
-            $cajaC = $_GET['USU_ID'];
+if($exito){
 
-            $datos = $cajaC->recuperarCajaEmpleado($mensaje,$code_error,$exito);
+    if(esValido($mensaje)){
+        
+        $cajaC = new Caja($db);
+        $cajaC->USU_ID = $_GET['USU_ID'];   
 
-            if($exito == true)
-                header('HTTP/1.1 200 OK');
-            else{
-                header('HTTP/1.1 400 Bad Request');
-            }
-            echo json_encode( array("error"=>$code_error,"mensaje"=>$mensaje,"exito"=>$exito));
+        $datos = $cajaC->recuperarCajaEmpleado($mensaje,$code_error,$exito);
 
+        if($exito==true){
+            header('HTTP/1.1 200 OK');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>true));
         }else{
-            $code_error = "error_deCampo";
-            echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
             header('HTTP/1.1 400 Bad Request');
+            echo json_encode( array("error"=>$code_error, "resultado"=>$datos, "mensaje"=>$mensaje,"exito"=>false));
         }
 
+    }else{
+        $code_error = "error_deCampo";
+        echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
+        header('HTTP/1.1 400 Bad Request');
     }
 
-    function esValido(&$m){
+}
 
-        if(!isset($_GET['USU_ID'])){
-            $m = "El campo USU_ID no ha sido enviado";
+function esValido(&$m){
+
+    if(!isset($_GET['USU_ID'])){
+        $m = "El campo USU_ID no ha sido enviado";
+        return false;
+    }else{
+        if($_GET['USU_ID'] == ''){
+            $m = "El campo USU_ID no puede estar vacío o ser null.";
             return false;
         }else{
-            if($_GET['USU_ID'] == ''){
-                $m = "El campo USU_ID no puede estar vacío o ser null.";
+            if(!is_numeric($_GET['USU_ID'])){
+                $m = "El campo USU_ID debe ser numérico";
                 return false;
             }else{
-                if(!is_numeric($_GET['USU_ID'])){
-                    $m = "El campo USU_ID debe ser numérico";
+                if($_GET['USU_ID'] <=0){
+                    $m = "El valor de USU_ID debe no debe ser negativo o igual a 0.";
                     return false;
-                }else{
-                    if($_GET['USU_ID'] <=0){
-                        $m = "El valor de USU_ID debe no debe ser negativo o igual a 0.";
-                        return false;
-                    }
                 }
             }
-            
-            
         }
-        return true; 
-
+        
+        
     }
+    return true; 
+
+}
 ?>
