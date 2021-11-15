@@ -78,6 +78,7 @@
                 CAJA_MONTO_TARJETA_SERVICIOS = ?, CAJA_MONTO_YAPE_SERVICIOS = ?, CAJA_MONTO_FINAL = ?, CAJA_CIERRE = ? WHERE CAJA_CODIGO = ?
             ";
             $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_MONTO_FINAL IS NOT NULL AND CAJA_CODIGO = ?" ;
+            setlocale(LC_ALL, 'es_PE');
             $this->CAJA_CIERRE = date("Y-m-d H:i:s");
 
             try {

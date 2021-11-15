@@ -129,6 +129,7 @@
         if(esValido($mensaje,$datos)){
             $exito_ = false;
             $caja = new Caja($db);
+            setlocale(LC_ALL, 'es_PE');
             $caja->CAJA_CIERRE = $datos->CAJA_CIERRE;
             $caja->CAJA_MONTO_FINAL = $datos->CAJA_MONTO_FINAL/100;
             $caja->CAJA_DESCUENTO_GASTOS = $datos->CAJA_DESCUENTO_GASTOS/100;
