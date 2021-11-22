@@ -112,13 +112,11 @@
         function listarDetallesPorVenta(&$mensaje, &$code_error,&$exito){
 
             $queryValidarIdVenta="SELECT * FROM VENTA WHERE VENTA_ID = ?";
-            $query ="
-                SELECT DET.*,PRO.*,CAT.CAT_NOMBRE, PROV.PROV_EMPRESA_PROVEEDORA FROM DETALLE_VENTA DET
-                INNER JOIN PRODUCTO PRO ON (DET.PRO_ID = PRO.PRO_ID)
-                INNER JOIN CATEGORIA CAT ON (PRO.CAT_ID = CAT.CAT_ID)
-                INNER JOIN PROVEEDOR PROV ON (PRO.PROV_ID = PROV.PROV_ID)
-                WHERE VENTA_ID = ?
-            ";
+            $query ="SELECT PRO.PRO_NOMBRE,PRO.PRO_TAMANIO_TALLA,CAT.CAT_NOMBRE,PRO.PRO_PRECIO_COMPRA,PRO.PRO_PRECIO_VENTA,DET.DET_CANTIDAD,DET.DET_IMPORTE FROM DETALLE_VENTA DET
+            INNER JOIN PRODUCTO PRO ON (DET.PRO_ID = PRO.PRO_ID)
+            INNER JOIN CATEGORIA CAT ON (PRO.CAT_ID = CAT.CAT_ID)
+            INNER JOIN PROVEEDOR PROV ON (PRO.PROV_ID = PROV.PROV_ID)
+            WHERE VENTA_ID = ?";
             $datos = [];
             try {
                 $stmtValidarIdVenta = $this->conn->prepare($queryValidarIdVenta);
@@ -127,41 +125,29 @@
                 $resultValidarIdVenta = get_result($stmtValidarIdVenta);
 
                 if(count($resultValidarIdVenta) > 0){
-
                     $stmt = $this->conn->prepare($query);
                     $stmt->bind_param("s",$this->VENTA_ID);
                     if(!$stmt->execute()){
-
                         $code_error = "error_ejecucionQuery";
                         $mensaje = "Hubo un error al listar los detalles de las ventas.";
-                        return false; 
-
+                        $exito = false; 
                     }else{
-
                         $result = get_result($stmt); 
-                    
                         if (count($result) > 0) {                
                             while ($dato = array_shift($result)) {    
                                 $datos[] = $dato;
                             }
                         }
-    
                         $mensaje = "Solicitud ejecutada con exito";
                         $exito = true;
-                        
                     }
-                    
-
                 }else{
-                    
                     $code_error = "error_NoExistenciaVentaId";
                     $mensaje = "El id de la venta ingresada no existe.";
-                    return false; 
-
+                    $exito = false; 
                 }
                 return $datos;
             } catch (Throwable $th) {
-                
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;

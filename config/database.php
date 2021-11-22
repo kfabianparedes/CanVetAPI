@@ -5,10 +5,10 @@
     class Database{
     
         //Database credentials
-        private $host = "213.190.6.85";
-        private $db_name = "u507536466_CanVet";
-        private $username = "u507536466_SolucionesMK";
-        private $password = "solucionesMK_2021";
+        private $host = "212.1.208.51";
+        private $db_name = "u741735946_canvet_testing";
+        private $username = "u741735946_intranet";
+        private $password = "Intranet_00";
         public $conn;
 
         //Constructor

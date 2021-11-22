@@ -521,7 +521,7 @@
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;
-                return $datos;
+                return $usuario;
             } 
 
         }

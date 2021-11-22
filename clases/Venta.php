@@ -602,8 +602,7 @@
             ';
 
             $queryServicios = '
-            SELECT SER.SERVICIO_PRECIO, SER.SERVICIO_FECHA_HORA,SER.SERVICIO_TIPO
-            ,CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO)AS USU_NOMBRE, 
+            SELECT SER.SERVICIO_PRECIO, SER.SERVICIO_FECHA_HORA,CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO)AS USU_NOMBRE, 
             TP.TIPO_SERVICIO_NOMBRE,
             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
@@ -732,7 +731,7 @@
                                                 }
                                             }
                                             #SE PONEN LOS SERVICIOS OBTENIDOS EN EL ARRAY DE MES ANTERIOR
-                                            array_push($datosMesAnterior    ,array("SERVIVIOS" => $datos));
+                                            array_push($datosMesAnterior    ,array("SERVICIOS" => $datos));
                                             
                                             #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
                                             $datos = [];

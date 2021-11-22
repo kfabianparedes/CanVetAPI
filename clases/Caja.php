@@ -208,59 +208,41 @@
 
         function recuperarCajaEmpleado(&$mensaje, &$code_error,&$exito){
 
-            $query  = '
-            SELECT CAJA_CODIGO, CAJA_ID FROM CAJA WHERE USU_ID = ? 
-            AND DATE_FORMAT(CAJA_APERTURA,"%Y-%m-%d") = ?
-            AND CAJA_CIERRE IS NULL';
+            $query  = 'SELECT CAJA_CODIGO, CAJA_ID FROM CAJA WHERE USU_ID = ? 
+            AND DATE_FORMAT(CAJA_APERTURA,"%Y-%m-%d") = ? AND CAJA_CIERRE IS NULL';
 
             $queryValidarUsuario = "SELECT * FROM USUARIOS WHERE USU_ID = ?";
 
             $diaActual = date("Y-m-d");
-            $datos ;
+            $datos;
             try {
-
                 $stmtValidarUsuario = $this->conn->prepare($queryValidarUsuario);
                 $stmtValidarUsuario->bind_param("s",$this->USU_ID);
                 $stmtValidarUsuario->execute();
                 $resultUsuario= get_result($stmtValidarUsuario);
                 //validamos si existe el id del usuario ingresado
                 if(count($resultUsuario) > 0){
-
-                    
                     $stmt = $this->conn->prepare($query);
                     $stmt->bind_param("ss",$this->USU_ID,$diaActual);
                     if(!$stmt->execute()){
-    
                         $code_error = "error_ejecucionQuery";
                         $mensaje = "Hubo un error reportar los cierres de caja del mes actual.";
                         $exito = false; 
-    
                     }else{
-                        
                         $result = get_result($stmt); 
                         if (count($result) > 0) {                
                             $datos = array_shift($result);
                         }
-
-                           
-
                         $mensaje = "Solicitud realizada con éxito.";
                         $exito = true;
                     }  
-
-
                 }else{
-
                     $code_error = "error_NoUsuarioId";
                     $mensaje = "El id del usuario ingresado no existe.";
                     $exito =  false;
-
                 }
-                
                 return $datos;
-
             } catch (Throwable $th) {
-                
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;
