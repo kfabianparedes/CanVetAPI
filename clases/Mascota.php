@@ -11,7 +11,7 @@
         public $MAS_ATENCIONES;
         public $MAS_ESTADO;
         public $CLIENTE_ID;
-        
+        public $MAS_FECHA_REGISTRO;
 
         public function __construct($db){
             $this->conn = $db;
@@ -20,11 +20,11 @@
         function registrarMascota(&$mensaje,&$code_error){
 
             $query  = "
-            INSERT INTO MASCOTA(MAS_NOMBRE,MAS_RAZA,MAS_COLOR,MAS_ESPECIE,MAS_ATENCIONES,MAS_ESTADO,CLIENTE_ID)
-            VALUES(?,?,?,?,?,?,?);
+            INSERT INTO MASCOTA(MAS_NOMBRE,MAS_RAZA,MAS_COLOR,MAS_ESPECIE,MAS_ATENCIONES,MAS_ESTADO,MAS_FECHA_REGISTRO,CLIENTE_ID)
+            VALUES(?,?,?,?,?,?,?,?);
             "; 
             $queryValidarIdCliente = "SELECT * FROM CLIENTE WHERE CLIENTE_ID";
-                
+            $fecha = date("d-m-Y");
             try {
                 
                 $stmtIdCliente = $this->conn->prepare($queryValidarIdCliente);
@@ -35,8 +35,8 @@
                 if (count($resultIdCliente) > 0) {
                     
                     $stmt = $this->conn->prepare($query);
-                    $stmt->bind_param("sssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
-                    ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->MAS_ESTADO,$this->CLIENTE_ID);
+                    $stmt->bind_param("ssssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
+                    ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->MAS_ESTADO,$fecha,$this->CLIENTE_ID);
                     if(!$stmt->execute()){
 
                         $code_error = "error_ejecucionQuery";
