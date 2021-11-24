@@ -24,7 +24,7 @@
         function registrarServicio(&$mensaje,&$code_error,$CAJA_CODIGO){
 
             $queryRegistrar = " 
-                INSERT INTO SERVICIO(SERVICIO_PRECIO,SERVICIO_DESCRIPCION,SERVICIO_FECHA_HORA,SERVICIO_TIPO,SERVICIO_ESTADO,TIPO_SERVICIO_ID,MASCOTA_ID,SERVICIO_ADELANTO,MDP_ID,USU_ID,COMPROBANTE_ID)
+                INSERT INTO SERVICIO(SERVICIO_PRECIO,SERVICIO_DESCRIPCION,SERVICIO_FECHA_HORA,SERVICIO_TIPO,SERVICIO_ESTADO,TIPO_SERVICIO_ID,MASCOTA_ID,SERVICIO_ADELANTO,MDP_ID,USU_ID,COMPROBANTE_ID,SERVICIO_FECHA_REGISTRO)
                 VALUES(?,?,?,?,0,?,?,?,?,?,?,?)
             ";
             setlocale(LC_ALL, 'es_PE');
@@ -88,6 +88,7 @@
 
                                     if (count($resultTipoEmpleado) > 0) {
                                         
+                
                                         if($this->COMPROBANTE_ID == 1){
                                             
                                             if(array_shift($resultTipoEmpleado)['TIPO_CLIENTE'] != 1){
@@ -117,18 +118,22 @@
                                         $resultMDP = get_result($stmtMDP); 
                                         
                                         if (count($resultMDP) > 0) {
-                
+                                            
+            
                                             if($this->SERVICIO_TIPO == 1 ){
                                             
                                                 $stmtHorarios = $this->conn->prepare($queryDisponibilidadHorarios);
                                                 $stmtHorarios->bind_param("ss",$this->SERVICIO_FECHA_HORA,$this->SERVICIO_FECHA_HORA);
                                                 $stmtHorarios->execute();
                                                 $resultHorarios = get_result($stmtHorarios); 
+                                                
+                        
                     
                                                 if(count($resultHorarios) < 3){
-                    
+                                                    
+                            
                                                     $stmt = $this->conn->prepare($queryRegistrar);
-                                                    $stmt->bind_param("ssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
+                                                    $stmt->bind_param("sssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
                                                     ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID,$hora_registro);
                                                     if(!$stmt->execute()){
                     
@@ -152,8 +157,10 @@
                                                 }
                     
                                             }else{
+                                                
+                        
                                                 $stmt = $this->conn->prepare($queryRegistrar);
-                                                $stmt->bind_param("ssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
+                                                $stmt->bind_param("sssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
                                                 ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID,$hora_registro);
                                                 if(!$stmt->execute()){
                     

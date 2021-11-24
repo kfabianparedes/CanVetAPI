@@ -166,7 +166,7 @@
         $productoC->CAT_ID = $data->CAT_ID;
         $productoC->PROV_ID = $data->PROV_ID;
         
-        $fecha = date("d-m-Y");
+        $fecha = date("Y-m-d");
         $exito =  $productoC->actualizarProducto($mensaje,$code_error,$fecha);
 
         if($exito == true)

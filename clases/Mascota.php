@@ -24,7 +24,7 @@
             VALUES(?,?,?,?,?,?,?,?);
             "; 
             $queryValidarIdCliente = "SELECT * FROM CLIENTE WHERE CLIENTE_ID";
-            $fecha = date("d-m-Y");
+            $fecha = date("Y-m-d");
             try {
                 
                 $stmtIdCliente = $this->conn->prepare($queryValidarIdCliente);
