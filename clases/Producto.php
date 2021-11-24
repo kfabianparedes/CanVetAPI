@@ -110,7 +110,7 @@ class Producto{
                         }else{
                             $fecha = date("Y-m-d");
                             $stmt = $this->conn->prepare($queryEditarConPrecioAnterior);
-                            $stmt->bind_param("sssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$    ,$fecha,$this->PRO_ID);
+                            $stmt->bind_param("sssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$precioCompraAnterior,$fecha,$this->PRO_ID);
                             $stmt->execute();
 
                         }
