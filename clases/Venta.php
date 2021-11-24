@@ -602,7 +602,9 @@
             ';
 
             $queryServicios = '
-            SELECT SER.SERVICIO_PRECIO, SER.SERVICIO_FECHA_HORA,CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO)AS USU_NOMBRE, 
+            SELECT SER.SERVICIO_ID,SER.SERVICIO_PRECIO, if(DATE_FORMAT(SER.SERVICIO_FECHA_REGISTRO,"%Y-%m") = ? AND 
+            SER.SERVICIO_PRECIO = SER.SERVICIO_ADELANTO,SER.SERVICIO_FECHA_REGISTRO,SER.SERVICIO_FECHA_HORA) AS SERVICIO_FECHA_HORA,SER.SERVICIO_TIPO
+            ,CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO)AS USU_NOMBRE, 
             TP.TIPO_SERVICIO_NOMBRE,
             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
@@ -614,8 +616,9 @@
             INNER JOIN MASCOTA MAS ON (SER.MASCOTA_ID = MAS.MAS_ID)
             INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) 
 			left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID)
-            WHERE SER.SERVICIO_ESTADO  = 1 AND
-            DATE_FORMAT(SER.SERVICIO_FECHA_HORA,"%Y-%m") = ?
+            WHERE	
+            ((DATE_FORMAT(SER.SERVICIO_FECHA_REGISTRO,"%Y-%m") = ? AND SER.SERVICIO_PRECIO = SER.SERVICIO_ADELANTO) 
+            OR (DATE_FORMAT(SER.SERVICIO_FECHA_HORA,"%Y-%m") = ? AND SER.SERVICIO_ESTADO = 1 AND SER.SERVICIO_PRECIO <> SER.SERVICIO_ADELANTO))
             ORDER BY SER.SERVICIO_FECHA_HORA DESC;
             ';
 
@@ -661,7 +664,7 @@
 
                         #obteniendo ventas con tipo de comprobante BOLETA 
                         $stmt = $this->conn->prepare($queryServicios);
-                        $stmt->bind_param("s",$anioMes);
+                        $stmt->bind_param("sss",$anioMes,$anioMes,$anioMes);
                         if(!$stmt->execute()){
 
                             $code_error = "error_ejecucionQuery";
@@ -714,7 +717,7 @@
 
                                         #obteniendo servicios con tipo de comprobante BOLETAS 
                                         $stmt = $this->conn->prepare($queryServicios);
-                                        $stmt->bind_param("s",$anioMesAnterior);
+                                        $stmt->bind_param("sss",$anioMesAnterior,$anioMesAnterior,$anioMesAnterior);
                                         if(!$stmt->execute()){
 
                                             $code_error = "error_ejecucionQuery";
@@ -731,7 +734,7 @@
                                                 }
                                             }
                                             #SE PONEN LOS SERVICIOS OBTENIDOS EN EL ARRAY DE MES ANTERIOR
-                                            array_push($datosMesAnterior    ,array("SERVICIOS" => $datos));
+                                            array_push($datosMesAnterior    ,array("SERVIVIOS" => $datos));
                                             
                                             #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
                                             $datos = [];
@@ -761,7 +764,8 @@
         }
         function listarVentasServiciosHoy(&$mensaje,&$code_error,&$exito){
 
-            $queryVentas = 'SELECT V.VENTA_ID, V.VENTA_FECHA_REGISTRO, V.VENTA_TOTAL
+            $queryVentas = '
+            SELECT V.VENTA_ID, V.VENTA_FECHA_REGISTRO, V.VENTA_TOTAL
             ,CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO)AS USU_NOMBRE, 
             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
@@ -772,9 +776,13 @@
             INNER JOIN CLIENTE CLI ON (V.CLIENTE_ID = CLI.CLIENTE_ID) 
 			left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID) 
             WHERE DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m-%d") = ?
-            ORDER BY V.VENTA_FECHA_REGISTRO DESC;';
+            ORDER BY V.VENTA_FECHA_REGISTRO DESC;
+            ';
 
-            $queryServicios = 'SELECT SER.SERVICIO_PRECIO, SER.SERVICIO_FECHA_HORA,CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO)AS USU_NOMBRE, 
+            $queryServicios = '
+            SELECT SER.SERVICIO_ID,SER.SERVICIO_PRECIO, if(DATE_FORMAT(SER.SERVICIO_FECHA_REGISTRO,"%Y-%m-%d") = ? AND 
+            SER.SERVICIO_PRECIO = SER.SERVICIO_ADELANTO,SER.SERVICIO_FECHA_REGISTRO,SER.SERVICIO_FECHA_HORA) AS SERVICIO_FECHA_HORA,SER.SERVICIO_TIPO
+            ,CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO)AS USU_NOMBRE, 
             TP.TIPO_SERVICIO_NOMBRE,
             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
@@ -786,9 +794,11 @@
             INNER JOIN MASCOTA MAS ON (SER.MASCOTA_ID = MAS.MAS_ID)
             INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) 
 			left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID)
-            WHERE SER.SERVICIO_ESTADO  = 1 AND
-            DATE_FORMAT(SER.SERVICIO_FECHA_HORA,"%Y-%m-%d") = ?
-            ORDER BY SER.SERVICIO_FECHA_HORA DESC;';
+            WHERE	
+            ((DATE_FORMAT(SER.SERVICIO_FECHA_REGISTRO,"%Y-%m-%d") = ? AND SER.SERVICIO_PRECIO = SER.SERVICIO_ADELANTO) 
+            OR (DATE_FORMAT(SER.SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SER.SERVICIO_ESTADO = 1 AND SER.SERVICIO_PRECIO <> SER.SERVICIO_ADELANTO))
+            ORDER BY SER.SERVICIO_FECHA_HORA DESC;
+            ';
 
             $diaActual = date('Y-m-d');
             
@@ -822,7 +832,7 @@
 
                      #obteniendo servicios del día actual 
                     $stmt = $this->conn->prepare($queryServicios);
-                    $stmt->bind_param("s",$diaActual);
+                    $stmt->bind_param("sss",$diaActual,$diaActual,$diaActual);
                     if(!$stmt->execute()){
 
                         $code_error = "error_ejecucionQuery";

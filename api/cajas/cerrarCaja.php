@@ -171,7 +171,7 @@
                 $m = 'La variable CAJA_MONTO_FINAL no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_FINAL)){
+                if(!is_numeric($d->CAJA_MONTO_FINAL)){
                     $m = 'La variable CAJA_MONTO_FINAL no es un numero o es null.';
                     return false;
                 }else{

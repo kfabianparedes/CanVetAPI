@@ -25,9 +25,10 @@
 
             $queryRegistrar = " 
                 INSERT INTO SERVICIO(SERVICIO_PRECIO,SERVICIO_DESCRIPCION,SERVICIO_FECHA_HORA,SERVICIO_TIPO,SERVICIO_ESTADO,TIPO_SERVICIO_ID,MASCOTA_ID,SERVICIO_ADELANTO,MDP_ID,USU_ID,COMPROBANTE_ID)
-                VALUES(?,?,?,?,0,?,?,?,?,?,?)
+                VALUES(?,?,?,?,0,?,?,?,?,?,?,?)
             ";
-            
+            setlocale(LC_ALL, 'es_PE');
+            $hora_registro = date("Y-m-d H:i:s");
             $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_CIERRE IS NULL AND CAJA_CODIGO = ?" ; 
 
             $queryValidarMas =" SELECT * FROM MASCOTA WHERE MAS_ID = ?";
@@ -128,7 +129,7 @@
                     
                                                     $stmt = $this->conn->prepare($queryRegistrar);
                                                     $stmt->bind_param("ssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID);
+                                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID,$hora_registro);
                                                     if(!$stmt->execute()){
                     
                                                         $code_error = "error_ejecucionQuery";
@@ -153,7 +154,7 @@
                                             }else{
                                                 $stmt = $this->conn->prepare($queryRegistrar);
                                                 $stmt->bind_param("ssssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                                ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID);
+                                                ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->USU_ID,$this->COMPROBANTE_ID,$hora_registro);
                                                 if(!$stmt->execute()){
                     
                                                     $code_error = "error_ejecucionQuery";
