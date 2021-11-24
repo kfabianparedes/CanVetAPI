@@ -182,6 +182,26 @@
                 }
             }
 
+            if(!isset($d->CAJA_MONTO_INICIAL)){
+                $m = "La variable CAJA_MONTO_INICIAL no ha sido enviada.";
+                return false; 
+            }
+
+            if(!isset($d->CAJA_MONTO_INICIAL)){
+                $m = 'La variable CAJA_MONTO_INICIAL no ha sido enviada.';
+                return false;
+            }else{
+                if(!is_numeric($d->CAJA_MONTO_INICIAL)){
+                    $m = 'La variable CAJA_MONTO_INICIAL no es un numero o es null.';
+                    return false;
+                }else{
+                    if($d->CAJA_MONTO_INICIAL < 0) { 
+                        $m = 'El valor de la variable CAJA_MONTO_INICIAL debe ser mayor o igual 0.';
+                        return false;
+                    }
+                }
+            }
+
             if(!isset($d->CAJA_DESCUENTO_GASTOS)){
                 $m = 'La variable CAJA_DESCUENTO_GASTOS no ha sido enviada.';
                 return false;
@@ -304,7 +324,7 @@
         }
 
         if(($d->CAJA_MONTO_EFECTIVO_VENTAS + $d->CAJA_MONTO_TARJETA_VENTAS + $d->CAJA_MONTO_YAPE_VENTAS + $d->CAJA_MONTO_EFECTIVO_SERVICIOS +
-         $d->CAJA_MONTO_TARJETA_SERVICIOS + $d->CAJA_MONTO_YAPE_SERVICIOS) - $d->CAJA_DESCUENTO_GASTOS   != $d->CAJA_MONTO_FINAL){
+         $d->CAJA_MONTO_TARJETA_SERVICIOS + $d->CAJA_MONTO_YAPE_SERVICIOS + $d->CAJA_MONTO_INICIAL) - $d->CAJA_DESCUENTO_GASTOS   != $d->CAJA_MONTO_FINAL){
             $m = "Los montos enviados no concuerdan.";
             return false;
         }
