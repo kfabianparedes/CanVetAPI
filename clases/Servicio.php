@@ -241,17 +241,17 @@
 
             $queryValidarIdServicio = "SELECT * FROM SERVICIO WHERE SERVICIO_ID = ?"; 
             $queryEditar ="
-                UPDATE SERVICIO SET SERVICIO_PRECIO = ?, SERVICIO_DESCRIPCION = ?,SERVICIO_FECHA_HORA = ?, SERVICIO_TIPO = ?,
+                UPDATE SERVICIO SET SERVICIO_PRECIO = ?, SERVICIO_DESCRIPCION = ?, SERVICIO_TIPO = ?,
                 TIPO_SERVICIO_ID = ?, MASCOTA_ID = ?, SERVICIO_ADELANTO = ?, MDP_ID = ? WHERE SERVICIO_ID = ?
             ";
             $queryValidarTs =" SELECT * FROM TIPO_SERVICIO WHERE TIPO_SERVICIO_ID = ?";
             $queryValidarMas =" SELECT * FROM MASCOTA WHERE MAS_ID = ?";
             $queryValidarMDP =" SELECT * FROM METODO_PAGO WHERE MDP_ID = ?";
-            $queryDisponibilidadHorarios = "
-            SELECT * FROM SERVICIO WHERE (? 
-            BETWEEN SERVICIO_FECHA_HORA AND ADDDATE(SERVICIO_FECHA_HORA, INTERVAL 1 hour) OR 
-            ADDDATE(?, INTERVAL 1 hour) BETWEEN SERVICIO_FECHA_HORA AND ADDDATE(SERVICIO_FECHA_HORA, INTERVAL 1 hour))  
-            AND SERVICIO_TIPO = 1  AND  SERVICIO_ESTADO = 0 AND SERVICIO_ID <> ?"; 
+            // $queryDisponibilidadHorarios = "
+            // SELECT * FROM SERVICIO WHERE (? 
+            // BETWEEN SERVICIO_FECHA_HORA AND ADDDATE(SERVICIO_FECHA_HORA, INTERVAL 1 hour) OR 
+            // ADDDATE(?, INTERVAL 1 hour) BETWEEN SERVICIO_FECHA_HORA AND ADDDATE(SERVICIO_FECHA_HORA, INTERVAL 1 hour))  
+            // AND SERVICIO_TIPO = 1  AND  SERVICIO_ESTADO = 0 AND SERVICIO_ID <> ?"; 
 
             try {
 
@@ -282,57 +282,24 @@
                             
                             if (count($resultMDP) > 0) {
 
-                                if($this->SERVICIO_TIPO == 1 ){
-                            
-                                    $stmtHorarios = $this->conn->prepare($queryDisponibilidadHorarios);
-                                    $stmtHorarios->bind_param("sss",$this->SERVICIO_FECHA_HORA,$this->SERVICIO_FECHA_HORA,$this->SERVICIO_ID);
-                                    $stmtHorarios->execute();
-                                    $resultHorarios = get_result($stmtHorarios); 
-        
-                                    if(count($resultHorarios) < 3){
-    
-                                        $stmt = $this->conn->prepare($queryEditar);
-                                        $stmt->bind_param("sssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                        ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->SERVICIO_ID);
-                                        if(!$stmt->execute()){
-    
-                                            $code_error = "error_ejecucionQuery";
-                                            $mensaje = "Hubo un error editar el servicio.";
-                                            return false; 
-    
-                                        }else{
-    
-                                            $mensaje = "Solicitud ejecutada con exito";
-                                            return true;
-                                            
-                                        }
-    
-                                    }else{
-                                    
-                                        $code_error = "error_conflictoHorarios";
-                                        $mensaje = "No se pudo registrar la cita por conflicto de horarios.";
-                                        return false; 
-        
-                                    }
-                                }else{
                                 
-                                    $stmt = $this->conn->prepare($queryEditar);
-                                    $stmt->bind_param("sssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION,$this->SERVICIO_FECHA_HORA
-                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->SERVICIO_ID);
-                                    if(!$stmt->execute()){
-    
-                                        $code_error = "error_ejecucionQuery";
-                                        $mensaje = "Hubo un error editar el servicio.";
-                                        return false; 
-    
-                                    }else{
-    
-                                        $mensaje = "Solicitud ejecutada con exito";
-                                        return true;
-                                        
-                                    }
-    
+                                $stmt = $this->conn->prepare($queryEditar);
+                                $stmt->bind_param("ssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION
+                                ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->SERVICIO_ID);
+                                if(!$stmt->execute()){
+
+                                    $code_error = "error_ejecucionQuery";
+                                    $mensaje = "Hubo un error editar el servicio.";
+                                    return false; 
+
+                                }else{
+
+                                    $mensaje = "Solicitud ejecutada con exito";
+                                    return true;
+                                    
                                 }
+    
+                                
 
                             }else{
 

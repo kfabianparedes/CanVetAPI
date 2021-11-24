@@ -137,7 +137,6 @@
                 $servicioC->SERVICIO_DESCRIPCION = '';
             $servicioC->MASCOTA_ID = $datos->MASCOTA_ID;
             $servicioC->SERVICIO_ID = $datos->SERVICIO_ID;
-            $servicioC->SERVICIO_FECHA_HORA = $datos->SERVICIO_FECHA_HORA." ".$datos->HORA_SERVICIO;
             $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
             $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
             $servicioC->MDP_ID = $datos->MDP_ID;
@@ -286,66 +285,6 @@
                     if($d->MDP_ID <=0){
                         $m = "El valor de MDP_ID debe no debe ser negativo o igual a 0.";
                         return false;
-                    }
-                }
-            }
-
-            //validación de la variable SERVICIO_FECHA_HORA
-            if(!isset($d->SERVICIO_FECHA_HORA)){
-                $m = "La variable SERVICIO_FECHA_HORA no ha sido enviada.";
-                return false; 
-            }else{
-                if(($d->SERVICIO_FECHA_HORA=="")){
-                    $m = "La variable SERVICIO_FECHA_HORA no puede ser null.";
-                    return false;
-                }else{
-                    if(!verificarFecha($d->SERVICIO_FECHA_HORA)){
-                        $m = "La variable SERVICIO_FECHA_HORA no contiene una fecha válida o no tiene el formato permitido.";
-                        return false;
-                    }else{
-                        if(($d->SERVICIO_FECHA_HORA) < date('Y-m-d')){
-                            $m = "La variable SERVICIO_FECHA_HORA no puede ser menor a la fecha actual.";
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            //VALIDAMOS LA VARIABLE HORA_SERVICIO            
-            if(!isset($d->HORA_SERVICIO)){
-                $m = "La variable HORA_SERVICIO no ha sido enviada.";
-                return false; 
-            }else{
-                if($d->HORA_SERVICIO==""){
-                    $m = "La variable HORA_SERVICIO no puede ser null.";
-                    return false;
-                }else{
-                    if(!preg_match("/^([0-1][0-9]|[2][0-3])[\:]([0-5][0-9])[\:]([0-5][0-9])$/",$d->HORA_SERVICIO)){
-                        $m = "La variable HORA_SERVICIO no contiene una hora válida o no tiene el formato correcto.";
-                        return false;
-                    } else {
-                        $get_hora = getdate();
-                        $hora = $get_hora["hours"];
-                        $minuto = $get_hora["minutes"];
-                        $hora_cliente = explode(':', $d->HORA_SERVICIO );
-                        $hora_form_cliente = $hora_cliente[0];
-                        $minuto_form_cliente = $hora_cliente[1];
-                        $hoy = explode('-', $d->SERVICIO_FECHA_HORA);
-                        
-                        if($get_hora["mday"] == $hoy[2]){
-                            if($hora > $hora_form_cliente ) {
-                                $m = "La variable1 HORA_SERVICIO debe ser mayor a la hora actual.";
-                                return false;
-                            }else{
-                                if($hora >= $hora_form_cliente ){
-                                    if ($minuto >= $minuto_form_cliente ){
-                                        $m = "La variable2 HORA_SERVICIO debe ser mayor a la hora actual.";
-                                        return false;
-                                    }
-                                }
-                                
-                            }
-                        }
                     }
                 }
             }
