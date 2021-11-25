@@ -500,7 +500,13 @@
 
 
         }
-        if($importeTotalDetalleVenta != $VENTA->VENTA_TOTAL){
+
+        $extra = 0 ; 
+        if($VENTA->METODO_DE_PAGO_ID == 2){
+            $extra = 0.05 ; 
+        }
+
+        if($importeTotalDetalleVenta + ($importeTotalDetalleVenta * $extra) != $VENTA->VENTA_TOTAL + ($importeTotalDetalleVenta * $extra){
             
             $m ="La suma de los importes de los detalles de venta no es igual al total de la venta.";
             return false; 
