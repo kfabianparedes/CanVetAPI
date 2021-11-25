@@ -52,7 +52,7 @@
             $mensaje = "la variable PROV_ESTADO no ha sido enviada.";
             return false;
         }else{  
-            if($d->PROV_ESTADO == ""){
+            if($d->PROV_ESTADO == "" && $d->PROV_ESTADO!=0 ){
                 $mensaje = "la variable PROV_ESTADO no puede estar vacía o ser null.";
                 return false; 
             }else{
