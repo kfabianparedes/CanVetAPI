@@ -506,7 +506,7 @@
             $extra = 0.05 ; 
         }
 
-        if($importeTotalDetalleVenta + ($importeTotalDetalleVenta * $extra) != $VENTA->VENTA_TOTAL + ($importeTotalDetalleVenta * $extra){
+        if($importeTotalDetalleVenta + ($importeTotalDetalleVenta * $extra) != $VENTA->VENTA_TOTAL){
             
             $m ="La suma de los importes de los detalles de venta no es igual al total de la venta.";
             return false; 
