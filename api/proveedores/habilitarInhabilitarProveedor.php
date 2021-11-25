@@ -60,8 +60,8 @@
                    $mensaje = "la variable PROV_ESTADO solo acepta caracteres numéricos.";
                    return false;  
                 }else{
-                    if($d->PROV_ESTADO < 1  || $d->PROV_ESTADO > 2){
-                        $mensaje = "la variable PROV_ESTADO no puede ser menor a 1 o mayor a 2.";
+                    if($d->PROV_ESTADO < 0  || $d->PROV_ESTADO > 1){
+                        $mensaje = "la variable PROV_ESTADO no puede ser menor a 0 o mayor a 1.";
                         return false; 
                     }
                 }
