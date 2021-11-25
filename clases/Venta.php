@@ -272,7 +272,7 @@
                 $stmt->bind_param("s",$this->USU_ID);
                 $stmt->execute();
                 $resultHoraApertura = get_result($stmt);
-                if(count($resultHoraApertura) < 1){
+                if(count($resultHoraApertura) <= 0){
 
                     $code_error = "error_ErrorDeCajaNoAbierta";
                     $mensaje = "El usuario no tiene ninguna caja abierta.";
@@ -352,7 +352,7 @@
                                 
                                     if (count($result) > 0) {                
                                         while ($dato = array_shift($result)) {    
-                                            $datosServicioEfectivo += $dato["SERVICIO_PRECIO"];
+                                            $datosServicioEfectivo += $dato["SERVICIO_PAGO_DEUDA"];
                                         }
                                     }
                                     //servicios tarjeta
@@ -370,7 +370,7 @@
                                     
                                         if (count($result) > 0) {                
                                             while ($dato = array_shift($result)) {    
-                                                $datosServicioTarjeta += $dato["SERVICIO_PRECIO"];
+                                                $datosServicioTarjeta += $dato["SERVICIO_PAGO_DEUDA"];
                                             }
                                         }
                                         //servicios yape
@@ -388,7 +388,7 @@
                                         
                                             if (count($result) > 0) {                
                                                 while ($dato = array_shift($result)) {    
-                                                    $datosServicioYape += $dato["SERVICIO_PRECIO"];
+                                                    $datosServicioYape += $dato["SERVICIO_PAGO_DEUDA"];
                                                 }
                                             }
                                         
