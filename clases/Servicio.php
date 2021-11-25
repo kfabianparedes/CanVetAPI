@@ -242,10 +242,11 @@
             $queryValidarIdServicio = "SELECT * FROM SERVICIO WHERE SERVICIO_ID = ?"; 
             $queryEditar ="
                 UPDATE SERVICIO SET SERVICIO_PRECIO = ?, SERVICIO_DESCRIPCION = ?, SERVICIO_TIPO = ?,
-                TIPO_SERVICIO_ID = ?, MASCOTA_ID = ?, SERVICIO_ADELANTO = ?, MDP_ID = ? WHERE SERVICIO_ID = ?
+                TIPO_SERVICIO_ID = ?, MASCOTA_ID = ?, SERVICIO_ADELANTO = ?, MDP_ID = ?,COMPROBANTE_ID = ? WHERE SERVICIO_ID = ?
             ";
             $queryValidarTs =" SELECT * FROM TIPO_SERVICIO WHERE TIPO_SERVICIO_ID = ?";
             $queryValidarMas =" SELECT * FROM MASCOTA WHERE MAS_ID = ?";
+            $queryValidarCom =" SELECT * FROM COMPROBANTE WHERE COMPROBANTE_ID = ?";
             $queryValidarMDP =" SELECT * FROM METODO_PAGO WHERE MDP_ID = ?";
             // $queryDisponibilidadHorarios = "
             // SELECT * FROM SERVICIO WHERE (? 
@@ -278,28 +279,41 @@
                             $stmtMDP = $this->conn->prepare($queryValidarMDP);
                             $stmtMDP->bind_param("s",$this->MDP_ID);
                             $stmtMDP->execute();
-                            $resultMDP = get_result($stmtMDP); 
+                            $resultMDP = get_result($stmtMDP);
                             
                             if (count($resultMDP) > 0) {
-
+ 
+                                $stmtCom = $this->conn->prepare($queryValidarCom);
+                                $stmtCom->bind_param("s",$this->COMPROBANTE_ID);
+                                $stmtCom->execute();
+                                $resultCom = get_result($stmtCom); 
+                                    
+                                if (count($resultMDP) > 0) {
                                 
-                                $stmt = $this->conn->prepare($queryEditar);
-                                $stmt->bind_param("ssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION
-                                ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->SERVICIO_ID);
-                                if(!$stmt->execute()){
+                                    
+                                    $stmt = $this->conn->prepare($queryEditar);
+                                    $stmt->bind_param("ssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION
+                                    ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->COMPROBANTE_ID,$this->SERVICIO_ID);
+                                    if(!$stmt->execute()){
 
-                                    $code_error = "error_ejecucionQuery";
-                                    $mensaje = "Hubo un error editar el servicio.";
-                                    return false; 
+                                        $code_error = "error_ejecucionQuery";
+                                        $mensaje = "Hubo un error editar el servicio.";
+                                        return false; 
+
+                                    }else{
+
+                                        $mensaje = "Solicitud ejecutada con exito";
+                                        return true;
+                                        
+                                    }
 
                                 }else{
-
-                                    $mensaje = "Solicitud ejecutada con exito";
-                                    return true;
                                     
+                                    $code_error = "error_NoExistenciaDeComprobante";
+                                    $mensaje = "El id ingresado del comprobante ingresado no existe.";
+                                    return false;
+
                                 }
-    
-                                
 
                             }else{
 

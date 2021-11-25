@@ -139,6 +139,7 @@
             $servicioC->SERVICIO_ID = $datos->SERVICIO_ID;
             $servicioC->SERVICIO_TIPO = $datos->SERVICIO_TIPO;
             $servicioC->TIPO_SERVICIO_ID = $datos->TIPO_SERVICIO_ID;
+            $servicioC->COMPROBANTE_ID = $datos->COMPROBANTE_ID;
             $servicioC->MDP_ID = $datos->MDP_ID;
             $servicioC->SERVICIO_ADELANTO = $datos->SERVICIO_ADELANTO/100;
 
@@ -220,6 +221,22 @@
                 }else{
                     if($d->TIPO_SERVICIO_ID <=0){
                         $m = "El valor de TIPO_SERVICIO_ID debe no debe ser negativo o igual a 0.";
+                        return false;
+                    }
+                }
+            }
+
+            //validamos el COMPROBANTE_ID
+            if(!isset($d->COMPROBANTE_ID)){
+                $m = "El campo COMPROBANTE_ID no ha sido enviado";
+                return false;
+            }else{
+                if(!is_numeric($d->COMPROBANTE_ID)){
+                    $m = "El campo COMPROBANTE_ID debe ser numérico";
+                    return false;
+                }else{
+                    if($d->COMPROBANTE_ID <=0){
+                        $m = "El valor de COMPROBANTE_ID debe no debe ser negativo o igual a 0.";
                         return false;
                     }
                 }
