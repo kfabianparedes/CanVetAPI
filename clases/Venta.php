@@ -475,8 +475,13 @@
         }
         function gananciasSemanales(&$mensaje,&$code_error,&$exito){
             
-            $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO =?"; 
-            $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SERVICIO_ESTADO = 1';
+            $query = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m-%d") =?'; 
+            // $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SERVICIO_ESTADO = 1';
+            
+            $queryServicio='SELECT SERVICIO_ID,if(DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d") = ?,SERVICIO_ADELANTO,
+            if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
+            FROM SERVICIO WHERE ((DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d") = ?) 
+							OR (DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SERVICIO_ESTADO = 1))';
             $datosVentas = 0;
             $datosServicios = 0; 
             try {
@@ -503,7 +508,7 @@
                     $mensaje = "Solicitud ejecutada con exito";
 
                     $stmt = $this->conn->prepare($queryServicio);
-                    $stmt->bind_param("s",$this->VENTA_FECHA_REGISTRO);
+                    $stmt->bind_param("sss",$this->VENTA_FECHA_REGISTRO,$this->VENTA_FECHA_REGISTRO,$this->VENTA_FECHA_REGISTRO);
                     if(!$stmt->execute()){
 
                         $code_error = "error_ejecucionQuery";
@@ -516,7 +521,7 @@
                     
                         if (count($result) > 0) {                
                             while ($dato = array_shift($result)) {    
-                                $datosServicios += $dato["SERVICIO_PRECIO"];
+                                $datosServicios += $dato["SERVICIO_PAGO_DEUDA"];
                             }
                         }
 
