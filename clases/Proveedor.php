@@ -107,7 +107,7 @@ class Proveedor{
 
         $queryVerificarExistenciaRuc = "select * from PROVEEDOR where PROV_RUC = ? ";
         $queryVerificarExistenciaNombreEmpresa = "select * from PROVEEDOR where PROV_EMPRESA_PROVEEDORA = ? ";
-        $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDORA,PROV_NUMERO_CONTACTO,PROV_ESTADO) VALUES(?,?,?,0)"; 
+        $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDORA,PROV_NUMERO_CONTACTO,PROV_ESTADO) VALUES(?,?,?,1)"; 
        
 
         try {
