@@ -238,13 +238,25 @@
             $queryEfectivo = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 1 AND USU_ID = ?" ; 
             $queryTarjeta = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 2 AND USU_ID = ?" ; 
             $queryYape = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 3 AND USU_ID = ?" ; 
-            $queryServicioEfectivo = 'SELECT * FROM SERVICIO WHERE (SERVICIO_FECHA_HORA BETWEEN ? AND ?)
-             AND MDP_ID = 1 AND SERVICIO_ESTADO = 1 AND USU_ID = ? ' ; 
-             $queryServicioTarjeta = 'SELECT * FROM SERVICIO WHERE (SERVICIO_FECHA_HORA BETWEEN ? AND ?) 
-             AND MDP_ID = 2 AND SERVICIO_ESTADO = 1 AND USU_ID = ?' ; 
-             $queryServicioYape = 'SELECT * FROM SERVICIO WHERE (SERVICIO_FECHA_HORA BETWEEN ? AND ?) 
-             AND MDP_ID = 3 AND SERVICIO_ESTADO = 1 AND USU_ID = ?' ; 
-            $queryBuscarHoraRegistroCaja = "SELECT CAJA_APERTURA FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NULL";
+            $queryServicioEfectivo = '
+            SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
+            if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
+            FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
+                                    OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
+            AND MDP_ID = 1 AND USU_ID = ?; ' ; 
+             $queryServicioTarjeta = '
+             SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
+             if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
+             FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
+                                     OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
+             AND MDP_ID = 2 AND USU_ID = ?;' ; 
+             $queryServicioYape = '
+             SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
+             if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
+             FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
+                                     OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
+             AND MDP_ID = 3 AND USU_ID = ?;' ; 
+            $queryBuscarHoraRegistroCaja = "SELECT CAJA_APERTURA,CAJA_MONTO_INICIAL FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NULL";
 
             $datosVentasTarjeta = 0;
             $datosVentasEfectivo = 0;
@@ -252,6 +264,7 @@
             $datosServicioEfectivo = 0;
             $datosServicioTarjeta = 0;
             $datosServicioYape = 0;
+            $monto_inicial = 0; 
             $hora_finalización = date("Y-m-d H:i:s");
             try {
                 //ventas efectivo
@@ -259,7 +272,7 @@
                 $stmt->bind_param("s",$this->USU_ID);
                 $stmt->execute();
                 $resultHoraApertura = get_result($stmt);
-                if(count($resultHoraApertura) <= 0){
+                if(count($resultHoraApertura) < 1){
 
                     $code_error = "error_ErrorDeCajaNoAbierta";
                     $mensaje = "El usuario no tiene ninguna caja abierta.";
@@ -268,6 +281,7 @@
                 }else{
 
                     $this->VENTA_FECHA_REGISTRO = array_shift($resultHoraApertura)['CAJA_APERTURA'] ; 
+                    $monto_inicial = array_shift($resultHoraApertura)['CAJA_MONTO_INICIAL'] ; 
                      //ventas efectivo
                     $stmt = $this->conn->prepare($queryEfectivo);
                     $stmt->bind_param("sss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
@@ -325,7 +339,7 @@
                                 //servicios
                                 //efectivo
                                 $stmt = $this->conn->prepare($queryServicioEfectivo);
-                                $stmt->bind_param("sss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
+                                $stmt->bind_param("sssssss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
                                 if(!$stmt->execute()){
 
                                     $code_error = "error_ejecucionQuery";
@@ -343,7 +357,7 @@
                                     }
                                     //servicios tarjeta
                                     $stmt = $this->conn->prepare($queryServicioTarjeta);
-                                    $stmt->bind_param("sss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
+                                    $stmt->bind_param("sssssss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
                                     if(!$stmt->execute()){
 
                                         $code_error = "error_ejecucionQuery";
@@ -361,7 +375,7 @@
                                         }
                                         //servicios yape
                                         $stmt = $this->conn->prepare($queryServicioYape);
-                                        $stmt->bind_param("sss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
+                                        $stmt->bind_param("sssssss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
                                         if(!$stmt->execute()){
 
                                             $code_error = "error_ejecucionQuery";
@@ -391,7 +405,7 @@
 
                
                 $datos = array("gananciasVentasEfectivo" => $datosVentasEfectivo, "gananciasVentasTarjeta" => $datosVentasTarjeta, "gananciasVentasYape" => $datosVentasYape,
-                "gananciasServiciosEfectivo" => $datosServicioEfectivo, "gananciasServiciosTarjeta" => $datosServicioTarjeta, "gananciasServiciosYape" => $datosServicioYape);
+                "gananciasServiciosEfectivo" => $datosServicioEfectivo, "gananciasServiciosTarjeta" => $datosServicioTarjeta, "gananciasServiciosYape" => $datosServicioYape,"montoInicial"=>$monto_inicial);
 
                 return $datos;
 
@@ -734,7 +748,7 @@
                                                 }
                                             }
                                             #SE PONEN LOS SERVICIOS OBTENIDOS EN EL ARRAY DE MES ANTERIOR
-                                            array_push($datosMesAnterior,array("SERVICIOS" => $datos));
+                                            array_push($datosMesAnterior    ,array("SERVICIOS" => $datos));
                                             
                                             #LIMPIAMOS LA VARIABLE DATOS PARA REUTILIZARLA PARA LOS OTROS REPORTES 
                                             $datos = [];
