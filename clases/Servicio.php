@@ -292,7 +292,7 @@
                                 
                                     
                                     $stmt = $this->conn->prepare($queryEditar);
-                                    $stmt->bind_param("ssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION
+                                    $stmt->bind_param("sssssssss",$this->SERVICIO_PRECIO,$this->SERVICIO_DESCRIPCION
                                     ,$this->SERVICIO_TIPO,$this->TIPO_SERVICIO_ID,$this->MASCOTA_ID,$this->SERVICIO_ADELANTO,$this->MDP_ID,$this->COMPROBANTE_ID,$this->SERVICIO_ID);
                                     if(!$stmt->execute()){
 
