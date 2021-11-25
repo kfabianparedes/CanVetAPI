@@ -223,7 +223,11 @@
         }
 
         function listarClientes(&$mensaje,&$code_error,&$exito){
-            $query = "SELECT * FROM CLIENTE";
+            $query = "
+            SELECT CLI.CLIENTE_ID, CLI.CLIENTE_NOMBRES, CLI.CLIENTE_APELLIDOS, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DIRECCION, CLI.CLIENTE_CORREO, 
+            if((SELECT COUNT(*) FROM DATOS_JURIDICOS WHERE CLIENTE_ID = CLI.CLIENTE_ID) = 1, DJ.DJ_RUC, CLI.CLIENTE_DNI) as CLIENTE_DNI FROM CLIENTE CLI 
+            LEFT OUTER JOIN DATOS_JURIDICOS DJ ON (DJ.CLIENTE_ID = CLI.CLIENTE_ID)
+            ";
             $datos = array();
             try {
                 $stmt = $this->conn->prepare($query);
