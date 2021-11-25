@@ -40,6 +40,32 @@ class Proveedor{
         } 
     }
 
+    function listarProveedorActivo(&$mensaje,&$exito,&$code_error){
+        $query = "SELECT * FROM PROVEEDOR WHERE PROV_ESTADO = 1 ";
+        $datos= [];
+        try{
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $result = get_result($stmt); 
+            
+            if (count($result) > 0) {                
+                while ($dato = array_shift($result)) {    
+                    $datos[] = $dato;
+                }
+            }
+            $mensaje = "Solicitud ejecutada con exito";
+            $exito = true;
+            return $datos;
+    
+        }catch(Throwable  $e){
+            $code_error = "error_deBD";
+            $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+            $exito = false;
+    
+            return $datos;
+        } 
+    }
+
     function actualizarProveedor(&$mensaje,&$code_error){
 
         $queryVerificarExistenciaId = "SELECT * from PROVEEDOR WHERE PROV_ID = ? ";
