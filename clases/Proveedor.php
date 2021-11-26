@@ -200,7 +200,7 @@ class Proveedor{
 
                 }else{
                     $code_error = "error_existenciaId";
-                    $mensaje = "El id de la empresa ingresado no existe.";
+                    $mensaje = "El id del proveedor ingresado no existe.";
                     return false; 
                 }
                 

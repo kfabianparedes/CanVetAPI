@@ -564,6 +564,40 @@
                 return false;
             }
         }
+        function habilitarInhabilitarUsuario(&$mensaje,&$code_error){
+
+            $queryVerificarExistenciaId = "SELECT * from USUARIOS WHERE USU_ID = ? ";
+            $query = "UPDATE USUARIOS SET USU_ESTADO = ? WHERE USU_ID = ?";
+    
+                try {
+                    $stmtId = $this->conn->prepare($queryVerificarExistenciaId);
+                    $stmtId->bind_param("s",$this->USU_ID);
+                    $stmtId->execute();
+                    $resultId = get_result($stmtId);
+    
+                    if(count($resultId) > 0){
+    
+                        //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA CATEGORIA 
+                        $stmt = $this->conn->prepare($query);
+                        $stmt->bind_param("ss",$this->USU_ESTADO,$this->USU_ID);
+                        $stmt->execute();
+    
+                        $mensaje = "Se ha actualizado el usuario con éxito";
+                        return true;
+    
+                    }else{
+                        $code_error = "error_existenciaId";
+                        $mensaje = "El id del usuario no existe.";
+                        return false; 
+                    }
+                    
+                } catch (Throwable $th) {
+                    $code_error = "error_deBD";
+                    $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                    return false;
+                }
+    
+        }
     }
 
 ?>
