@@ -349,7 +349,7 @@ class Producto{
             if(count($resultProductoId) > 0){
 
                 $stmt = $this->conn->prepare($queryAumentaStock);
-                $stmt->bind_param("ss",$this->PRO_STOCK,$this->PRO_ID);
+                $stmt->bind_param("s",$this->PRO_ID);
                 if(!$stmt->execute()){
                     $code_error = "error_ejecucionQuery";
                     $mensaje = "Hubo un error al aumentar el stock de los productos.";
@@ -370,6 +370,43 @@ class Producto{
             $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
             return false;
         }
+    }
+
+    function disminuirStock(&$mensaje,&$code_error){
+        
+        $validarExistenciaIdProducto ="SELECT * FROM PRODUCTO WHERE PRO_ID = ?";
+        $queryAumentaStock ="UPDATE PRODUCTO SET PRO_STOCK = PRO_STOCK + ? WHERE PRO_ID = ?";
+     
+        try {
+            $stmtExistenciaProId = $this->conn->prepare($validarExistenciaIdProducto);
+            $stmtExistenciaProId->bind_param("s",$this->PRO_ID);
+            $stmtExistenciaProId->execute();
+            $resultProductoId = get_result($stmtExistenciaProId);
+
+            if(count($resultProductoId) > 0){
+                $stmt = $this->conn->prepare($queryAumentaStock);
+                $stmt->bind_param("ss",$this->PRO_STOCK,$this->PRO_ID);
+                if(!$stmt->execute()){
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error al disminuir el stock de los productos.";
+                    return false;       
+                }else{
+                    $mensaje = "Se ha disminuido el stock del producto con éxito";
+                    return true;
+                }
+
+            }else{
+                $code_error = "error_ErrorExistenciaProducto";
+                $mensaje = "El id del producto ingresado no existe.";
+                return false;
+            }
+            
+        } catch (Throwable $th) {
+            $code_error = "error_deBD";
+            $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+            return false;
+        }
+
     }
 }
 ?>

@@ -235,9 +235,9 @@
         }
         function gananciasDiariasVenta(&$mensaje,&$code_error,&$exito){
 
-            $queryEfectivo = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 1 AND USU_ID = ?" ; 
-            $queryTarjeta = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 2 AND USU_ID = ?" ; 
-            $queryYape = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 3 AND USU_ID = ?" ; 
+            $queryEfectivo = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 1 AND USU_ID = ? AND VENTA_ESTADO = 1" ; 
+            $queryTarjeta = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 2 AND USU_ID = ? AND VENTA_ESTADO = 1" ; 
+            $queryYape = "SELECT * FROM VENTA WHERE (VENTA_FECHA_REGISTRO  BETWEEN ? AND ? ) AND METODO_DE_PAGO_ID = 3 AND USU_ID = ? AND VENTA_ESTADO = 1"  ; 
             $queryServicioEfectivo = '
             SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
             if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
@@ -421,7 +421,7 @@
         }
         function gananciasDiariasVentaPorUsuario(&$mensaje,&$code_error,&$exito){
 
-            $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND USU_ID = ?"; 
+            $query = "SELECT * FROM VENTA WHERE VENTA_FECHA_REGISTRO = ? AND USU_ID = ? AND VENTA_ESTADO = 1"; 
             $queryValidarUsuId = "SELECT * FROM USUARIOS WHERE USU_ID = ?";
             $datos = 0;
             try {
@@ -475,7 +475,7 @@
         }
         function gananciasSemanales(&$mensaje,&$code_error,&$exito){
             
-            $query = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m-%d") =?'; 
+            $query = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m-%d") =? AND VENTA_ESTADO = 1'; 
             // $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ? AND SERVICIO_ESTADO = 1';
             
             $queryServicio='SELECT SERVICIO_ID,if(DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d") = ?,SERVICIO_ADELANTO,
@@ -543,7 +543,7 @@
         }
         function gananciasMensuales(&$mensaje,&$code_error,&$exito){
 
-            $queryVenta = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m") = ?'; 
+            $queryVenta = 'SELECT * FROM VENTA WHERE DATE_FORMAT(VENTA_FECHA_REGISTRO,"%Y-%m") = ? AND VENTA_ESTADO = 1'; 
             $queryServicio = 'SELECT * FROM SERVICIO WHERE DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m") = ? AND SERVICIO_ESTADO = 1';
             $datos = 0;
             try {
@@ -616,7 +616,7 @@
             INNER JOIN USUARIOS USU ON (V.USU_ID = USU.USU_ID)
             INNER JOIN CLIENTE CLI ON (V.CLIENTE_ID = CLI.CLIENTE_ID) 
 			left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID) 
-            WHERE DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m") = ?
+            WHERE DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m") = ? AND V.VENTA_ESTADO = 1
             ORDER BY V.VENTA_FECHA_REGISTRO DESC;
             ';
 
@@ -794,7 +794,7 @@
             INNER JOIN USUARIOS USU ON (V.USU_ID = USU.USU_ID)
             INNER JOIN CLIENTE CLI ON (V.CLIENTE_ID = CLI.CLIENTE_ID) 
 			left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID) 
-            WHERE DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m-%d") = ?
+            WHERE DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m-%d") = ? AND V.VENTA_ESTADO = 1
             ORDER BY V.VENTA_FECHA_REGISTRO DESC;
             ';
 
@@ -885,6 +885,36 @@
                 return $datos ;
 
             }
+        }
+        function deshabilitarVenta(&$mensaje,&$code_error){
+
+            $query = "UPDATE VENTA SET VENTA_ESTADO = 0 WHERE VENTA_ID = ?";
+            $verificarExistenciaIdVenta = "select * from VENTA where VENTA_ID = ?"; 
+                try {
+                    $stmtId = $this->conn->prepare($verificarExistenciaIdVenta);
+                    $stmtId->bind_param("s",$this->VENTA_ID);
+                    $stmtId->execute();
+                    $resultId = get_result($stmtId);
+                    
+                    if(count($resultId) > 0){
+                        //EJECTUAMOS LA CONSULTA PARA ACTUALIZAR EL ESTADO DE LA CATEGORIA 
+                        $stmt = $this->conn->prepare($query);
+                        $stmt->bind_param("s",$this->VENTA_ID);
+                        $stmt->execute();
+    
+                        $mensaje = "Se ha actualizado la venta con éxito";
+                        return true;
+                    }else{
+                        $code_error = "error_existenciaId";
+                        $mensaje = "La venta no existe.";
+                        return false; 
+                    }
+                    
+                } catch (Throwable $th) {
+                    $code_error = "error_deBD";
+                    $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                    return false;
+                }
         }
     }
 
