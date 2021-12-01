@@ -128,7 +128,9 @@
 
         if(esValido($mensaje,$datos)){
             $VENTA = $datos->VENTA;
-
+            if($VENTA->METODO_DE_PAGO_ID == 2){
+                $VENTA->VENTA_TOTAL = $VENTA->VENTA_TOTAL + ($VENTA->VENTA_TOTAL * 0.05);
+            }
             $ventaC->VENTA_FECHA_EMISION_COMPROBANTE = $VENTA->VENTA_FECHA_EMISION_COMPROBANTE;
             $ventaC->VENTA_FECHA_REGISTRO = $VENTA->VENTA_FECHA_REGISTRO;
             $ventaC->VENTA_NRO_SERIE = $VENTA->VENTA_NRO_SERIE;
@@ -501,17 +503,11 @@
 
         }
 
-        $extra = 0 ; 
-        if($VENTA->METODO_DE_PAGO_ID == 2){
-            $extra = 0.05 ; 
-        }
-
-        if($importeTotalDetalleVenta + ($importeTotalDetalleVenta * $extra) != $VENTA->VENTA_TOTAL){
+        if($importeTotalDetalleVenta != $VENTA->VENTA_TOTAL){
             
             $m ="La suma de los importes de los detalles de venta no es igual al total de la venta.";
             return false; 
         }
-
         return true; 
     }
 ?>
