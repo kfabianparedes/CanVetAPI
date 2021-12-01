@@ -134,7 +134,6 @@
             $ventaC = new Venta($db);
             $ventaC->VENTA_ID = $datos->VENTA_ID ; 
             $ventaC->deshabilitarVenta($mensaje, $code_error);
-            echo json_encode($datos);
 
             if($exito == true){
 
@@ -152,14 +151,13 @@
                         $productoC->PRO_ID = json_encode($listaDetVenta[$i]['PRO_ID']);
                         
                         $productoC->PRO_STOCK = json_encode($listaDetVenta[$i]['DET_CANTIDAD']);
-                        echo  $productoC->PRO_STOCK;
                         $productoC->disminuirStock($mensaje,$code_error);
 
                         if($exito == false) break;
                     }
 
                     if($exito){
-
+                        $mensaje = "La venta se ha deshabilitado correctamente";
                         header('HTTP/1.1 200 OK');
                         $db->commit(); // SI NO EXISTE NINGÚN ERROR SE EJECUTA LA TRANSACCIÓN
                         
