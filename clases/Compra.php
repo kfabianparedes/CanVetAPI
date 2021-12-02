@@ -96,7 +96,8 @@
                         $stmtExistenciaComprobanteId->execute();
                         $resultComprobanteId = get_result($stmtExistenciaComprobanteId);
                         //validamos si existe el comprobante ingresado
-                        if(count($resultComprobanteId) > 0){
+                        json_encode(array("resultado"=>$resultComprobanteId));
+                        if(count($resultComprobanteId) <= 0){
                             
 
                             $stmtIngresarCompra = $this->conn->prepare($queryIngresarCompra);
