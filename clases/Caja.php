@@ -16,6 +16,7 @@
         public $CAJA_MONTO_EFECTIVO_SERVICIOS;
         public $CAJA_MONTO_YAPE_SERVICIOS;
         public $CAJA_MONTO_TARJETA_SERVICIOS;
+        public $CAJA_DESCRIPCION ; 
         public $USU_ID;
 
         public function __construct($db){
@@ -75,7 +76,7 @@
             $existeCaja = "SELECT * FROM CAJA WHERE CAJA_CODIGO = ?"; 
             $query = "UPDATE CAJA SET 
                 CAJA_DESCUENTO_GASTOS = ? , CAJA_MONTO_EFECTIVO_VENTAS = ?, CAJA_MONTO_TARJETA_VENTAS = ?, CAJA_MONTO_YAPE_VENTAS = ?, CAJA_MONTO_EFECTIVO_SERVICIOS = ?,
-                CAJA_MONTO_TARJETA_SERVICIOS = ?, CAJA_MONTO_YAPE_SERVICIOS = ?, CAJA_MONTO_FINAL = ?, CAJA_CIERRE = ? WHERE CAJA_CODIGO = ?
+                CAJA_MONTO_TARJETA_SERVICIOS = ?, CAJA_MONTO_YAPE_SERVICIOS = ?, CAJA_MONTO_FINAL = ?, CAJA_CIERRE = ?, CAJA_DESCRIPCION = ? WHERE CAJA_CODIGO = ?
             ";
             $cajaCerrada = "SELECT * FROM CAJA WHERE CAJA_MONTO_FINAL IS NOT NULL AND CAJA_CODIGO = ?" ;
             setlocale(LC_ALL, 'es_PE');
@@ -97,9 +98,9 @@
                     if(count($resultCajaCerrada) == 0){
                         
                         $stmt = $this->conn->prepare($query);
-                        $stmt->bind_param("ssssssssss",$this->CAJA_DESCUENTO_GASTOS,$this->CAJA_MONTO_EFECTIVO_VENTAS,$this->CAJA_MONTO_TARJETA_VENTAS,
+                        $stmt->bind_param("sssssssssss",$this->CAJA_DESCUENTO_GASTOS,$this->CAJA_MONTO_EFECTIVO_VENTAS,$this->CAJA_MONTO_TARJETA_VENTAS,
                         $this->CAJA_MONTO_YAPE_VENTAS,$this->CAJA_MONTO_EFECTIVO_SERVICIOS,$this->CAJA_MONTO_TARJETA_SERVICIOS,$this->CAJA_MONTO_YAPE_SERVICIOS,$this->CAJA_MONTO_FINAL
-                        ,$this->CAJA_CIERRE,$this->CAJA_CODIGO);
+                        ,$this->CAJA_CIERRE,$this->CAJA_DESCRIPCION,$this->CAJA_CODIGO);
                         //verificamos que se haya realizado correctamente el ingreso de la compra
                         if(!$stmt->execute()){
 

@@ -130,6 +130,10 @@
             $exito_ = false;
             $caja = new Caja($db);
             setlocale(LC_ALL, 'es_PE');
+            if(isset($datos->CAJA_DESCRIPCION))
+                $caja->CAJA_DESCRIPCION = $datos->CAJA_DESCRIPCION;
+            else    
+                $caja->CAJA_DESCRIPCION = '';  
             $caja->CAJA_CIERRE = $datos->CAJA_CIERRE;
             $caja->CAJA_MONTO_FINAL = $datos->CAJA_MONTO_FINAL/100;
             $caja->CAJA_DESCUENTO_GASTOS = $datos->CAJA_DESCUENTO_GASTOS/100;
@@ -182,6 +186,12 @@
                 }
             }
 
+            if(isset($d->CAJA_DESCRIPCION)){
+                if(obtenerCantidadDeCaracteres($d->CAJA_DESCRIPCION)>500){
+                    $m = "La variable CAJA_DESCRIPCION supera los 500 caracteres permitidos.";
+                    return false;
+                }
+            }
             if(!isset($d->CAJA_MONTO_INICIAL)){
                 $m = "La variable CAJA_MONTO_INICIAL no ha sido enviada.";
                 return false; 
