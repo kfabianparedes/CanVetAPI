@@ -256,7 +256,8 @@
              FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
                                      OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
              AND MDP_ID = 3 AND USU_ID = ?;' ; 
-            $queryBuscarHoraRegistroCaja = "SELECT CAJA_APERTURA,CAJA_MONTO_INICIAL FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NULL";
+            $queryBuscarHoraRegistroCaja = "SELECT CAJA_APERTURA, CAJA_MONTO_INICIAL FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NULL";
+            $queryMontoInicial = "SELECT  CAJA_MONTO_INICIAL FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NULL";
 
             $datosVentasTarjeta = 0;
             $datosVentasEfectivo = 0;
@@ -281,7 +282,11 @@
                 }else{
 
                     $this->VENTA_FECHA_REGISTRO = array_shift($resultHoraApertura)['CAJA_APERTURA'] ; 
-                    $monto_inicial = array_shift($resultHoraApertura)['CAJA_MONTO_INICIAL'] ; 
+                    $stmtMontoInicial = $this->conn->prepare($queryMontoInicial);
+                    $stmtMontoInicial->bind_param("s",$this->USU_ID);
+                    $stmtMontoInicial->execute();
+                    $resulMontoInicial = get_result($stmtMontoInicial);
+                    $monto_inicial = array_shift($resulMontoInicial)['CAJA_MONTO_INICIAL'] ;
                      //ventas efectivo
                     $stmt = $this->conn->prepare($queryEfectivo);
                     $stmt->bind_param("sss",$this->VENTA_FECHA_REGISTRO,$hora_finalización,$this->USU_ID);
