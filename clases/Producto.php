@@ -71,8 +71,8 @@ class Producto{
         $verificarExistenciaIdProducto = "SELECT * FROM PRODUCTO WHERE PRO_ID = ?"; 
         $verificarIdCategoria = "SELECT * FROM CATEGORIA WHERE CAT_ID =?"; 
         $verificarIdProveedor = "SELECT * FROM PROVEEDOR WHERE PROV_ID =?"; 
-        $queryEditarSinPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ?,PROV_ID = ? where PRO_ID = ?"; //falta acabar
-        $queryEditarConPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ? ,PROV_ID = ?,PRO_PRECIO_ANTERIOR = ?,PRO_FECHA_CAMBIO_PRECIO = ? where PRO_ID = ?"; //falta acabar
+        $queryEditarSinPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ?,PROV_ID = ? , PRO_STOCK = ? where PRO_ID = ?"; 
+        $queryEditarConPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ? ,PROV_ID = ?,PRO_PRECIO_ANTERIOR = ?, PRO_FECHA_CAMBIO_PRECIO = ? , PRO_STOCK = ? where PRO_ID = ?"; 
         try {
             
             $stmtId = $this->conn->prepare($verificarExistenciaIdProducto);
@@ -104,13 +104,13 @@ class Producto{
                         if($precioCompraAnterior == $this->PRO_PRECIO_COMPRA ){
 
                             $stmt = $this->conn->prepare($queryEditarSinPrecioAnterior);
-                            $stmt->bind_param("sssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$this->PRO_ID);
+                            $stmt->bind_param("ssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$this->PRO_STOCK,$this->PRO_ID);
                             $stmt->execute();
 
                         }else{
                             $fecha = date("Y-m-d");
                             $stmt = $this->conn->prepare($queryEditarConPrecioAnterior);
-                            $stmt->bind_param("sssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$precioCompraAnterior,$fecha,$this->PRO_ID);
+                            $stmt->bind_param("ssssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$precioCompraAnterior,$fecha,$this->PRO_STOCK,$this->PRO_ID);
                             $stmt->execute();
 
                         }

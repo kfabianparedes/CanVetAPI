@@ -50,6 +50,20 @@
             }
         }
 
+        if(!isset($d->PRO_STOCK)){
+            $m = 'La variable PRO_STOCK no ha sido enviada.';
+            return false;
+        }else{
+            if(ctype_digit($d->PRO_STOCK) || is_numeric($d->PRO_STOCK)){
+                if($d->PRO_STOCK < 0) { 
+                    $m = 'El valor de la variable PRO_STOCK debe ser mayor o igual a 0.';
+                    return false;
+                }
+            }else{
+                $m = 'La variable PRO_STOCK no es un numero o es null.';
+                return false;
+            }
+        }
         
         if(!isset($d->PRO_PRECIO_VENTA)){
             $m = 'La variable PRO_PRECIO_VENTA no ha sido enviada.';
