@@ -334,7 +334,7 @@
         }
 
         if(($d->CAJA_MONTO_EFECTIVO_VENTAS + $d->CAJA_MONTO_TARJETA_VENTAS + $d->CAJA_MONTO_YAPE_VENTAS + $d->CAJA_MONTO_EFECTIVO_SERVICIOS +
-         $d->CAJA_MONTO_TARJETA_SERVICIOS + $d->CAJA_MONTO_YAPE_SERVICIOS + $d->CAJA_MONTO_INICIAL) - $d->CAJA_DESCUENTO_GASTOS   != $d->CAJA_MONTO_FINAL){
+         $d->CAJA_MONTO_TARJETA_SERVICIOS + $d->CAJA_MONTO_YAPE_SERVICIOS) - $d->CAJA_DESCUENTO_GASTOS   != $d->CAJA_MONTO_FINAL){
             $m = "Los montos enviados no concuerdan.";
             return false;
         }
