@@ -9,6 +9,7 @@
     //Include database and classes files
     include_once '../../config/database.php';
     include_once '../../clases/Producto.php';
+    include_once '../../util/validaciones.php';
 
     //COMPROBAMOS QUE EL METODO USADO SEA GET
     if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
@@ -28,25 +29,25 @@
     $productoC = new Producto($db);
 
 
-    function esValido($d,&$mensaje){
+    function esValido($d,&$m){
 
         
 
         if(!isset($d->PRO_NOMBRE)){
-            $mensaje = "la variable PRO_NOMBRE no ha sido enviada.";
+            $m = "la variable PRO_NOMBRE no ha sido enviada.";
             return false;
         }else{  
             if($d->PRO_NOMBRE == ""){
-                $mensaje = "la variable PRO_NOMBRE no puede estar vacía o ser null.";
+                $m = "la variable PRO_NOMBRE no puede estar vacía o ser null.";
                 return false; 
             }
         }
         if(!isset($d->PRO_TAMANIO_TALLA)){
-            $mensaje = "la variable PRO_TAMANIO_TALLA no ha sido enviada.";
+            $m = "la variable PRO_TAMANIO_TALLA no ha sido enviada.";
             return false;
         }else{  
             if($d->PRO_TAMANIO_TALLA == ""){
-                $mensaje = "la variable PRO_TAMANIO_TALLA no puede estar vacía o ser null.";
+                $m = "la variable PRO_TAMANIO_TALLA no puede estar vacía o ser null.";
                 return false; 
             }
         }
@@ -58,7 +59,7 @@
         }else{
             if(ctype_digit($d->PRO_PRECIO_VENTA) || is_numeric($d->PRO_PRECIO_VENTA)){
                 if($d->PRO_PRECIO_VENTA <= 0) { 
-                    $m = 'El valor de la variable PRO_PRECIO_VENTA debe ser mayor a 0.';
+                    $mensaje = 'El valor de la variable PRO_PRECIO_VENTA debe ser mayor a 0.';
                     return false;
                 }
             }else{
@@ -66,6 +67,17 @@
                 return false;
             }
         }
+
+        if(!isset($d->PRO_CODIGO)){
+            $m = "la variable PRO_CODIGO no ha sido enviada.";
+            return false;
+        }else{  
+            if(obtenerCantidadDeCaracteres($d->PRO_CODIGO)>60){
+                $m = "La variable PRO_CODIGO no debe exceder los 60 caracteres.";
+                return false;
+            }
+        }
+
         if(!isset($d->PRO_PRECIO_COMPRA)){
             $m = 'La variable PRO_PRECIO_COMPRA no ha sido enviada.';
             return false;
@@ -96,19 +108,19 @@
         }
 
         if(!isset($d->CAT_ID)){
-            $mensaje = "la variable CAT_ID no ha sido enviada.";
+            $m = "la variable CAT_ID no ha sido enviada.";
             return false;
         }else{  
             if($d->CAT_ID == ""){
-                $mensaje = "la variable CAT_ID no puede estar vacía o ser null.";
+                $m = "la variable CAT_ID no puede estar vacía o ser null.";
                 return false; 
             }else{
                 if(!is_numeric($d->CAT_ID)){
-                   $mensaje = "la variable CAT_ID solo acepta caracteres numéricos.";
+                   $m = "la variable CAT_ID solo acepta caracteres numéricos.";
                    return false;  
                 }else{
                     if($d->CAT_ID < 1 ){
-                        $mensaje = "la variable CAT_ID no puede ser menor o igual a 0.";
+                        $m = "la variable CAT_ID no puede ser menor o igual a 0.";
                         return false; 
                     }
                 }
@@ -116,19 +128,19 @@
         }
 
         if(!isset($d->PROV_ID)){
-            $mensaje = "la variable v no ha sido enviada.";
+            $m = "la variable PROV_ID no ha sido enviada.";
             return false;
         }else{  
             if($d->PROV_ID == ""){
-                $mensaje = "la variable PROV_ID no puede estar vacía o ser null.";
+                $m = "la variable PROV_ID no puede estar vacía o ser null.";
                 return false; 
             }else{
                 if(!is_numeric($d->PROV_ID)){
-                   $mensaje = "la variable v solo acepta caracteres numéricos.";
+                   $m = "la variable v solo acepta caracteres numéricos.";
                    return false;  
                 }else{
                     if($d->PROV_ID < 1 ){
-                        $mensaje = "la variable PROV_ID no puede ser menor o igual a 0.";
+                        $m = "la variable PROV_ID no puede ser menor o igual a 0.";
                         return false; 
                     }
                 }
@@ -144,6 +156,7 @@
         $productoC->PRO_TAMANIO_TALLA = $data->PRO_TAMANIO_TALLA;
         $productoC->PRO_PRECIO_COMPRA = $data->PRO_PRECIO_COMPRA;
         $productoC->PRO_STOCK = $data->PRO_STOCK;
+        $productoC->PRO_CODIGO = $data->PRO_CODIGO;
         $productoC->CAT_ID = $data->CAT_ID;
         $productoC->PROV_ID = $data->PROV_ID;
         $exito =  $productoC->crearProducto($mensaje,$code_error);

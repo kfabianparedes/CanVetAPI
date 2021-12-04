@@ -24,7 +24,7 @@ class Producto{
     
         $verificarIdCategoria = "SELECT * FROM CATEGORIA WHERE CAT_ID =?"; 
         $verificarIdProveedor = "SELECT * FROM PROVEEDOR WHERE PROV_ID =?"; 
-        $query = "INSERT INTO PRODUCTO(PRO_NOMBRE,PRO_PRECIO_VENTA,PRO_PRECIO_COMPRA,PRO_STOCK,PRO_TAMANIO_TALLA,CAT_ID,PROV_ID,PRO_ESTADO) VALUES(?,?,?,?,?,?,?,1)";
+        $query = "INSERT INTO PRODUCTO(PRO_NOMBRE,PRO_PRECIO_VENTA,PRO_PRECIO_COMPRA,PRO_STOCK,PRO_TAMANIO_TALLA,CAT_ID,PROV_ID,PRO_ESTADO,PRO_CODIGO) VALUES(?,?,?,?,?,?,?,1,?)";
         try {
             //VERIFICAMOS QUE EL NOMBRE DEL NUEVO PRODUCTO NO ESTÉ REGISTRADO
             $stmtExistenciaCatID = $this->conn->prepare($verificarIdCategoria);
@@ -33,31 +33,41 @@ class Producto{
             $resultCategoriaId = get_result($stmtExistenciaCatID);
             //VERIFICAMOS QUE EXISTA EL ID DE LA CATEGORIA INGRESADA
             if(count($resultCategoriaId) > 0){
+
                 $stmtExistenciaProvID = $this->conn->prepare($verificarIdProveedor);
                 $stmtExistenciaProvID->bind_param("s",$this->PROV_ID);
                 $stmtExistenciaProvID->execute();
                 $resultProveedorId = get_result($stmtExistenciaProvID);
+
                 if(count($resultProveedorId) > 0){
+
                     $stmt = $this->conn->prepare($query);
-                    $stmt->bind_param("sssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_STOCK,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID);
+                    $stmt->bind_param("ssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_STOCK,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$this->PRO_CODIGO);
+                   
                     if(!$stmt->execute()){
                         $code_error ="error_ejecucionQuery";
                         $mensaje = "Hubo un error al registrar el producto.";
                         return false;
                     }
+                    
                     $mensaje = "Se ha creado el producto con éxito";
                     return true;
+
                 }else{
+
                     //SI YA EXISTE UN PRODUCTO CON EL NOMBRE MOSTRAMOS EL ERROR
                     $code_error = "error_exitenciaProveedorId";
                     $mensaje = "El id del proveedor no existe.";
                     return false; 
+
                 }
             }else{
+
                 //SI YA EXISTE UN PRODUCTO CON EL NOMBRE MOSTRAMOS EL ERROR
                 $code_error = "error_exitenciaCategoriaId";
                 $mensaje = "El id de la categoria no existe.";
                 return false; 
+
             }
             
         } catch (Throwable $th) {
@@ -71,8 +81,8 @@ class Producto{
         $verificarExistenciaIdProducto = "SELECT * FROM PRODUCTO WHERE PRO_ID = ?"; 
         $verificarIdCategoria = "SELECT * FROM CATEGORIA WHERE CAT_ID =?"; 
         $verificarIdProveedor = "SELECT * FROM PROVEEDOR WHERE PROV_ID =?"; 
-        $queryEditarSinPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ?,PROV_ID = ? , PRO_STOCK = ? where PRO_ID = ?"; 
-        $queryEditarConPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ? ,PROV_ID = ?,PRO_PRECIO_ANTERIOR = ?, PRO_FECHA_CAMBIO_PRECIO = ? , PRO_STOCK = ? where PRO_ID = ?"; 
+        $queryEditarSinPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ?,PROV_ID = ? , PRO_STOCK = ?, PRO_CODIGO = ? where PRO_ID = ?"; 
+        $queryEditarConPrecioAnterior = "UPDATE PRODUCTO SET PRO_NOMBRE = ?, PRO_PRECIO_VENTA = ?,PRO_PRECIO_COMPRA = ?,PRO_TAMANIO_TALLA = ?,CAT_ID = ? ,PROV_ID = ?,PRO_PRECIO_ANTERIOR = ?, PRO_FECHA_CAMBIO_PRECIO = ? , PRO_STOCK = ? , PRO_CODIGO = ? where PRO_ID = ?"; 
         try {
             
             $stmtId = $this->conn->prepare($verificarExistenciaIdProducto);
@@ -104,13 +114,13 @@ class Producto{
                         if($precioCompraAnterior == $this->PRO_PRECIO_COMPRA ){
 
                             $stmt = $this->conn->prepare($queryEditarSinPrecioAnterior);
-                            $stmt->bind_param("ssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$this->PRO_STOCK,$this->PRO_ID);
+                            $stmt->bind_param("sssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$this->PRO_STOCK,$this->PRO_CODIGO,$this->PRO_ID);
                             $stmt->execute();
 
                         }else{
                             $fecha = date("Y-m-d");
                             $stmt = $this->conn->prepare($queryEditarConPrecioAnterior);
-                            $stmt->bind_param("ssssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$precioCompraAnterior,$fecha,$this->PRO_STOCK,$this->PRO_ID);
+                            $stmt->bind_param("sssssssssss",$this->PRO_NOMBRE,$this->PRO_PRECIO_VENTA,$this->PRO_PRECIO_COMPRA,$this->PRO_TAMANIO_TALLA,$this->CAT_ID,$this->PROV_ID,$precioCompraAnterior,$fecha,$this->PRO_STOCK,$this->PRO_CODIGO,$this->PRO_ID);
                             $stmt->execute();
 
                         }
