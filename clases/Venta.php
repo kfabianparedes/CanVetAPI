@@ -633,7 +633,8 @@
                             TP.TIPO_SERVICIO_NOMBRE,
                             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
                             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
-                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC
+                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC,
+                            MAS.MAS_NOMBRE, MAS.MAS_ATENCIONES
                             FROM SERVICIO SER
                             INNER JOIN METODO_PAGO MDP ON (SER.MDP_ID = MDP.MDP_ID)
                             INNER JOIN TIPO_SERVICIO TP ON (SER.TIPO_SERVICIO_ID = TP.TIPO_SERVICIO_ID)
@@ -649,7 +650,8 @@
                             TP.TIPO_SERVICIO_NOMBRE,
                             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
                             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
-                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC
+                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC,
+                            MAS.MAS_NOMBRE, MAS.MAS_ATENCIONES
                             FROM 
                             SERVICIO SER
                             INNER JOIN METODO_PAGO MDP ON (SER.MDP_ID = MDP.MDP_ID)
@@ -850,7 +852,8 @@
                             TP.TIPO_SERVICIO_NOMBRE,
                             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
                             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
-                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC
+                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC,
+                            MAS.MAS_NOMBRE, MAS.MAS_ATENCIONES
                             FROM SERVICIO SER
                             INNER JOIN METODO_PAGO MDP ON (SER.MDP_ID = MDP.MDP_ID)
                             INNER JOIN TIPO_SERVICIO TP ON (SER.TIPO_SERVICIO_ID = TP.TIPO_SERVICIO_ID)
@@ -866,7 +869,8 @@
                             TP.TIPO_SERVICIO_NOMBRE,
                             COM.COMPROBANTE_TIPO,MDP.MDP_NOMBRE,
                             CONCAT(CLI.CLIENTE_NOMBRES," ",CLI.CLIENTE_APELLIDOS)AS CLIENTE_NOMBRE, CLI.CLIENTE_TELEFONO, CLI.CLIENTE_DNI, CLI.CLIENTE_CORREO,
-                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC
+                            DJ.DJ_RAZON_SOCIAL, DJ.DJ_RUC,
+                            MAS.MAS_NOMBRE, MAS.MAS_ATENCIONES
                             FROM 
                             SERVICIO SER
                             INNER JOIN METODO_PAGO MDP ON (SER.MDP_ID = MDP.MDP_ID)
