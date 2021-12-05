@@ -92,12 +92,11 @@
                     if(count($resultProveedorId) > 0){
                         
                         $stmtExistenciaComprobanteId = $this->conn->prepare($queryValidarComprobanteId);
-                        $stmtExistenciaComprobanteId->bind_param("s",$this->PROV_ID);
+                        $stmtExistenciaComprobanteId->bind_param("s",$this->COMPROBANTE_ID);
                         $stmtExistenciaComprobanteId->execute();
                         $resultComprobanteId = get_result($stmtExistenciaComprobanteId);
                         //validamos si existe el comprobante ingresado
-                        json_encode(array("resultado"=>$resultComprobanteId));
-                        if(count($resultComprobanteId) <= 0){
+                        if(count($resultComprobanteId) > 0){
                             
 
                             $stmtIngresarCompra = $this->conn->prepare($queryIngresarCompra);
