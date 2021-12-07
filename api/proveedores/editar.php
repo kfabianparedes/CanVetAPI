@@ -62,9 +62,6 @@
                     $m = "El RUC del proveedor debe tener una longitud de 11 caracteres numericos.";
                     return false;
                 }
-            }else{
-                $m = "El campo RUC es un campo obligatorio.";
-                    return false;
             }
         }
 
