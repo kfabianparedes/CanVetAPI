@@ -1,6 +1,6 @@
 <?php
 
-    include_once '../../util/mysqlnd.php';
+    include_once '../../util/mysqlnd.php';  
 
     class Compra{
         private $conn; 
@@ -25,7 +25,7 @@
         
         function listar(&$mensaje,&$code_error,&$exito){
 
-            $query = "
+            $query = '
             SELECT COM.COMPRA_ID, COM.COMPRA_FECHA_EMISION_COMPROBANTE, COM.COMPRA_FECHA_REGISTRO, COM.COMPRA_NRO_SERIE, COM.COMPRA_NRO_COMPROBANTE, COM.COMPRA_SUBTOTAL, COM.COMPRA_TOTAL, COM.COMPRA_DESCRIPCION,
             COM.COMPRA_ESTADO,
             PROV.PROV_EMPRESA_PROVEEDORA,
@@ -37,7 +37,7 @@
             INNER JOIN USUARIOS USU ON (COM.USU_ID = USU.USU_ID)
             INNER JOIN COMPROBANTE COMP ON (COM.COMPROBANTE_ID = COMP.COMPROBANTE_ID) 
             LEFT OUTER JOIN GUIA_REMISION GUIA ON (COM.GUIA_ID = GUIA.GUIA_ID);
-            ";
+            ';
 
             $datos = [];
             try {
