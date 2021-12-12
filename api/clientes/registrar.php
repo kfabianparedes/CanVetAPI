@@ -270,44 +270,46 @@
                     if(!isset($CLIENTE->CLIENTE_NOMBRES)){
                         $m = "La variable CLIENTE_NOMBRES no ha sido enviada.";
                         return false;
-                    }else{
-                        if($CLIENTE->CLIENTE_NOMBRES!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_NOMBRES)>45){
-                                $m = "La variable DJ_RAZON_SOCIAL no debe exceder los 45 caracteres.";
-                                return false;
-                            }else{
-                                foreach ( str_split($CLIENTE->CLIENTE_NOMBRES) as $caracter) {
-                                    if(is_numeric($caracter)){
-                                        $m = "La variable CLIENTE_NOMBRES no debe tener números.";
-                                        return false;
-                                    }
-                                }
-                            }
-                        }else{
-                            $m = "La variable CLIENTE_NOMBRES no puede estar vacía o ser null.";
-                                return false;
-                        }
                     }
+                    // else{
+                    //     if($CLIENTE->CLIENTE_NOMBRES!=""){
+                    //         if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_NOMBRES)>45){
+                    //             $m = "La variable DJ_RAZON_SOCIAL no debe exceder los 45 caracteres.";
+                    //             return false;
+                    //         }else{
+                    //             foreach ( str_split($CLIENTE->CLIENTE_NOMBRES) as $caracter) {
+                    //                 if(is_numeric($caracter)){
+                    //                     $m = "La variable CLIENTE_NOMBRES no debe tener números.";
+                    //                     return false;
+                    //                 }
+                    //             }
+                    //         }
+                    //     }else{
+                    //         $m = "La variable CLIENTE_NOMBRES no puede estar vacía o ser null.";
+                    //             return false;
+                    //     }
+                    // }
 
                     //validación CLIENTE_APELLIDOS
                     if(!isset($CLIENTE->CLIENTE_APELLIDOS)){
                         $m = "La variable CLIENTE_APELLIDOS no ha sido enviada.";
                         return false;
-                    }else{
-                        if($CLIENTE->CLIENTE_APELLIDOS!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_APELLIDOS)>45){
-                                $m = "La variable CLIENTE_APELLIDOS no debe exceder los 45 caracteres.";
-                                return false;
-                            }else{
-                                foreach ( str_split($CLIENTE->CLIENTE_APELLIDOS) as $caracter) {
-                                    if(is_numeric($caracter)){
-                                        $m = "La variable CLIENTE_APELLIDOS no debe tener números.";
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
                     }
+                    // else{
+                    //     if($CLIENTE->CLIENTE_APELLIDOS!=""){
+                    //         if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_APELLIDOS)>45){
+                    //             $m = "La variable CLIENTE_APELLIDOS no debe exceder los 45 caracteres.";
+                    //             return false;
+                    //         }else{
+                    //             foreach ( str_split($CLIENTE->CLIENTE_APELLIDOS) as $caracter) {
+                    //                 if(is_numeric($caracter)){
+                    //                     $m = "La variable CLIENTE_APELLIDOS no debe tener números.";
+                    //                     return false;
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
 
                     //validación CLIENTE_APELLIDOS
                     if(!isset($CLIENTE->CLIENTE_DIRECCION)){
