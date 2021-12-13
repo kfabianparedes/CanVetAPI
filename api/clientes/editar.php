@@ -190,22 +190,23 @@
                     if(!isset($DATOS_JURIDICOS->TIPO_EMPRESA_ID)){
                         $m = "La variable TIPO_EMPRESA_ID no ha sido enviada.";
                         return false;
-                    }else{  
-                        if($DATOS_JURIDICOS->TIPO_EMPRESA_ID == ""){
-                            $m = "La variable TIPO_EMPRESA_ID no puede estar vacía o ser null.";
-                            return false; 
-                        }else{
-                            if(!is_numeric($DATOS_JURIDICOS->TIPO_EMPRESA_ID)){
-                            $m = "La variable TIPO_EMPRESA_ID solo acepta caracteres numéricos.";
-                            return false;  
-                            }else{
-                                if($DATOS_JURIDICOS->TIPO_EMPRESA_ID < 1 ){
-                                    $m = "La variable TIPO_EMPRESA_ID no puede ser menor o igual a 0.";
-                                    return false; 
-                                }
-                            }
-                        }
                     }
+                    // else{  
+                    //     if($DATOS_JURIDICOS->TIPO_EMPRESA_ID == ""){
+                    //         $m = "La variable TIPO_EMPRESA_ID no puede estar vacía o ser null.";
+                    //         return false; 
+                    //     }else{
+                    //         if(!is_numeric($DATOS_JURIDICOS->TIPO_EMPRESA_ID)){
+                    //         $m = "La variable TIPO_EMPRESA_ID solo acepta caracteres numéricos.";
+                    //         return false;  
+                    //         }else{
+                    //             if($DATOS_JURIDICOS->TIPO_EMPRESA_ID < 1 ){
+                    //                 $m = "La variable TIPO_EMPRESA_ID no puede ser menor o igual a 0.";
+                    //                 return false; 
+                    //             }
+                    //         }
+                    //     }
+                    // }
 
                     //validaciones de DJ_RUC
                     if(!isset($DATOS_JURIDICOS->DJ_RUC)){
@@ -232,24 +233,25 @@
                     if(!isset($DATOS_JURIDICOS->DJ_RAZON_SOCIAL)){
                         $m = "La variable DJ_RAZON_SOCIAL no ha sido enviada.";
                         return false;
-                    }else{
-                        if($DATOS_JURIDICOS->DJ_RAZON_SOCIAL!=""){
-                            if(obtenerCantidadDeCaracteres($DATOS_JURIDICOS->DJ_RAZON_SOCIAL)>100){
-                                $m = "La variable DJ_RAZON_SOCIAL no debe exceder los 100 caracteres.";
-                                return false;
-                            }else{
-                                foreach ( str_split($DATOS_JURIDICOS->DJ_RAZON_SOCIAL) as $caracter) {
-                                    if(is_numeric($caracter)){
-                                        $m = "La variable DJ_RAZON_SOCIAL no debe tener números.";
-                                        return false;
-                                    }
-                                }
-                            }
-                        }else{
-                            $m = "La variable DJ_RUC no puede estar vacía o ser null.";
-                                return false;
-                        }
                     }
+                    // else{
+                    //     if($DATOS_JURIDICOS->DJ_RAZON_SOCIAL!=""){
+                    //         if(obtenerCantidadDeCaracteres($DATOS_JURIDICOS->DJ_RAZON_SOCIAL)>100){
+                    //             $m = "La variable DJ_RAZON_SOCIAL no debe exceder los 100 caracteres.";
+                    //             return false;
+                    //         }else{
+                    //             foreach ( str_split($DATOS_JURIDICOS->DJ_RAZON_SOCIAL) as $caracter) {
+                    //                 if(is_numeric($caracter)){
+                    //                     $m = "La variable DJ_RAZON_SOCIAL no debe tener números.";
+                    //                     return false;
+                    //                 }
+                    //             }
+                    //         }
+                    //     }else{
+                    //         $m = "La variable DJ_RUC no puede estar vacía o ser null.";
+                    //             return false;
+                    //     }
+                    // }
 
                 }
             }
