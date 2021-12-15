@@ -130,7 +130,7 @@
             $exito_ = false;
             $caja = new Caja($db);
             $caja->CAJA_APERTURA = $datos->CAJA_APERTURA;
-            $caja->CAJA_MONTO_INICIAL = $datos->CAJA_MONTO_INICIAL;
+            $caja->CAJA_MONTO_INICIAL = $datos->CAJA_MONTO_INICIAL/100;
             $caja->USU_ID = $datos->USU_ID;
             $caja->CAJA_CODIGO = password_hash($caja->USU_ID,PASSWORD_DEFAULT);
             $exito_ = $caja->abrirCaja($mensaje,$code_error,$caja->CAJA_ID);
@@ -177,7 +177,7 @@
                 $m = 'La variable CAJA_MONTO_INICIAL no ha sido enviada.';
                 return false;
             }else{
-                if(!ctype_digit($d->CAJA_MONTO_INICIAL) || !is_numeric($d->CAJA_MONTO_INICIAL)){
+                if(!is_numeric($d->CAJA_MONTO_INICIAL)){
                     $m = 'La variable CAJA_MONTO_INICIAL no es un numero o es null.';
                     return false;
                 }else{

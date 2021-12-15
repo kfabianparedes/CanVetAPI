@@ -82,12 +82,12 @@ class Proveedor{
         $resultId = get_result($stmtId);
 
         if(count($resultId) > 0){
-            $stmtRuc = $this->conn->prepare($queryVerificarExistenciaRuc);
-            $stmtRuc->bind_param("ss",$this->PROV_RUC,$this->PROV_ID);
-            $stmtRuc->execute();
-            $resultRuc = get_result($stmtRuc);
-            //VERIFICAMOS SI EL RUC INGRESADO YA EXISTE
-            if(count($resultRuc) < 1){
+            // $stmtRuc = $this->conn->prepare($queryVerificarExistenciaRuc);
+            // $stmtRuc->bind_param("ss",$this->PROV_RUC,$this->PROV_ID);
+            // $stmtRuc->execute();
+            // $resultRuc = get_result($stmtRuc);
+            // //VERIFICAMOS SI EL RUC INGRESADO YA EXISTE
+            // if(count($resultRuc) < 1){
                 //SI ES QUE EL RUC INGRESADO NO EXISTE PASA EL FILTRO Y VERIFICAMOS SI YA EXISTE UN PROVEEDOR CON EL NOMBRE INGRESADO
 
                 $stmtExistenciaNombreEmpresa = $this->conn->prepare($queryVerificarExistenciaNombreEmpresa);
@@ -109,11 +109,11 @@ class Proveedor{
                     return false; 
                 }
                 
-            }else{
-                $code_error = "error_existenciaRuc";
-                $mensaje = "El RUC ingresado ya existe.";
-                return false; 
-            }
+            // }else{
+            //     $code_error = "error_existenciaRuc";
+            //     $mensaje = "El RUC ingresado ya existe.";
+            //     return false; 
+            // }
         }else{
             $code_error = "error_existenciaId";
             $mensaje = "El id de la empresa ingresado no existe.";
@@ -131,18 +131,18 @@ class Proveedor{
 
     function crearProveedor(&$mensaje,&$code_error){
 
-        $queryVerificarExistenciaRuc = "select * from PROVEEDOR where PROV_RUC = ? ";
+        $queryVerificarExistenciaRuc = "select * from PROVEEDOR where (PROV_RUC = ? &&)";
         $queryVerificarExistenciaNombreEmpresa = "select * from PROVEEDOR where PROV_EMPRESA_PROVEEDORA = ? ";
         $query = "INSERT INTO PROVEEDOR(PROV_RUC,PROV_EMPRESA_PROVEEDORA,PROV_NUMERO_CONTACTO,PROV_ESTADO) VALUES(?,?,?,1)"; 
        
 
         try {
-            $stmtRuc = $this->conn->prepare($queryVerificarExistenciaRuc);
-            $stmtRuc->bind_param("s",$this->PROV_RUC);
-            $stmtRuc->execute();
-            $resultRuc = get_result($stmtRuc);
+            // $stmtRuc = $this->conn->prepare($queryVerificarExistenciaRuc);
+            // $stmtRuc->bind_param("s",$this->PROV_RUC);
+            // $stmtRuc->execute();
+            // $resultRuc = get_result($stmtRuc);
             //VERIFICAMOS SI EL RUC INGRESADO YA EXISTE
-            if(count($resultRuc) < 1){
+            // if(count($resultRuc) < 1){
                 //SI ES QUE EL RUC INGRESADO NO EXISTE PASA EL FILTRO Y VERIFICAMOS SI YA EXISTE UN PROVEEDOR CON EL NOMBRE INGRESADO
 
                 $stmtExistenciaNombreEmpresa = $this->conn->prepare($queryVerificarExistenciaNombreEmpresa);
@@ -164,11 +164,11 @@ class Proveedor{
                     return false; 
                 }
                 
-            }else{
-                $code_error = "error_exitenciaRuc";
-                $mensaje = "El RUC ingresado ya existe.";
-                return false; 
-            }
+            // }else{
+            //     $code_error = "error_exitenciaRuc";
+            //     $mensaje = "El RUC ingresado ya existe.";
+            //     return false; 
+            // }
   
         } catch (Throwable $th) {
             $code_error = "error_deBD";

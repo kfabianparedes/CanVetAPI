@@ -165,7 +165,7 @@
                 $m = "El campo CLIENTE_ID no ha sido enviado";
                 return false;
             }else{
-                if(!is_numeric($d->CLIENTE_ID) || ctype_digit($d->CLIENTE_ID)){
+                if(!is_numeric($d->CLIENTE_ID)){
                     $m = "El campo CLIENTE_ID debe ser numérico";
                     return false;
                 }else{
@@ -182,7 +182,7 @@
                 $m = "El campo MAS_ATENCIONES no ha sido enviado";
                 return false;
             }else{
-                if(!is_numeric($d->MAS_ATENCIONES) || ctype_digit($d->MAS_ATENCIONES)){
+                if(!is_numeric($d->MAS_ATENCIONES)){
                     $m = "El campo MAS_ATENCIONES debe ser numérico";
                     return false;
                 }else{
