@@ -141,8 +141,8 @@
             $query = '
             SELECT SUM(CAJA_MONTO_EFECTIVO_VENTAS) AS CAJA_MONTO_EFECTIVO_VENTAS,SUM(CAJA_MONTO_TARJETA_VENTAS) AS CAJA_MONTO_TARJETA_VENTAS,SUM(CAJA_MONTO_YAPE_VENTAS) AS CAJA_MONTO_YAPE_VENTAS
             ,SUM(CAJA_MONTO_EFECTIVO_SERVICIOS) AS CAJA_MONTO_EFECTIVO_SERVICIOS,SUM(CAJA_MONTO_TARJETA_SERVICIOS) AS CAJA_MONTO_TARJETA_SERVICIOS,SUM(CAJA_MONTO_YAPE_SERVICIOS) AS CAJA_MONTO_YAPE_SERVICIOS
-            ,CAJA_CODIGO,SUM(CAJA_DESCUENTO_GASTOS) AS CAJA_DESCUENTO_GASTOS,date_format(CAJA_APERTURA,"%Y-%m-%d") AS CAJA_FECHA
-            FROM CAJA WHERE DATE_FORMAT(CAJA_APERTURA,"%Y-%m") = ?
+            ,CAJA_CODIGO,SUM(CAJA_DESCUENTO_GASTOS) AS CAJA_DESCUENTO_GASTOS, SUM(CAJA_MONTO_INICIAL) AS CAJA_MONTO_INICIAL,date_format(CAJA_APERTURA,"%Y-%m-%d") AS CAJA_FECHA
+            FROM CAJA WHERE DATE_FORMAT(CAJA_APERTURA,"%Y-%m") = ? AND CAJA_CIERRE IS NOT NULL
             GROUP BY DATE_FORMAT(CAJA_APERTURA,"%Y-%m-%d") ORDER BY DATE_FORMAT(CAJA_APERTURA,"%Y-%m-%d") DESC'; 
 
             $anioMes = date('Y-m'); 
@@ -250,6 +250,53 @@
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 $exito = false;
                 return $datos;
+            }
+        }
+
+        function reportarCajasPorFecha(&$mensaje, &$code_error, &$exito){
+
+            $query = 
+            'SELECT CAJ.*, 
+            CONCAT(USU.USU_NOMBRES," ",USU.USU_APELLIDO_PATERNO," ",USU.USU_APELLIDO_MATERNO) AS USU_NOMBRE
+            FROM CAJA CAJ 
+            INNER JOIN USUARIOS USU ON (CAJ.USU_ID = USU.USU_ID)
+            WHERE DATE_FORMAT(CAJA_APERTURA,"%Y-%m-%d") = ? AND CAJ.CAJA_CIERRE IS NOT NULL';
+
+            $datos = [];
+            
+            try {
+                
+                //reporte del mes anterior 
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$this->CAJA_APERTURA);
+                if(!$stmt->execute()){
+
+                    $code_error = "error_ejecucionQuery";
+                    $mensaje = "Hubo un error reportar las cajas del día seleccionado.";
+                    $exito = false; 
+
+                }else{
+                    
+                    $result = get_result($stmt); 
+                
+                    if (count($result) > 0) {                
+                        while ($dato = array_shift($result)) {    
+                            $datos[] = $dato;
+                        }
+                    }
+                    
+                    $mensaje = "El reporte se realizó con éxito";
+                    $exito = true; 
+                }
+                return $datos; 
+
+            } catch (Throwable $th) {
+
+                $code_error = "error_deBD";
+                $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+                $exito = false;
+                return $datos;
+
             }
         }
     }   
