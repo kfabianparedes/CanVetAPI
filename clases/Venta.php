@@ -244,18 +244,18 @@
             FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
                                     OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
             AND MDP_ID = 1 AND USU_ID = ?; ' ; 
-             $queryServicioTarjeta = '
-             SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
-             if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
-             FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
-                                     OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
-             AND MDP_ID = 2 AND USU_ID = ?;' ; 
-             $queryServicioYape = '
-             SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
-             if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
-             FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
-                                     OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
-             AND MDP_ID = 3 AND USU_ID = ?;' ; 
+            $queryServicioTarjeta = '
+            SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
+            if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
+            FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
+                                    OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
+            AND MDP_ID = 2 AND USU_ID = ?;' ; 
+            $queryServicioYape = '
+            SELECT SERVICIO_ID,if(SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0,SERVICIO_ADELANTO,
+            if(DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d"),SERVICIO_PRECIO ,SERVICIO_PRECIO - SERVICIO_ADELANTO)) as SERVICIO_PAGO_DEUDA
+            FROM SERVICIO WHERE ((SERVICIO_FECHA_REGISTRO BETWEEN ? AND ? AND SERVICIO_ESTADO = 0) 
+                                    OR (SERVICIO_FECHA_HORA BETWEEN ? AND ? AND SERVICIO_ESTADO = 1))
+            AND MDP_ID = 3 AND USU_ID = ?;' ; 
             $queryBuscarHoraRegistroCaja = "SELECT CAJA_APERTURA, CAJA_MONTO_INICIAL FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NULL";
             $queryMontoInicial = "SELECT  CAJA_MONTO_INICIAL FROM CAJA WHERE USU_ID = ? AND CAJA_CIERRE IS NULL";
 
@@ -408,7 +408,6 @@
                     }
                 }
 
-               
                 $datos = array("gananciasVentasEfectivo" => $datosVentasEfectivo, "gananciasVentasTarjeta" => $datosVentasTarjeta, "gananciasVentasYape" => $datosVentasYape,
                 "gananciasServiciosEfectivo" => $datosServicioEfectivo, "gananciasServiciosTarjeta" => $datosServicioTarjeta, "gananciasServiciosYape" => $datosServicioYape,"montoInicial"=>$monto_inicial);
 
@@ -466,7 +465,6 @@
 
                 }
 
-               
 
                 return $datos;
 
@@ -663,8 +661,8 @@
                             left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID)
                             WHERE (DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m") = ?) AND DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") <> DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d")
                 ) as SERVICIOS
-                ORDER BY SERVICIOS.SERVICIO_ID, SERVICIOS.SERVICIO_FECHA_HORA DESC
-            ';
+                ORDER BY SERVICIOS.SERVICIO_FECHA_HORA DESC
+            '; //ORDER BY SERVICIOS.SERVICIO_ID, SERVICIOS.SERVICIO_FECHA_HORA DESC
 
             // $queryServicios = '
             // SELECT SER.SERVICIO_ID,SER.SERVICIO_PRECIO, if(DATE_FORMAT(SER.SERVICIO_FECHA_REGISTRO,"%Y-%m") = ? AND 
@@ -839,7 +837,7 @@
             INNER JOIN COMPROBANTE COM ON (V.COMPROBANTE_ID = COM.COMPROBANTE_ID)
             INNER JOIN USUARIOS USU ON (V.USU_ID = USU.USU_ID)
             INNER JOIN CLIENTE CLI ON (V.CLIENTE_ID = CLI.CLIENTE_ID) 
-			left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID) 
+			LEFT OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID) 
             WHERE DATE_FORMAT(V.VENTA_FECHA_REGISTRO,"%Y-%m-%d") = ? AND V.VENTA_ESTADO = 1
             ORDER BY V.VENTA_FECHA_REGISTRO DESC;
             ';
@@ -861,7 +859,7 @@
                             INNER JOIN USUARIOS USU ON (SER.USU_ID = USU.USU_ID)
                             INNER JOIN MASCOTA MAS ON (SER.MASCOTA_ID = MAS.MAS_ID)
                             INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) 
-                            left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID)
+                            LEFT OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID)
                             WHERE (DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d") = ?)
                             UNION 
                 SELECT SERVICIO_ID, SERVICIO_PRECIO - SERVICIO_ADELANTO AS SERVICIO_PRECIO, SERVICIO_FECHA_HORA 
@@ -882,8 +880,8 @@
                             left OUTER JOIN DATOS_JURIDICOS DJ ON (CLI.CLIENTE_ID = DJ.CLIENTE_ID)
                             WHERE (DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") = ?) AND DATE_FORMAT(SERVICIO_FECHA_HORA,"%Y-%m-%d") <> DATE_FORMAT(SERVICIO_FECHA_REGISTRO,"%Y-%m-%d")
                 ) as SERVICIOS
-                ORDER BY SERVICIOS.SERVICIO_ID, SERVICIOS.SERVICIO_FECHA_HORA DESC
-            ';
+                ORDER BY SERVICIOS.SERVICIO_FECHA_HORA DESC
+            '; //ORDER BY SERVICIOS.SERVICIO_ID, SERVICIOS.SERVICIO_FECHA_HORA DESC || POR SEA CASO SE REVIERTA
 
             // $queryServicios = '
             // SELECT SER.SERVICIO_ID,SER.SERVICIO_PRECIO, if(DATE_FORMAT(SER.SERVICIO_FECHA_REGISTRO,"%Y-%m-%d") = ? AND 
@@ -936,7 +934,7 @@
                     #LIMPIAMOS EL RECEPTOR DE DATOS PARA USARLO DESPUÉS
                     $receptorDatos = [];
 
-                     #obteniendo servicios del día actual 
+                    #obteniendo servicios del día actual 
                     $stmt = $this->conn->prepare($queryServicios);
                     $stmt->bind_param("sss",$diaActual,$diaActual,$diaActual);
                     if(!$stmt->execute()){

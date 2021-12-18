@@ -32,7 +32,6 @@
         if(!isset($d->PROV_ID)){
             $m = "la variable PROV_ID no ha sido enviada.";
             return false;
-            echo "hola";
         }else{  
             if($d->PROV_ID == ""){
                 $m = "la variable PROV_ID no puede estar vacía o ser null.";

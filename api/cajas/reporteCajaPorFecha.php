@@ -145,8 +145,6 @@ if($exito){
         }
 
     }else{
-        echo "hola";
-
         $code_error = "error_deCampo";
         echo json_encode(array("error"=>$code_error,"mensaje"=>$mensaje, "exito"=>false));
         header('HTTP/1.1 400 Bad Request');
