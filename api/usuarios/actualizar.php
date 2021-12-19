@@ -305,8 +305,8 @@
                     $m = "El campo USU_CELULAR no puede estar vacío.";
                     return false;
                 }else{
-                    if(obtenerCantidadDeCaracteres($d->USU_CELULAR)>20){
-                        $m = "La variable USU_CELULAR no debe exceder de 20 caracteres.";
+                    if(obtenerCantidadDeCaracteres($d->USU_CELULAR)!=9){
+                        $m = "La variable USU_CELULAR no debe exceder de 9 caracteres.";
                         return false;
                     }else{
                         if(!verificarCelular($d->USU_CELULAR)){

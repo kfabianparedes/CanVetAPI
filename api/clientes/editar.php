@@ -255,7 +255,6 @@
 
                 }
             }
-           
 
             //validaciones de CLIENTE
             if(!isset($d->CLIENTE)){
@@ -316,14 +315,14 @@
                     if(!isset($CLIENTE->CLIENTE_DIRECCION)){
                         $m = "La variable CLIENTE_DIRECCION no ha sido enviada.";
                         return false;
-                    }else{
-                        if($CLIENTE->CLIENTE_DIRECCION!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_DIRECCION)>100){
-                                $m = "La variable CLIENTE_DIRECCION no debe exceder los 100 caracteres.";
-                                return false;
-                            }
-                        }
-                    }
+                    }// else{
+                    //     if($CLIENTE->CLIENTE_DIRECCION!=""){
+                    //         if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_DIRECCION)>100){
+                    //             $m = "La variable CLIENTE_DIRECCION no debe exceder los 100 caracteres.";
+                    //             return false;
+                    //         }
+                    //     }
+                    // }
 
                     //validaciones de CLIENTE_DNI
                     if(!isset($CLIENTE->CLIENTE_DNI)){
@@ -331,7 +330,6 @@
                         return false;
                     }else{  
                         if($CLIENTE->CLIENTE_DNI != ""){
-                           
                             if(!ctype_digit($CLIENTE->CLIENTE_DNI)){
                                 $m = "La variable CLIENTE_DNI debe estar conformada por caracteres numéricos.";
                                 return false;
@@ -350,13 +348,13 @@
                         return false;
                     }else{
                         if($CLIENTE->CLIENTE_TELEFONO!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_TELEFONO)<=12){
+                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_TELEFONO)==9){
                                 if(!verificarCelular($CLIENTE->CLIENTE_TELEFONO)){
                                     $m = "La variable CLIENTE_TELEFONO no tiene el formato permitido.";
                                     return false;
                                 }
                             }else{
-                                $m = "La variable CLIENTE_TELEFONO no debe exceder los 12 caracteres.";
+                                $m = "La variable CLIENTE_TELEFONO no debe exceder los 9 caracteres.";
                                 return false;
                             }
                         }else{
@@ -392,38 +390,38 @@
                     if(!isset($CLIENTE->CLIENTE_NOMBRES)){
                         $m = "La variable CLIENTE_NOMBRES no ha sido enviada.";
                         return false;
-                    }else{
-                        if($CLIENTE->CLIENTE_NOMBRES!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_NOMBRES)>45){
-                                $m = "La variable DJ_RAZON_SOCIAL no debe exceder los 45 caracteres.";
-                                return false;
-                            }else{
-                                foreach ( str_split($CLIENTE->CLIENTE_NOMBRES) as $caracter) {
-                                    if(is_numeric($caracter)){
-                                        $m = "La variable CLIENTE_NOMBRES no debe tener números.";
-                                        return false;
-                                    }
-                                }
-                            }
-                        }else{
-                            $m = "La variable CLIENTE_NOMBRES no puede estar vacía o ser null.";
-                                return false;
-                        }
-                    }
+                    }// else{
+                    //     if($CLIENTE->CLIENTE_NOMBRES!=""){
+                    //         if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_NOMBRES)>45){
+                    //             $m = "La variable DJ_RAZON_SOCIAL no debe exceder los 45 caracteres.";
+                    //             return false;
+                    //         }else{
+                    //             foreach ( str_split($CLIENTE->CLIENTE_NOMBRES) as $caracter) {
+                    //                 if(is_numeric($caracter)){
+                    //                     $m = "La variable CLIENTE_NOMBRES no debe tener números.";
+                    //                     return false;
+                    //                 }
+                    //             }
+                    //         }
+                    //     }else{
+                    //         $m = "La variable CLIENTE_NOMBRES no puede estar vacía o ser null.";
+                    //             return false;
+                    //     }
+                    // }
 
                      //VALIDAMOS CLIENTE_TELEFONO
-                     if(!isset($CLIENTE->CLIENTE_TELEFONO)){
+                    if(!isset($CLIENTE->CLIENTE_TELEFONO)){
                         $m = "La variable CLIENTE_TELEFONO no ha sido enviada.";
                         return false;
                     }else{
                         if($CLIENTE->CLIENTE_TELEFONO!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_TELEFONO)<=12){
+                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_TELEFONO)==9){
                                 if(!verificarCelular($CLIENTE->CLIENTE_TELEFONO)){
                                     $m = "La variable CLIENTE_TELEFONO no tiene el formato permitido.";
                                     return false;
                                 }
                             }else{
-                                $m = "La variable CLIENTE_TELEFONO no debe exceder los 12 caracteres.";
+                                $m = "La variable CLIENTE_TELEFONO no debe exceder los 9 caracteres.";
                                 return false;
                             }
                         }else{
@@ -438,7 +436,6 @@
                         return false;
                     }else{  
                         if($CLIENTE->CLIENTE_DNI != ""){
-                           
                             if(!ctype_digit($CLIENTE->CLIENTE_DNI)){
                                 $m = "La variable CLIENTE_DNI debe estar conformada por caracteres numéricos.";
                                 return false;
@@ -458,34 +455,34 @@
                     if(!isset($CLIENTE->CLIENTE_DIRECCION)){
                         $m = "La variable CLIENTE_DIRECCION no ha sido enviada.";
                         return false;
-                    }else{
-                        if($CLIENTE->CLIENTE_DIRECCION!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_DIRECCION)>100){
-                                $m = "La variable CLIENTE_DIRECCION no debe exceder los 100 caracteres.";
-                                return false;
-                            }
-                        }
-                    }
+                    }// else{
+                    //     if($CLIENTE->CLIENTE_DIRECCION!=""){
+                    //         if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_DIRECCION)>100){
+                    //             $m = "La variable CLIENTE_DIRECCION no debe exceder los 100 caracteres.";
+                    //             return false;
+                    //         }
+                    //     }
+                    // }
 
                     //validación CLIENTE_APELLIDOS
                     if(!isset($CLIENTE->CLIENTE_APELLIDOS)){
                         $m = "La variable CLIENTE_APELLIDOS no ha sido enviada.";
                         return false;
-                    }else{
-                        if($CLIENTE->CLIENTE_APELLIDOS!=""){
-                            if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_APELLIDOS)>45){
-                                $m = "La variable CLIENTE_APELLIDOS no debe exceder los 45 caracteres.";
-                                return false;
-                            }else{
-                                foreach ( str_split($CLIENTE->CLIENTE_APELLIDOS) as $caracter) {
-                                    if(is_numeric($caracter)){
-                                        $m = "La variable CLIENTE_APELLIDOS no debe tener números.";
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    }// else{
+                    //     if($CLIENTE->CLIENTE_APELLIDOS!=""){
+                    //         if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_APELLIDOS)>45){
+                    //             $m = "La variable CLIENTE_APELLIDOS no debe exceder los 45 caracteres.";
+                    //             return false;
+                    //         }else{
+                    //             foreach ( str_split($CLIENTE->CLIENTE_APELLIDOS) as $caracter) {
+                    //                 if(is_numeric($caracter)){
+                    //                     $m = "La variable CLIENTE_APELLIDOS no debe tener números.";
+                    //                     return false;
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
                     
                     //validaciones de la variable CLIENTE_ID
                     if(!isset($CLIENTE->CLIENTE_ID)){
@@ -513,19 +510,19 @@
                 if(!isset($CLIENTE->CLIENTE_CORREO)){
                     $m = "La variable CLIENTE_CORREO no ha sido enviada.";
                     return false;
-                }else{
-                    if($CLIENTE->CLIENTE_CORREO != ""){
-                        if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_CORREO)>60){
-                            $m = "La variable CLIENTE_CORREO no debe exceder los 60 caracteres.";
-                            return false;
-                        }else{
-                            if(!filter_var($CLIENTE->CLIENTE_CORREO, FILTER_VALIDATE_EMAIL)){
-                                $m = "La variable CLIENTE_CORREO no tiene un formato valido.";
-                                return false;
-                            }
-                        }
-                    }
-                }
+                }// else{
+                //     if($CLIENTE->CLIENTE_CORREO != ""){
+                //         if(obtenerCantidadDeCaracteres($CLIENTE->CLIENTE_CORREO)>60){
+                //             $m = "La variable CLIENTE_CORREO no debe exceder los 60 caracteres.";
+                //             return false;
+                //         }else{
+                //             if(!filter_var($CLIENTE->CLIENTE_CORREO, FILTER_VALIDATE_EMAIL)){
+                //                 $m = "La variable CLIENTE_CORREO no tiene un formato valido.";
+                //                 return false;
+                //             }
+                //         }
+                //     }
+                // }
 
             }
         }

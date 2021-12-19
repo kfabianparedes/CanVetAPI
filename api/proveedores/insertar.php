@@ -51,13 +51,13 @@
             return false;
         }else{
             if($d->PROV_NUMERO_CONTACTO!=""){
-                if(obtenerCantidadDeCaracteres($d->PROV_NUMERO_CONTACTO)<=20){
+                if(obtenerCantidadDeCaracteres($d->PROV_NUMERO_CONTACTO)==9){
                     if(!verificarCelular($d->PROV_NUMERO_CONTACTO)){
                         $m = "*Campo obligatorio* El numero de celular no tiene el formato permitido.";
                         return false;
                     }
                 }else{
-                    $m = "*Campo obligatorio* El numero de celular no debe exceder de 20 caracteres.";
+                    $m = "*Campo obligatorio* El numero de celular no debe exceder de 9 caracteres.";
                     return false;
                 }
             }else{
