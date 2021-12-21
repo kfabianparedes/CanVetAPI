@@ -248,8 +248,36 @@ class Producto{
 		SELECT COMPRA_ID FROM COMPRA ORDER BY COMPRA_ID DESC LIMIT 1
 		)), 1,0 ) AS ULTIMA_COMPRA  FROM PRODUCTO P 
         INNER JOIN CATEGORIA C ON (P.CAT_ID = C.CAT_ID) 
-        INNER JOIN PROVEEDOR PV ON (P.PROV_ID = PV.PROV_ID )
-        ORDER BY ULTIMA_COMPRA DESC , P.PRO_ESTADO ASC  ; ";
+        INNER JOIN PROVEEDOR PV ON (P.PROV_ID = PV.PROV_ID );";
+        $datos= [];
+        try{
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $result = get_result($stmt); 
+            
+            if (count($result) > 0) {                
+                while ($dato = array_shift($result)) {    
+                    $datos[] = $dato;
+                }
+            }
+            $mensaje = "Solicitud ejecutada con exito";
+            $exito = true;
+            return $datos;
+
+        }catch(Throwable  $e){
+            $code_error = "error_deBD";
+            $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
+            $exito = false;
+
+            return $datos;
+        } 
+    }
+
+    function listarProductosActivos(&$mensaje,&$exito,&$code_error){
+        $query = "SELECT P.*, C.CAT_NOMBRE,PV.PROV_EMPRESA_PROVEEDORA
+		FROM PRODUCTO P 
+        INNER JOIN CATEGORIA C ON (P.CAT_ID = C.CAT_ID) 
+        INNER JOIN PROVEEDOR PV ON (P.PROV_ID = PV.PROV_ID ) WHERE P.PRO_ESTADO = 1";
         $datos= [];
         try{
             $stmt = $this->conn->prepare($query);
