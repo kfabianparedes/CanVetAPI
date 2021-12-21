@@ -248,7 +248,8 @@ class Producto{
 		SELECT COMPRA_ID FROM COMPRA ORDER BY COMPRA_ID DESC LIMIT 1
 		)), 1,0 ) AS ULTIMA_COMPRA  FROM PRODUCTO P 
         INNER JOIN CATEGORIA C ON (P.CAT_ID = C.CAT_ID) 
-        INNER JOIN PROVEEDOR PV ON (P.PROV_ID = PV.PROV_ID )";
+        INNER JOIN PROVEEDOR PV ON (P.PROV_ID = PV.PROV_ID )
+        ORDER BY ULTIMA_COMPRA DESC , P.PRO_ESTADO ASC  ; ";
         $datos= [];
         try{
             $stmt = $this->conn->prepare($query);
