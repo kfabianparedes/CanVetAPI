@@ -143,7 +143,10 @@
                 $DATOS_JURIDICOS = $datos->DATOS_JURIDICOS; 
                 $DJ_RAZON_SOCIAL = $DATOS_JURIDICOS->DJ_RAZON_SOCIAL; 
                 $DJ_RUC = $DATOS_JURIDICOS->DJ_RUC; 
-                $DJ_TIPO_EMPRESA_ID = $DATOS_JURIDICOS->TIPO_EMPRESA_ID;        
+                if($DATOS_JURIDICOS->TIPO_EMPRESA_ID != "")
+                    $DJ_TIPO_EMPRESA_ID = $DATOS_JURIDICOS->TIPO_EMPRESA_ID;       
+                else    
+                    $DJ_TIPO_EMPRESA_ID = 6 ;
             }else{
                 $DJ_RAZON_SOCIAL = ''; 
                 $DJ_RUC = ''; 

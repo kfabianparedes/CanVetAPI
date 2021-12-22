@@ -18,7 +18,7 @@
         
         function registrarCliente(&$mensaje,&$code_error,$esJuridico,$DJ_RAZON_SOCIAL,$DJ_RUC,$DJ_TIPO_EMPRESA_ID){
 
-            $query = "CALL SP_INSERTAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?,?)" ; 
+            $query = "CALL SP_CREAR_CLIENTE(@VALIDACIONES,?,?,?,?,?,?,?,?,?,?)" ; 
             $queryValidaciones = "SELECT @VALIDACIONES"; 
 
             try {
