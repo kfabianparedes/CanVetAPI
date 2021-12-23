@@ -40,7 +40,7 @@
         }
         
         function listarCategorias(&$mensaje,&$exito,&$code_error){
-            $query="SELECT * FROM CATEGORIA";
+            $query="SELECT * FROM CATEGORIA ORDER BY CAT_ESTADO, CAT_NOMBRE ASC ;";
             $datos = [];
 
             try{

@@ -133,7 +133,7 @@
         }
 
         function listar(&$mensaje,&$code_error,&$exito){
-            $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) ORDER BY MAS_ID DESC;";
+            $query = "SELECT * FROM MASCOTA MAS INNER JOIN CLIENTE CLI ON (MAS.CLIENTE_ID = CLI.CLIENTE_ID) ORDER BY  MAS_ESTADO DESC , MAS_ID DESC;";
             $datos = [];  
             try {
 
