@@ -139,6 +139,8 @@
                 $mascotaC->MAS_ATENCIONES = $datos->MAS_ATENCIONES;
                 $mascotaC->CLIENTE_ID = $datos->CLIENTE_ID;
                 $mascotaC->MAS_ESTADO = $datos->MAS_ESTADO;
+                $mascotaC->MAS_TAMANIO = $datos->MAS_TAMANIO;
+                $mascotaC->MAS_GENERO = $datos->MAS_GENERO;
                 $exito = $mascotaC->registrarMascota($mensaje,$code_error);
                 if($exito == true)
                     header('HTTP/1.1 200 OK');
@@ -192,6 +194,38 @@
                     }
                 }
                 
+            }
+
+            //validamos el tamaño de la mascota
+            if(!isset($d->MAS_TAMANIO)){
+                $m = "La variable MAS_TAMANIO no ha sido enviada.";
+                return false;
+            }else{  
+                if($d->MAS_TAMANIO == ""){
+                    $m = "La variable MAS_TAMANIO no puede estar vacía o ser null.";
+                    return false; 
+                }else{
+                    if(obtenerCantidadDeCaracteres($d->MAS_TAMANIO)>20){
+                        $m = "La variable MAS_TAMANIO no puede ser mayor a 20 caracteres.";
+                        return false; 
+                    }
+                }
+            }
+
+            //validamos el tamaño de la mascota
+            if(!isset($d->MAS_GENERO)){
+                $m = "La variable MAS_GENERO no ha sido enviada.";
+                return false;
+            }else{  
+                if($d->MAS_GENERO == ""){
+                    $m = "La variable MAS_GENERO no puede estar vacía o ser null.";
+                    return false; 
+                }else{
+                    if($d->MAS_GENERO != 'M' && $d->MAS_GENERO != 'H'){
+                        $m = "La variable MAS_TAMANIO solo puede ser 'M' o  'H'.";
+                        return false; 
+                    }
+                }
             }
 
             //validamos el nombre de la mascota
