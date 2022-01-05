@@ -231,7 +231,7 @@
             $m = "El campo TIPO_SERVICIO_ID no ha sido enviado";
             return false;
         }else{
-            if(!is_numeric($d->TIPO_SERVICIO_ID) || ctype_digit($d->TIPO_SERVICIO_ID)){
+            if(!is_numeric($d->TIPO_SERVICIO_ID)){
                 $m = "El campo TIPO_SERVICIO_ID debe ser numérico";
                 return false;
             }else{
@@ -247,7 +247,7 @@
             $m = "El campo USU_ID no ha sido enviado";
             return false;
         }else{
-            if(!is_numeric($d->USU_ID) || ctype_digit($d->USU_ID)){
+            if(!is_numeric($d->USU_ID)){
                 $m = "El campo USU_ID debe ser numérico";
                 return false;
             }else{
@@ -263,7 +263,7 @@
             $m = "El campo COMPROBANTE_ID no ha sido enviado";
             return false;
         }else{
-            if(!is_numeric($d->COMPROBANTE_ID) || ctype_digit($d->COMPROBANTE_ID)){
+            if(!is_numeric($d->COMPROBANTE_ID)){
                 $m = "El campo COMPROBANTE_ID debe ser numérico";
                 return false;
             }else{
@@ -295,7 +295,7 @@
             $m = "El campo MASCOTA_ID no ha sido enviado";
             return false;
         }else{
-            if(!is_numeric($d->MASCOTA_ID) || ctype_digit($d->MASCOTA_ID)){
+            if(!is_numeric($d->MASCOTA_ID)){
                 $m = "El campo MASCOTA_ID debe ser numérico";
                 return false;
             }else{
