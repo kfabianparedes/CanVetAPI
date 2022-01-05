@@ -147,8 +147,8 @@
 
             $anioMes = date('Y-m'); 
             $anioMesAnterior = strtotime('-1 month', strtotime($anioMes));
-            $anioMesAnterior = date('Y-m', $anioMesAnterior); 
 
+            $anioMesAnterior = date('Y-m', $anioMesAnterior); 
             $datos = [];
             $datosMesActual =[];
             $datosMesAterior =[];
