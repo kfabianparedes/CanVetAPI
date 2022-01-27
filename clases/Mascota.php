@@ -25,7 +25,7 @@
             INSERT INTO MASCOTA(MAS_NOMBRE,MAS_RAZA,MAS_COLOR,MAS_ESPECIE,MAS_ATENCIONES,MAS_ESTADO,MAS_FECHA_REGISTRO,MAS_TAMANIO,MAS_GENERO,CLIENTE_ID)
             VALUES(?,?,?,?,?,?,?,?,?,?);
             "; 
-            $queryValidarIdCliente = "SELECT * FROM CLIENTE WHERE CLIENTE_ID";
+            $queryValidarIdCliente = "SELECT * FROM CLIENTE WHERE CLIENTE_ID = ?";
             $fecha = date("Y-m-d");
             try {
                 
@@ -37,20 +37,16 @@
                 if (count($resultIdCliente) > 0) {
                     
                     $stmt = $this->conn->prepare($query);
-                    $stmt->bind_param("ssssssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR
-                    ,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->MAS_ESTADO,$fecha,$this->MAS_TAMANIO,$this->MAS_GENERO,$this->CLIENTE_ID);
+                    $stmt->bind_param("ssssssssss",$this->MAS_NOMBRE,$this->MAS_RAZA,$this->MAS_COLOR,$this->MAS_ESPECIE,$this->MAS_ATENCIONES,$this->MAS_ESTADO,$fecha,$this->MAS_TAMANIO,$this->MAS_GENERO,$this->CLIENTE_ID);
                     if(!$stmt->execute()){
 
                         $code_error = "error_ejecucionQuery";
                         $mensaje = "Hubo un error al registrar la mascota.";
                         return false; 
-
-                    }else{
-
-                        $mensaje = "Solicitud ejecutada con exito";
-                        return true;
-
                     }
+
+                    $mensaje = "Solicitud ejecutada con exito";
+                    return true;
 
                 }else{
 
@@ -60,12 +56,10 @@
 
                 }
 
-            } catch (Throwable $th) {
-
+            }catch(Throwable $th) {
                 $code_error = "error_deBD";
                 $mensaje = "Ha ocurrido un error con la BD. No se pudo ejecutar la consulta.";
                 return false;
-            
             }
         }
 
